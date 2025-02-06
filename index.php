@@ -3,7 +3,7 @@
  * Plugin Name:          Siteefy
  * Plugin URI:
  * Description:
- * Version: 1.1.01
+ * Version: 1.20
  * Author:                 Nikola Stanin
  * Author URI:
  * License:
@@ -21,6 +21,7 @@ defined('ABSPATH') || exit;
 require_once  WP_PLUGIN_DIR . '/siteefy/functions.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/ajax.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/shortcodes.php';
+require_once  WP_PLUGIN_DIR . '/siteefy/taxonomy.php';
 
 /**
  * Register a custom post type called "Tool".
@@ -546,20 +547,22 @@ function siteefy_add_tool_backend_fields(){
         'fields' => array (
             array (
                 'key' => 'tool_name',
-                'label' => 'Tool Name',
+                'label' => 'Name',
                 'name' => 'tool_name',
                 'type' => 'text',
                 'required' => true,
             ),
             array (
                 'key' => 'tool_review_link',
-                'label' => 'Tool Review Link',
+                'label' => 'Review Link',
                 'name' => 'tool_review_link',
                 'type' => 'link',
+                'instructions' =>'Select a page where users will be redirected when they click on this tool. ',
+
             ),
             array (
                 'key' => 'tool_rating',
-                'label' => 'Tool Rating',
+                'label' => 'Rating',
                 'name' => 'tool_rating',
                 'type' => 'range',
                 'min'=>0,
@@ -579,31 +582,35 @@ function siteefy_add_tool_backend_fields(){
 //            ),
             array (
                 'key' => 'tool_category',
-                'label' => 'Tool assigned category',
+                'label' => 'Category',
                 'name' => 'tool_category',
                 'type' => 'select',
                 'multiple' => 0,
+                'instructions' =>'Category under which this tool belongs',
                 'required' => true,
             ),
             array (
                 'key' => 'tool_solution',
-                'label' => 'Tool assigned solution',
+                'label' => 'Solution',
                 'name' => 'tool_solution',
                 'type' => 'select',
                 'multiple' => 1,
+                'instructions' =>'What solutions does this tool solve?',
                 'required' => true,
             ),
             array (
                 'key' => 'tool_price',
-                'label' => 'Tool price description',
+                'label' => 'Price description',
                 'name' => 'tool_price',
                 'type' => 'text',
+                'instructions' =>'Subscription price of this tool - if empty will show as "free" on frontend. ',
                 'required' => false,
             ),
             array (
                 'key' => 'tool_is_featured',
-                'label' => 'Tool - is featured ? (appears with blue highlighted border on search page "sponsored")',
+                'label' => 'Is featured ?',
                 'name' => 'tool_is_featured',
+                'instructions' =>'Selecting this will highlight this tool in a blue border so its more visible to users.',
                 'type' => 'true_false',
                 'required' => false,
             ),
@@ -635,26 +642,29 @@ function siteefy_add_task_backend_fields(){
         'fields' => array (
             array (
                 'key' => 'task_nice_title',
-                'label' => 'Task nice title (with emoji)',
+                'label' => 'Nnice title (with emoji)',
                 'name' => 'task_nice_title',
                 'type' => 'text',
                 'required' => false,
             ),
             array (
                 'key' => 'task_category',
-                'label' => 'Task assigned category',
+                'label' => 'Category',
                 'name' => 'task_category',
                 'type' => 'select',
                 'multiple' => 0,
                 'required' => true,
+                'instructions' =>'Category under which this TASK belongs',
+
             ),
             array (
                 'key' => 'task_solution',
-                'label' => 'Task assigned solution',
+                'label' => 'Solutions',
                 'name' => 'task_solution',
                 'type' => 'select',
                 'multiple' => 1,
                 'required' => true,
+                'instructions' =>'What solutions does this TASK solve?',
             ),
         ),
         'location' => array (
@@ -856,9 +866,6 @@ function get_tasks_for_tool_from_its_solution($tool_id = 0) {
 
     return $matching_tasks;
 }
-
-
-//var_dump(get_tasks_for_tool_from_its_solution(57049));
 
 function get_task_assigned_category($task){
     $category_id = get_field('task_category', $task->ID);
