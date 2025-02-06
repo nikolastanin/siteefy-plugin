@@ -1,0 +1,36 @@
+ol.all-tasks__list{
+  margin: 50px 0 0 0 !important;
+  &.no-margin{
+    margin:0 !important;
+  }
+}
+
+li.all-tasks__item a {
+  margin-left: 37px;
+  color: #828282;
+  font-family: Inter;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+
+li.all-tasks__item{
+  margin-left: 19px;
+  color: rgba(0, 0, 0, 0.30);
+  text-align: right;
+  font-family: Inter;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;;
+  text-align: left;
+  padding: 12px 0;
+  border-bottom: 0.3px solid #E6E6E6;;
+}
+li.all-tasks__item:first-child{
+  border-top: 0.3px solid #E6E6E6;;;
+}
+.all-tasks__item-counter{
+  font-weight: 400;
+}

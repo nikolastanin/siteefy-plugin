@@ -1,0 +1,247 @@
+.text-blue{
+  color: #000AD1;
+  text-align: left;
+  font-family: Montserrat;
+  font-size: 48px !important;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 48px !important; /* 100% */
+  margin-bottom: 24px;
+  &.align-center{
+    text-align: center;
+  }
+  .highlight{
+    border-bottom: 13px solid #FFDA10;
+  }
+}
+
+.most-popular-tasks__inner{
+  padding: 96px 120px;
+  p{
+    margin-top: 40px;
+  }
+  @media (max-width: 770px) {
+    padding: 60px 0;
+  }
+}
+.popular-tasks__container{
+  display: flex;
+  gap:28px;
+  @media (max-width: 770px) {
+    flex-direction: column;
+  }
+ }
+.popular-task-item{
+  width: 235px;
+  height: 131px;
+  flex-shrink: 0;
+  border-radius: 5px;
+  background: #FAFAFA;
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.10);
+  &:hover{
+    box-shadow: 0px 0px 7px 0px rgba(255, 204, 0, 0.70);
+    cursor: pointer;
+  }
+  @media (max-width: 770px) {
+    width: 100%;
+  }
+}
+.popular-task-item__inner{
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+.popular-task-item__category{
+  min-width: 191px;
+  height: 41px;
+  flex-shrink: 0;
+  border-radius: 5px;
+  border: 1px solid #DFDFDF;
+  background: #EAEAEA;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  color: #3F3F3F;
+  padding:10px;
+  text-align: center;
+  font-family: Inter;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+.subtask-name{
+  color: #3F3F3F;
+  text-align: center;
+  font-family: Inter;
+  font-size: 10px;
+  font-style: italic;
+  font-weight: 300;
+  line-height: normal;
+  text-decoration-line: underline;
+}
+.task-name{
+  color: #000AD1;
+  text-align: center;
+  font-family: Inter;
+  font-size: 13px;
+  font-style: italic;
+  font-weight: 600;
+  line-height: normal;
+}
+.tool-of-the-week__inner{
+  display: flex;
+  gap: 90px;
+  @media (max-width: 770px) {
+    flex-direction: column;
+  }
+}
+.tool-of-the-week-left{
+  padding: 25px 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.tool-of-the-week__left-top{
+  margin-bottom: 43px;
+  p{
+    margin: 40px auto 0;
+    max-width: 283.56px;
+  }
+}
+
+.tool-of-the-week__left-bottom{
+  display: flex;
+  gap: 11px;
+  flex-wrap: wrap;
+  .popular-task-item__category{
+    max-width: 100%;
+    flex-grow: 1;
+
+  }
+}
+
+.tool-of-the-week-right{
+  position: relative;
+  z-index: 1;
+  border-radius: 5px;
+  border: 2px solid #FC0;
+  background: var(--Gradient-Blue, linear-gradient(180deg, #0744E3 0%, #0880EC 100%));
+  padding: 27px 53px ;
+  @media (max-width: 770px) {
+    padding:20px;
+  }
+  h2{
+    color: #FFF;
+    text-align: center;
+    font-family: Montserrat;
+    font-size: 36px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 48px; /* 133.333% */
+  }
+  p{
+    color: #AFD9FF;
+    text-align: center;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+  .tool-item{
+    min-width: 313px;
+    @media (max-width: 770px) {
+      min-width: unset;
+      width: 100%;
+    }
+  }
+}
+.overlay-right{
+    position: absolute;
+    width: 105%;
+    height: 110%;
+    border-radius: 5px;
+    opacity: 0.4;
+    background: var(--Gradient-Blue, linear-gradient(180deg, #0744E3 0%, #0880EC 100%));
+    filter: blur(15px);
+    top: -10px;
+    left: -10px;
+    z-index: -1;
+}
+.top-rated-tools{
+  padding: 96px 0;
+  p{
+    margin: 40px auto 40px;
+    max-width: 425px;
+    color: #3F3F3F;
+    text-align: center;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+}
+.top-rated-tools-items{
+  display: flex;
+  gap:29px;
+  justify-content: space-between;
+  .tool-item{
+    width:313px;
+    @media (max-width: 770px) {
+      width: 100%;
+    }
+  }
+  @media (max-width: 770px) {
+    flex-direction: column;
+  }
+}
+.see-more__container{
+  margin-top: 55px;
+  text-align: center;
+}
+.see-more-btn{
+  color: #000AD1;
+  text-align: center;
+  font-family: Inter;
+  font-size: 12px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: normal;
+  text-decoration-line: underline;
+}
+
+.newly-discovered__items{
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  .tool-item{
+    max-width: 313px;
+    @media (max-width: 770px) {
+      width: 100%;
+      max-width: unset;
+    }
+  }
+  @media (max-width: 770px) {
+    flex-direction: column;
+  }
+}
+section.best-tools{
+  padding: 96px 0;
+}
+.best-tools-container{
+  display: flex;
+  gap: 7px;
+  justify-content: center;
+  .popular-task-item__category{
+    flex-grow: 1;
+  }
+  @media (max-width: 770px) {
+    flex-direction:column;
+  }
+}

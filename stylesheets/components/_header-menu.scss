@@ -1,0 +1,26 @@
+header.new{
+  background: unset;
+  background-color: unset;
+  z-index: 50;
+  position: fixed;
+  width: 100%;
+  .inside-header{
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+
+
+#mobile-header {
+  display: none;
+}
+
+@media (max-width: 770px) {
+  #mobile-header {
+    display: block; /* Show when screen width is less than 770px */
+  }
+  header.new{
+    display: none;
+  }
+}
