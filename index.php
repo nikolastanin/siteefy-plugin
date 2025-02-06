@@ -567,14 +567,16 @@ function siteefy_add_tool_backend_fields(){
                 'step'=> '0.1',
                 'required' => true,
             ),
-            array (
-                'key' => 'tool_assigned_tasks',
-                'label' => 'Tool assigned Tasks',
-                'name' => 'tool_assigned_tasks',
-                'type' => 'select',
-                'multiple' => 1,
-                'required' => true,
-            ),
+//todo:get tool assigned tasks from its solution
+        //tool_assigned_tasks -> get_tasks_by_solution
+//            array (
+//                'key' => 'tool_assigned_tasks',
+//                'label' => 'Tool assigned Tasks',
+//                'name' => 'tool_assigned_tasks',
+//                'type' => 'select',
+//                'multiple' => 1,
+//                'required' => true,
+//            ),
             array (
                 'key' => 'tool_category',
                 'label' => 'Tool assigned category',
@@ -808,7 +810,8 @@ function siteefy_get_field($field='', $id=false){
             }
             break;
         case 'tool_assigned_tasks':
-            $assigned_task = get_field('tool_assigned_tasks', $id);
+//            $assigned_task = get_field('tool_assigned_tasks', $id);
+            $assigned_task = get_tasks_for_tool_from_its_solution($id);
             if(is_array($assigned_task) && count($assigned_task)>=0){
                 return $assigned_task[0];
 //               echo get_the_title($assigned_task[0]);
@@ -830,11 +833,32 @@ function get_task_by_id($id){
 }
 
 function get_task_by_tool($tool){
-    $task_id = siteefy_get_field('tool_assigned_tasks', $tool->ID);
-    $task = get_task_by_id($task_id);
-    return $task;
+    return get_tasks_for_tool_from_its_solution($tool->ID);
 }
 
+function get_tasks_for_tool_from_its_solution($tool_id = 0) {
+    $solution_ids = get_field('tool_solution', $tool_id);
+
+    if (empty($solution_ids)) {
+        return [];
+    }
+
+    $tasks = get_all_tasks(); // Returns an array of WP_Post objects
+    $matching_tasks = [];
+
+    foreach ($tasks as $task) {
+        $task_assigned_solutions = get_field('task_solution', $task->ID);
+
+        if (!empty($task_assigned_solutions) && array_intersect($solution_ids, $task_assigned_solutions)) {
+            $matching_tasks[] = $task->ID; // Collect only task IDs
+        }
+    }
+
+    return $matching_tasks;
+}
+
+
+//var_dump(get_tasks_for_tool_from_its_solution(57049));
 
 function get_task_assigned_category($task){
     $category_id = get_field('task_category', $task->ID);

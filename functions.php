@@ -77,7 +77,7 @@ function get_tools_by_search_term(){
     // Loop through each tool and get the selected tasks
     foreach ($all_tools as $single_tool) {
         $post_id = $single_tool->ID;
-        $selected_tasks_ids_for_post = get_field('tool_assigned_tasks', $post_id);
+        $selected_tasks_ids_for_post = get_tasks_for_tool_from_its_solution($post_id);
 
         if (!empty($selected_tasks_ids_for_post)) {
             $selected_tasks = array();
@@ -180,7 +180,7 @@ function get_tools_by_task_id($task_id) {
         // Loop through each tool and check if it is assigned to the specific task ID
         foreach ($all_tools as $single_tool) {
             $post_id = $single_tool->ID;
-            $assigned_tasks = get_field('tool_assigned_tasks', $post_id); // Assume this is an ACF field
+            $assigned_tasks = get_tasks_for_tool_from_its_solution($post_id); // Assume this is an ACF field
             if (!empty($assigned_tasks) && in_array($task_id, $assigned_tasks)) {
                 // If the task ID is found in the assigned tasks, add the tool to the filtered list
                 $filtered_tools[] = $single_tool;
@@ -337,7 +337,7 @@ function get_tools_and_tasks_by_search_term($search_term) {
         // Filter tools based on title, assigned tasks, or categories
         foreach ($all_tools as $single_tool) {
             $post_id = $single_tool->ID;
-            $selected_tasks_ids_for_post = get_field('tool_assigned_tasks', $post_id);
+            $selected_tasks_ids_for_post = get_tasks_for_tool_from_its_solution($post_id);
 
             // Retrieve and format assigned tasks for the tool
             if (!empty($selected_tasks_ids_for_post)) {
@@ -456,7 +456,7 @@ function get_count_of_tools_for_single_task($task_id_passed){
     // Loop through each tool and get the selected tasks
     foreach ($all_tools as $single_tool) {
         $post_id = $single_tool->ID;
-        $selected_tasks_ids_for_post = get_field('tool_assigned_tasks', $post_id);
+        $selected_tasks_ids_for_post = get_tasks_for_tool_from_its_solution($post_id);
         if (!empty($selected_tasks_ids_for_post)) {
             foreach ($selected_tasks_ids_for_post as $task_id) {
                 if($task_id == $task_id_passed){
