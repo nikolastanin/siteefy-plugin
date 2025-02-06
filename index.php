@@ -642,7 +642,7 @@ function siteefy_add_task_backend_fields(){
         'fields' => array (
             array (
                 'key' => 'task_nice_title',
-                'label' => 'Nnice title (with emoji)',
+                'label' => 'Nice title (with emoji)',
                 'name' => 'task_nice_title',
                 'type' => 'text',
                 'required' => false,
@@ -809,7 +809,7 @@ function siteefy_get_field($field='', $id=false){
             break;
         case 'tool_rating':
             $rating = get_field('tool_rating', $id) ?: '4.9';
-            $rating = (!str_contains($rating ?: '.', '.')) ? $rating . '.0' : $rating;
+            $rating = (strpos($rating ?: '.', '.') === false) ? $rating . '.0' : $rating;
             echo $rating;
             break;
         case 'tool_review_link':

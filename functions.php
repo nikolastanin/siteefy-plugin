@@ -93,7 +93,7 @@ function get_tools_by_search_term(){
         $post_title_normalized = strtolower(str_replace(array(' ', '_', '-'), '', $single_tool->post_title));
 
         // Check if search term matches in the normalized post title
-        if (str_contains($post_title_normalized, $search_term_normalized)) {
+        if (strpos($post_title_normalized, $search_term_normalized) !== false) {
             $filtered_tools[] = $single_tool;
             continue; // If matched in title, skip other checks for this tool
         }
@@ -105,7 +105,7 @@ function get_tools_by_search_term(){
             $category_name_normalized = strtolower(str_replace([' ', '_', '-'], '', $assigned_category->post_title));
 
             // Check if the search term matches the category name
-            if (str_contains($category_name_normalized, $search_term_normalized)) {
+            if (strpos($category_name_normalized, $search_term_normalized) !== false) {
                 $filtered_tools[] = $single_tool;
                 continue;
             }
@@ -121,7 +121,7 @@ function get_tools_by_search_term(){
                 $solution_name_normalized = strtolower(str_replace([' ', '_', '-'], '', $solution_post->post_title));
 
                 // Check if the search term matches the category name
-                if (str_contains($solution_name_normalized, $search_term_normalized)) {
+                if (strpos($solution_name_normalized, $search_term_normalized) !== false) {
                     $filtered_tools[] = $single_tool;
                     break; // Exit the loop as we found a match
                 }
@@ -129,7 +129,7 @@ function get_tools_by_search_term(){
         }
 
         // Check if search term matches in the tasks (also normalize tasks)
-        if (!empty($tasks_per_tool[$post_id]) && str_contains(strtolower(str_replace(array(' ', '_', '-'), '', $tasks_per_tool[$post_id])), $search_term_normalized)) {
+        if (!empty($tasks_per_tool[$post_id]) && strpos(strtolower(str_replace([' ', '_', '-'], '', $tasks_per_tool[$post_id])), $search_term_normalized) !== false) {
             $filtered_tools[] = $single_tool;
         }
     }
@@ -328,7 +328,7 @@ function get_tools_and_tasks_by_search_term($search_term) {
             $task_title_normalized = strtolower(str_replace([' ', '_', '-'], '', $task->post_title));
 
             // Check if the search term matches in the normalized task title
-            if (str_contains($task_title_normalized, $search_term_normalized)) {
+            if (strpos($task_title_normalized, $search_term_normalized) !== false) {
                 $filtered_tasks[] = $task;
             }
         }
@@ -353,7 +353,7 @@ function get_tools_and_tasks_by_search_term($search_term) {
             $post_title_normalized = strtolower(str_replace([' ', '_', '-'], '', $single_tool->post_title));
 
             // Check if the search term matches the tool title
-            if (str_contains($post_title_normalized, $search_term_normalized)) {
+            if (strpos($post_title_normalized, $search_term_normalized) !== false) {
                 $filtered_tools[] = $single_tool;
                 continue;
             }
@@ -361,7 +361,7 @@ function get_tools_and_tasks_by_search_term($search_term) {
 
 
             // Check if the search term matches in the assigned tasks for the tool
-            if (!empty($tasks_per_tool[$post_id]) && str_contains(strtolower(str_replace([' ', '_', '-'], '', $tasks_per_tool[$post_id])), $search_term_normalized)) {
+            if (!empty($tasks_per_tool[$post_id]) && strpos(strtolower(str_replace([' ', '_', '-'], '', $tasks_per_tool[$post_id])), $search_term_normalized) !== false) {
                 $filtered_tools[] = $single_tool;
             }
 
@@ -375,7 +375,7 @@ function get_tools_and_tasks_by_search_term($search_term) {
                     $solution_name_normalized = strtolower(str_replace([' ', '_', '-'], '', $solution_post->post_title));
 
                     // Check if the search term matches the category name
-                    if (str_contains($solution_name_normalized, $search_term_normalized)) {
+                    if (strpos($solution_name_normalized, $search_term_normalized) !== false) {
                         $filtered_tools[] = $single_tool;
                         break; // Exit the loop as we found a match
                     }
