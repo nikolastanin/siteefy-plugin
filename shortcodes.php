@@ -38,11 +38,11 @@ add_shortcode('tool-of-the-week', function(){
     ob_start(); // Start output buffering to capture output as string
 
     $tool_of_the_week = get_selected_tool_of_the_week();
-    $tool_of_the_week_text = get_selected_tool_of_the_week_text();
+    $choosen_tool_text = get_options(array('tool_of_the_week_text'));
     if($tool_of_the_week->post_type==='tool' && $tool_of_the_week){
     ?>
     <h2 class="text-blue align-center">Tool of the Week</h2>
-    <p><?php echo $tool_of_the_week_text;?></p>
+    <p><?php echo $choosen_tool_text['tool_of_the_week_text'];?></p>
     <div class="tool-item" data-link="<?php siteefy_get_field('tool_review_link',$tool_of_the_week->ID); ?>">
                         <div class="tool-item__inner">
                             <div class="tool-item__img">
