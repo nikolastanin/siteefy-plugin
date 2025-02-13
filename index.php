@@ -3,7 +3,7 @@
  * Plugin Name:          Siteefy
  * Plugin URI:
  * Description:
- * Version: 1.20
+ * Version: 1.21
  * Author:                 Nikola Stanin
  * Author URI:
  * License:
@@ -22,6 +22,8 @@ require_once  WP_PLUGIN_DIR . '/siteefy/functions.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/ajax.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/shortcodes.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/taxonomy.php';
+require_once  WP_PLUGIN_DIR . '/siteefy/solutions.php';
+require_once  WP_PLUGIN_DIR . '/siteefy/category.php';
 
 /**
  * Register a custom post type called "Tool".
@@ -77,59 +79,6 @@ function siteefy_tool_init() {
 add_action( 'init', 'siteefy_tool_init' );
 
 
-
-/**
- * Register a custom post type called "Tool".
- *
- * @see get_post_type_labels() for label keys.
- */
-function siteefy_solution_init() {
-    $labels = array(
-        'name'                  => _x( 'Solution', 'Post type general name', 'textdomain' ),
-        'singular_name'         => _x( 'Solution', 'Post type singular name', 'textdomain' ),
-        'menu_name'             => _x( 'Solutions', 'Admin Menu text', 'textdomain' ),
-        'name_admin_bar'        => _x( 'Solution', 'Add New on Toolbar', 'textdomain' ),
-        'add_new'               => __( 'Add New', 'textdomain' ),
-        'add_new_item'          => __( 'Add New Solution', 'textdomain' ),
-        'new_item'              => __( 'New Solution', 'textdomain' ),
-        'edit_item'             => __( 'Edit Solution', 'textdomain' ),
-        'view_item'             => __( 'View Solution', 'textdomain' ),
-        'all_items'             => __( 'All Solution', 'textdomain' ),
-        'search_items'          => __( 'Search Solutions', 'textdomain' ),
-        'parent_item_colon'     => __( 'Parent Solutions:', 'textdomain' ),
-        'not_found'             => __( 'No Solution found.', 'textdomain' ),
-        'not_found_in_trash'    => __( 'No Solutions found in Trash.', 'textdomain' ),
-        'featured_image'        => _x( 'Solution Cover Image', 'Overrides the “Featured Image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'set_featured_image'    => _x( 'Set cover image', 'Overrides the “Set featured image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'remove_featured_image' => _x( 'Remove cover image', 'Overrides the “Remove featured image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'use_featured_image'    => _x( 'Use as cover image', 'Overrides the “Use as featured image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'archives'              => _x( 'Solution archives', 'The post type archive label used in nav menus. Default “Post Archives”. Added in 4.4', 'textdomain' ),
-        'insert_into_item'      => _x( 'Insert into Solution', 'Overrides the “Insert into post”/”Insert into page” phrase (used when inserting media into a post). Added in 4.4', 'textdomain' ),
-        'uploaded_to_this_item' => _x( 'Uploaded to this Solution', 'Overrides the “Uploaded to this post”/”Uploaded to this page” phrase (used when viewing media attached to a post). Added in 4.4', 'textdomain' ),
-        'filter_items_list'     => _x( 'Filter Solutions list', 'Screen reader text for the filter links heading on the post type listing screen. Default “Filter posts list”/”Filter pages list”. Added in 4.4', 'textdomain' ),
-        'items_list_navigation' => _x( 'Solutions list navigation', 'Screen reader text for the pagination heading on the post type listing screen. Default “Posts list navigation”/”Pages list navigation”. Added in 4.4', 'textdomain' ),
-        'items_list'            => _x( 'Solutions list', 'Screen reader text for the items list heading on the post type listing screen. Default “Posts list”/”Pages list”. Added in 4.4', 'textdomain' ),
-    );
-
-    $args = array(
-        'labels'             => $labels,
-        'public'             => true,
-        'publicly_queryable' => true,
-        'show_ui'            => true,
-        'show_in_menu'       => true,
-        'query_var'          => true,
-        'rewrite'            => array( 'slug' => 'solutions' ),
-        'capability_type'    => 'post',
-        'has_archive'        => true,
-        'hierarchical'       => false,
-        'menu_position'      => 53,
-        'menu_icon' => 'dashicons-admin-tools',
-        'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' ),
-    );
-
-    register_post_type( 'solution', $args );
-}
-add_action( 'init', 'siteefy_solution_init' );
 
 function siteefy_add_options_menu() {
     add_menu_page(
@@ -269,18 +218,69 @@ function siteefy_task__init() {
         'show_ui'            => true,
         'show_in_menu'       => true,
         'query_var'          => true,
-        'rewrite'            => array( 'slug' => 'tasks' ),
+        'rewrite'            => array(
+            'slug'       => 'tasks', // No fixed slug
+            'with_front' => false,
+        ),
+        "cptp_permalink_structure" => "/%category%/%postname%/",
         'capability_type'    => 'post',
         'has_archive'        => true,
         'hierarchical'       => false,
         'menu_position'      => 52,
         'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' ),
     );
-
+    // Register the taxonomy
+    register_taxonomy('category', 'task', array(
+        'label'             => 'Task Categories',
+        'hierarchical'      => true,
+        'rewrite'           => array('slug' => 'category'),
+    ));
     register_post_type( 'task', $args );
 }
+flush_rewrite_rules();
 
 add_action( 'init', 'siteefy_task__init' );
+
+function custom_task_permalink($permalink, $post) {
+    if ($post->post_type === 'task') {
+        $terms = get_the_terms($post->ID, 'category'); // Use the correct taxonomy
+
+        if (!empty($terms) && !is_wp_error($terms)) {
+            $category_slug = $terms[0]->slug; // Get the first assigned category
+            return home_url('/' . $category_slug . '/' . $post->post_name . '/');
+        }
+    }
+    return $permalink;
+}
+add_filter('post_type_link', 'custom_task_permalink', 10, 2);
+
+
+function custom_task_rewrite_rules() {
+    $categories = get_terms(array(
+        'taxonomy'   => 'category',
+        'hide_empty' => false, // Set to true if you only want categories that have posts
+    ));
+    $category_slugs = array();
+    if (!is_wp_error($categories) && !empty($categories)) {
+        foreach ($categories as $category) {
+            add_rewrite_rule(
+                '^'.$category->slug.'/([^/]+)/?$',
+                'index.php?task=$matches[1]',
+                'top'
+            );
+        }
+    }
+}
+add_action('init', 'custom_task_rewrite_rules');
+
+
+//function modify_category_route($q){
+//    if ($q->is_main_query() && !is_admin() && $q->is_single){
+////        $q->set( 'post_type',  array_merge(array('post'), array('page', 'task'))   );
+//    }
+//    return $q;
+//}
+//add_action('pre_get_posts', 'modify_category_route',  12);
 
 /**
  * Register a custom post type called "Article".
@@ -336,71 +336,18 @@ function siteefy_article__init() {
 
 add_action( 'init', 'siteefy_article__init' );
 
-/**
- * Register a custom post type called "Article".
- *
- * @see get_post_type_labels() for label keys.
- */
-function siteefy_category__init() {
-    $labels = array(
-        'name'                  => _x( 'Categories', 'Post type general name', 'textdomain' ),
-        'singular_name'         => _x( 'Category', 'Post type singular name', 'textdomain' ),
-        'menu_name'             => _x( 'Categories', 'Admin Menu text', 'textdomain' ),
-        'name_admin_bar'        => _x( 'Categories', 'Add New on Toolbar', 'textdomain' ),
-        'add_new'               => __( 'Add New', 'textdomain' ),
-        'add_new_item'          => __( 'Add New Category', 'textdomain' ),
-        'new_item'              => __( 'New Category', 'textdomain' ),
-        'edit_item'             => __( 'Edit Category', 'textdomain' ),
-        'view_item'             => __( 'View Category', 'textdomain' ),
-        'all_items'             => __( 'All Categories', 'textdomain' ),
-        'search_items'          => __( 'Search Categories', 'textdomain' ),
-        'parent_item_colon'     => __( 'Parent Categories:', 'textdomain' ),
-        'not_found'             => __( 'No categories found.', 'textdomain' ),
-        'not_found_in_trash'    => __( 'No categories found in Trash.', 'textdomain' ),
-        'featured_image'        => _x( 'Category Cover Image', 'Overrides the “Featured Image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'set_featured_image'    => _x( 'Set cover image', 'Overrides the “Set featured image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'remove_featured_image' => _x( 'Remove cover image', 'Overrides the “Remove featured image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'use_featured_image'    => _x( 'Use as cover image', 'Overrides the “Use as featured image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'archives'              => _x( 'Category archives', 'The post type archive label used in nav menus. Default “Post Archives”. Added in 4.4', 'textdomain' ),
-        'insert_into_item'      => _x( 'Insert into Category', 'Overrides the “Insert into post”/”Insert into page” phrase (used when inserting media into a post). Added in 4.4', 'textdomain' ),
-        'uploaded_to_this_item' => _x( 'Uploaded to this Category', 'Overrides the “Uploaded to this post”/”Uploaded to this page” phrase (used when viewing media attached to a post). Added in 4.4', 'textdomain' ),
-        'filter_items_list'     => _x( 'Filter categories list', 'Screen reader text for the filter links heading on the post type listing screen. Default “Filter posts list”/”Filter pages list”. Added in 4.4', 'textdomain' ),
-        'items_list_navigation' => _x( 'Category list navigation', 'Screen reader text for the pagination heading on the post type listing screen. Default “Posts list navigation”/”Pages list navigation”. Added in 4.4', 'textdomain' ),
-        'items_list'            => _x( 'Category list', 'Screen reader text for the items list heading on the post type listing screen. Default “Posts list”/”Pages list”. Added in 4.4', 'textdomain' ),
-    );
 
-    $args = array(
-        'labels'             => $labels,
-        'public'             => true,
-        'publicly_queryable' => true,
-        'show_ui'            => true,
-        'show_in_menu'       => true,
-        'query_var'          => true,
-        'rewrite'            => array( 'slug' => 'categories' ),
-        'capability_type'    => 'post',
-        'has_archive'        => true,
-        'hierarchical'       => false,
-        'menu_position'      => 51,
-        'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' ),
-    );
-
-    register_post_type( 'category', $args );
-}
-
-add_action( 'init', 'siteefy_category__init' );
-
-
-function na_parse_request( $query ) {
-
-    if ( ! $query->is_main_query() || 2 != count( $query->query ) || ! isset( $query->query['page'] ) ) {
-        return;
-    }
-
-    if ( ! empty( $query->query['name'] ) ) {
-        $query->set( 'post_type', array( 'post', 'article', 'page' ) );
-    }
-}
-add_action( 'pre_get_posts', 'na_parse_request' );
+//function na_parse_request( $query ) {
+//
+//    if ( ! $query->is_main_query() || 2 != count( $query->query ) || ! isset( $query->query['page'] ) ) {
+//        return;
+//    }
+//
+//    if ( ! empty( $query->query['name'] ) ) {
+//        $query->set( 'post_type', array( 'post', 'article', 'page' ) );
+//    }
+//}
+//add_action( 'pre_get_posts', 'na_parse_request' );
 
 
 ////CATEGORIES
@@ -508,33 +455,34 @@ function siteefy_add_custom_templates($template) {
             return $custom_template;
         }
     }
-    elseif(is_single() && get_post_type($post) === 'solution'){
-        $custom_template = plugin_dir_path(__FILE__) . 'templates/solution-template.php';
-        // Check if the custom template exists
-        if (file_exists($custom_template)) {
-            return $custom_template;
-        }
-    }
-    elseif(is_archive() && get_post_type($post) === 'solution' ){
-        $custom_template = plugin_dir_path(__FILE__) . 'templates/solution-archive-template.php';
-        // Check if the custom template exists
-        if (file_exists($custom_template)) {
-            return $custom_template;
-        }
-    }
-    elseif(is_archive() && get_post_type($post) === 'category' ){
-        $custom_template = plugin_dir_path(__FILE__) . 'templates/category-archive-template.php';
-        // Check if the custom template exists
-        if (file_exists($custom_template)) {
-            return $custom_template;
-        }
-    }elseif(is_single() && get_post_type($post) === 'category'){
+    elseif(is_archive() && get_queried_object()->taxonomy === 'solution'){
         $custom_template = plugin_dir_path(__FILE__) . 'templates/category-template.php';
         // Check if the custom template exists
         if (file_exists($custom_template)) {
             return $custom_template;
         }
     }
+    elseif(is_page() && strtolower(get_the_title())==='solution' ){
+        $custom_template = plugin_dir_path(__FILE__) . 'templates/solution-archive-template.php';
+        // Check if the custom template exists
+        if (file_exists($custom_template)) {
+            return $custom_template;
+        }
+    }
+    elseif (is_page() && get_the_title()==='category') {
+        $custom_template = plugin_dir_path(__FILE__) . 'templates/category-archive-template.php';
+        // Check if the custom template exists
+        if (file_exists($custom_template)) {
+            return $custom_template;
+        }
+    }elseif(is_archive() && get_queried_object()->taxonomy === 'category'){
+        $custom_template = plugin_dir_path(__FILE__) . 'templates/category-template.php';
+        // Check if the custom template exists
+        if (file_exists($custom_template)) {
+            return $custom_template;
+        }
+    }
+//    todo: category single page template to be used for solution as well as they the same
     return $template;
 }
 add_filter('template_include', 'siteefy_add_custom_templates');
@@ -580,24 +528,24 @@ function siteefy_add_tool_backend_fields(){
 //                'multiple' => 1,
 //                'required' => true,
 //            ),
-            array (
-                'key' => 'tool_category',
-                'label' => 'Category',
-                'name' => 'tool_category',
-                'type' => 'select',
-                'multiple' => 0,
-                'instructions' =>'Category under which this tool belongs',
-                'required' => true,
-            ),
-            array (
-                'key' => 'tool_solution',
-                'label' => 'Solution',
-                'name' => 'tool_solution',
-                'type' => 'select',
-                'multiple' => 1,
-                'instructions' =>'What solutions does this tool solve?',
-                'required' => true,
-            ),
+//            array (
+//                'key' => 'tool_category',
+//                'label' => 'Category',
+//                'name' => 'tool_category',
+//                'type' => 'select',
+//                'multiple' => 0,
+//                'instructions' =>'Category under which this tool belongs',
+//                'required' => true,
+//            ),
+//            array (
+//                'key' => 'tool_solution',
+//                'label' => 'Solution',
+//                'name' => 'tool_solution',
+//                'type' => 'select',
+//                'multiple' => 1,
+//                'instructions' =>'What solutions does this tool solve?',
+//                'required' => true,
+//            ),
             array (
                 'key' => 'tool_price',
                 'label' => 'Price description',
@@ -647,25 +595,25 @@ function siteefy_add_task_backend_fields(){
                 'type' => 'text',
                 'required' => false,
             ),
-            array (
-                'key' => 'task_category',
-                'label' => 'Category',
-                'name' => 'task_category',
-                'type' => 'select',
-                'multiple' => 0,
-                'required' => true,
-                'instructions' =>'Category under which this TASK belongs',
-
-            ),
-            array (
-                'key' => 'task_solution',
-                'label' => 'Solutions',
-                'name' => 'task_solution',
-                'type' => 'select',
-                'multiple' => 1,
-                'required' => true,
-                'instructions' =>'What solutions does this TASK solve?',
-            ),
+//            array (
+//                'key' => 'task_category',
+//                'label' => 'Category',
+//                'name' => 'task_category',
+//                'type' => 'select',
+//                'multiple' => 0,
+//                'required' => true,
+//                'instructions' =>'Category under which this TASK belongs',
+//
+//            ),
+//            array (
+//                'key' => 'task_solution',
+//                'label' => 'Solutions',
+//                'name' => 'task_solution',
+//                'type' => 'select',
+//                'multiple' => 1,
+//                'required' => true,
+//                'instructions' =>'What solutions does this TASK solve?',
+//            ),
         ),
         'location' => array (
             array (
@@ -713,53 +661,7 @@ function siteefy_add_homepage_backend_fields(){
 add_action('acf/init', 'siteefy_add_homepage_backend_fields');
 
 
-function populate_category_select_field_for_tasks( $field ) {
-    // Reset choices
-    $field['choices'] = array();
 
-    // Get all "categories" posts
-    $categories = get_posts(array(
-        'post_type' => 'category',
-        'posts_per_page' => -1,
-        'post_status' => 'publish',
-    ));
-
-    // Loop through the tasks and add them to the choices
-    if( $categories ) {
-        foreach( $categories as $category ) {
-            $field['choices'][ $category->ID ] = $category->post_title;
-        }
-    }
-
-    // Return the updated field
-    return $field;
-}
-add_filter('acf/load_field/name=tool_category', 'populate_category_select_field_for_tasks');
-add_filter('acf/load_field/name=task_category', 'populate_category_select_field_for_tasks');
-
-function populate_solution_select_field_for_tasks( $field ) {
-    // Reset choices
-    $field['choices'] = array();
-
-    // Get all "solution" posts
-    $solutions = get_posts(array(
-        'post_type' => 'solution',
-        'posts_per_page' => -1,
-        'post_status' => 'publish',
-    ));
-
-    // Loop through the tasks and add them to the choices
-    if( $solutions ) {
-        foreach( $solutions as $solution ) {
-            $field['choices'][ $solution->ID ] = $solution->post_title;
-        }
-    }
-
-    // Return the updated field
-    return $field;
-}
-add_filter('acf/load_field/name=tool_solution', 'populate_solution_select_field_for_tasks');
-add_filter('acf/load_field/name=task_solution', 'populate_solution_select_field_for_tasks');
 
 function populate_tool_assigned_tasks_field( $field ) {
     // Reset choices
@@ -846,42 +748,9 @@ function get_task_by_tool($tool){
     return get_tasks_for_tool_from_its_solution($tool->ID);
 }
 
-function get_tasks_for_tool_from_its_solution($tool_id = 0) {
-    $solution_ids = get_field('tool_solution', $tool_id);
-
-    if (empty($solution_ids)) {
-        return [];
-    }
-
-    $tasks = get_all_tasks(); // Returns an array of WP_Post objects
-    $matching_tasks = [];
-
-    foreach ($tasks as $task) {
-        $task_assigned_solutions = get_field('task_solution', $task->ID);
-
-        if (!empty($task_assigned_solutions) && array_intersect($solution_ids, $task_assigned_solutions)) {
-            $matching_tasks[] = $task->ID; // Collect only task IDs
-        }
-    }
-
-    return $matching_tasks;
-}
-
-function get_task_assigned_category($task){
-    $category_id = get_field('task_category', $task->ID);
-    echo get_post($category_id)->post_title ?? '';
-}
 
 
-function get_all_categories($limit=5) {
-    // Get all "categories" posts
-    $categories = get_posts(array(
-        'post_type' => 'category',
-        'posts_per_page' => $limit,
-        'post_status' => 'publish',
-    ));
-    return $categories;
-}
+
 
 
 

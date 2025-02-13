@@ -38,7 +38,7 @@
                 $categories = get_all_categories(-1);
                 foreach ($categories as $category){?>
                     <li class="all-tasks__item">
-                        <a href="<?php echo get_permalink( $category->ID ); ?>"><?php echo ucfirst($category->post_title) . '<span class="all-tasks__item-counter">('. get_count_of_tools_for_single_category($category->ID) . ')</span>'; ?></a>
+                        <a href="<?php echo get_term_link( $category->term_id ); ?>"><?php echo ucfirst($category->name) . '<span class="all-tasks__item-counter">('. get_count_of_tools_for_single_category($category->term_id) . ')</span>'; ?></a>
                     </li>
                 <?php } ?>
 

@@ -99,6 +99,7 @@ function get_tools_by_search_term(){
         }
 
         // Retrieve the assigned category for the tool
+        //        todo:get term id by post id by tax = cat
         $assigned_category = get_field('tool_category', $post_id);
         $assigned_category = get_post($assigned_category);
         if ($assigned_category && !empty($assigned_category)) {
@@ -112,6 +113,7 @@ function get_tools_by_search_term(){
         }
 
         // Retrieve the assigned solution for the tool
+//        todo:get term id by post id by tax = solution
         $assigned_solution = get_field('tool_solution', $post_id);
         // Loop through each assigned solution
         foreach ($assigned_solution as $solution) {
@@ -196,115 +198,24 @@ function get_tools_by_task_id($task_id) {
     return $data;
 }
 
-function get_tools_grouped_by_solution_name_by_using_task_id($task_id) {
-    $tools = get_tools_by_task_id($task_id);
-    $grouped_solutions = array();
-    $used_tool_ids = array(); // Track tool IDs that have already been assigned to a solution
-
-    foreach ($tools as $tool) {
-        // Get the assigned solutions for the current tool
-        $assigned_solutions = get_field('tool_solution', $tool->ID);
-
-        if (is_array($assigned_solutions)) {
-            foreach ($assigned_solutions as $solution_id) {
-                // Skip the tool if it has already been assigned to a solution
-                if (in_array($tool->ID, $used_tool_ids)) {
-                    continue;
-                }
-
-                $solution_post = get_post($solution_id); // Get the full solution post object
-
-                // Initialize the solution group if it doesn't exist
-                if (!isset($grouped_solutions[$solution_id])) {
-                    $grouped_solutions[$solution_id] = array(
-                        'solution' => $solution_post, // Store the full solution object
-                        'tools' => array(),          // Initialize an array to hold tools
-                    );
-                }
-
-                // Add the tool to the current solution
-                $grouped_solutions[$solution_id]['tools'][] = $tool; // Add the whole tool object
-                $used_tool_ids[] = $tool->ID; // Mark the tool as used
-            }
-        }
-    }
-    return $grouped_solutions;
-}
 
 
 
-function get_tools_by_solution_id($solution_id) {
-    // Validate the task ID
-    if (!is_numeric($solution_id)) {
-        return array('error' => 'Invalid task ID.');
-    }
-
-    // Generate a cache key to avoid querying on every request
-    $cache_key = 'tools_by_task_id_' . $solution_id;
-    $data = get_transient($cache_key);
-
-    if (!$data) {
-        // Get all tools
-        $all_tools = get_posts(array(
-            'post_type' => 'tool',
-            'posts_per_page' => -1,
-        ));
-
-        $filtered_tools = array();
-
-        // Loop through each tool and check if it is assigned to the specific task ID
-        foreach ($all_tools as $single_tool) {
-            $post_id = $single_tool->ID;
-            $assigned_tasks = get_field('tool_solution', $post_id); // Assume this is an ACF field
-
-            if (!empty($assigned_tasks) && in_array($solution_id, $assigned_tasks)) {
-                // If the task ID is found in the assigned tasks, add the tool to the filtered list
-                $filtered_tools[] = $single_tool;
-            }
-        }
-
-        // Store the result in a transient for future requests
-        $data = $filtered_tools;
-        set_transient($cache_key, $data, 1); // Cache for 1 hour
-    }
-
-    // Return the filtered tools
-    return $data;
-}
-
-function get_tools_by_category_id($category_id){
-    // Get all tools
-    $all_tools = get_posts(array(
-        'post_type' => 'tool',
+function get_cpt_posts_by_tax($cpt='',$tax, $category_id){
+    $query = new WP_Query(array(
+        'post_type'      => $cpt,
         'posts_per_page' => -1,
+        'tax_query'      => array(
+            array(
+                'taxonomy' => $tax,
+                'field'    => 'term_id',
+                'terms'    => (int) $category_id,
+            ),
+        ),
     ));
-    $selected_tools=array();
-    foreach ($all_tools as $tool){
-        $selected_tool_category = get_field('tool_category', $tool->ID);
-        if($selected_tool_category == $category_id){
-            $selected_tools[] = $tool;
-        }
-    }
-    return $selected_tools;
+    return $query->posts; // Return array of post objects
 }
 
-
-function get_tasks_by_category_id($category_id){
-    // Get all tools
-    $all_tasks = get_posts(array(
-        'post_type' => 'task',
-        'posts_per_page' => -1,
-    ));
-    $selected_tasks=array();
-    foreach ($all_tasks as $task){
-        $selected_tool_category = get_field('task_category', $task->ID);
-        if($selected_tool_category == $category_id){
-            $selected_tasks[] = $task;
-        }
-    }
-//    var_dump($selected_tasks);
-    return $selected_tasks;
-}
 
 
 //on ajax search
@@ -366,6 +277,7 @@ function get_tools_and_tasks_by_search_term($search_term) {
             }
 
             // Retrieve the assigned solution for the tool
+            //        todo:get term id by post id by tax = solution
             $assigned_solution = get_field('tool_solution', $post_id);
             // Loop through each assigned solution
             foreach ($assigned_solution as $solution) {
@@ -404,15 +316,6 @@ function get_all_tasks($count=-1){
     );
     $tasks = get_posts($args);
     return $tasks;
-}
-
-function get_all_solutions($count=-1){
-    $args=array(
-        'post_type'        => 'solution',
-        'numberposts'      => $count,
-    );
-    $solutions = get_posts($args);
-    return $solutions;
 }
 
 function get_all_tools($count=-1, $sort='ASC'){
@@ -468,43 +371,6 @@ function get_count_of_tools_for_single_task($task_id_passed){
     return $count;
 }
 
-function get_count_of_tools_for_single_solution($solution_id_passed){
-    // Get all tools
-    $all_tools = get_posts(array(
-        'post_type' => 'tool',
-        'posts_per_page' => -1,
-    ));
-    $count = 0;
-    // Loop through each tool and get the selected tasks
-    foreach ($all_tools as $single_tool) {
-        $post_id = $single_tool->ID;
-        $selected_solutions_ids_for_post = get_field('tool_solution', $post_id);
-        if (!empty($selected_solutions_ids_for_post)) {
-            foreach ($selected_solutions_ids_for_post as $solution_id) {
-                if($solution_id == $solution_id_passed){
-                    $count++;
-                }
-            }
-        }
-    }
-    return $count;
-}
-
-function get_count_of_tools_for_single_category($category_id){
-    // Get all tools
-    $all_tools = get_posts(array(
-        'post_type' => 'tool',
-        'posts_per_page' => -1,
-    ));
-    $count=0;
-    foreach ($all_tools as $tool){
-        $selected_tool_category = get_field('tool_category', $tool->ID);
-        if($selected_tool_category == $category_id){
-            $count++;
-        }
-    }
-    return $count;
-}
 
 function disable_attachment_pages() {
     if (is_attachment()) {
@@ -521,12 +387,4 @@ add_action('template_redirect', 'disable_attachment_pages');
 function siteefy_get_search_value(){
     $search_value = isset($_GET['s']) ? $_GET['s'] : '';
     echo $search_value;
-}
-
-function get_solution_name_by_tool_id($tool_id){
-    $solution_id = get_field('tool_solution', $tool_id);
-    $solution = get_post($solution_id[0]);
-    if($solution){
-        return $solution->post_title;
-    }
 }
