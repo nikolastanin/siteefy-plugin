@@ -1,7 +1,7 @@
 <?php
-function get_task_assigned_category($task){
-    $category_id = get_field('task_category', $task->ID);
-    echo get_post($category_id)->post_title ?? '';
+function get_task_assigned_category_name($task){
+    $category_id = get_category_for_task($task->ID);
+    echo get_term($category_id)->name ?? '';
 }
 
 //cat-fixed
@@ -37,4 +37,29 @@ function get_count_of_tools_for_single_category($category_id) {
     ));
 
     return $query->found_posts; // Return the count of matching posts
+}
+
+
+function get_category_for_task($task_id){
+    $terms = wp_get_post_terms($task_id, 'category', array('fields' => 'ids'));
+
+    if (!is_wp_error($terms) && is_array($terms)) {
+        return $terms[0]; // Returns an array of term IDs
+    }
+
+    return array(); // Return an empty array if no terms are found
+}
+
+function get_category_for_tool($tool_id) {
+    if (!$tool_id) {
+        return array();
+    }
+
+    $terms = wp_get_post_terms($tool_id, 'category', array('fields' => 'ids'));
+
+    if (!is_wp_error($terms) && is_array($terms) && !empty($terms)) {
+        return $terms[0]; // Returns the first category ID
+    }
+
+    return array(); // Return an empty array if no terms are found
 }

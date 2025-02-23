@@ -1,4 +1,5 @@
 <?php
+//todo:done
 
 function get_all_solutions($limit=-1) {
     if($limit===-1){
@@ -32,10 +33,28 @@ function get_count_of_tools_for_single_solution($solution_id) {
 
     return $query->found_posts; // Return the count of matching posts
 }
+function get_solutions_for_tool($tool_id) {
+    $terms = wp_get_post_terms($tool_id, 'solution', array('fields' => 'ids'));
 
+    if (!is_wp_error($terms)) {
+        return $terms; // Returns an array of term IDs
+    }
+
+    return array(); // Return an empty array if no terms are found
+}
+
+function get_solutions_for_task($task_id){
+    $terms = wp_get_post_terms($task_id, 'solution', array('fields' => 'ids'));
+    if (!is_wp_error($terms)) {
+        return $terms; // Returns an array of term IDs
+    }
+    return array(); // Return an empty array if no terms are found
+}
+
+
+//todo:check if it works
 function get_tasks_for_tool_from_its_solution($tool_id = 0) {
-    $solution_ids = get_field('tool_solution', $tool_id);
-
+    $solution_ids = get_solutions_for_tool($tool_id);
     if (empty($solution_ids)) {
         return [];
     }
@@ -44,7 +63,7 @@ function get_tasks_for_tool_from_its_solution($tool_id = 0) {
     $matching_tasks = [];
 
     foreach ($tasks as $task) {
-        $task_assigned_solutions = get_field('task_solution', $task->ID);
+        $task_assigned_solutions = get_solutions_for_task($task->ID);
 
         if (!empty($task_assigned_solutions) && array_intersect($solution_ids, $task_assigned_solutions)) {
             $matching_tasks[] = $task->ID; // Collect only task IDs
@@ -53,6 +72,8 @@ function get_tasks_for_tool_from_its_solution($tool_id = 0) {
 
     return $matching_tasks;
 }
+//var_dump('here biatch');
+//var_dump(get_tasks_for_tool_from_its_solution());
 
 function get_tools_grouped_by_solution_name_by_using_task_id($task_id) {
     $tools = get_tools_by_task_id($task_id);
@@ -61,7 +82,7 @@ function get_tools_grouped_by_solution_name_by_using_task_id($task_id) {
 
     foreach ($tools as $tool) {
         // Get the assigned solutions for the current tool
-        $assigned_solutions = get_field('tool_solution', $tool->ID);
+        $assigned_solutions = get_solutions_for_tool($tool->ID);
 
         if (is_array($assigned_solutions)) {
             foreach ($assigned_solutions as $solution_id) {
@@ -70,8 +91,7 @@ function get_tools_grouped_by_solution_name_by_using_task_id($task_id) {
                     continue;
                 }
 
-                $solution_post = get_post($solution_id); // Get the full solution post object
-
+                $solution_post = get_term($solution_id); // Get the full solution post object
                 // Initialize the solution group if it doesn't exist
                 if (!isset($grouped_solutions[$solution_id])) {
                     $grouped_solutions[$solution_id] = array(
@@ -97,8 +117,8 @@ function get_tools_by_solution_id($solution_id) {
     }
 
     // Generate a cache key to avoid querying on every request
-    $cache_key = 'tools_by_task_id_' . $solution_id;
-    $data = get_transient($cache_key);
+//    $cache_key = 'tools_by_task_id_' . $solution_id;
+    $data = false;
 
     if (!$data) {
         // Get all tools
@@ -112,7 +132,7 @@ function get_tools_by_solution_id($solution_id) {
         // Loop through each tool and check if it is assigned to the specific task ID
         foreach ($all_tools as $single_tool) {
             $post_id = $single_tool->ID;
-            $assigned_tasks = get_field('tool_solution', $post_id); // Assume this is an ACF field
+            $assigned_tasks = get_solutions_for_tool($post_id);
 
             if (!empty($assigned_tasks) && in_array($solution_id, $assigned_tasks)) {
                 // If the task ID is found in the assigned tasks, add the tool to the filtered list
@@ -122,7 +142,7 @@ function get_tools_by_solution_id($solution_id) {
 
         // Store the result in a transient for future requests
         $data = $filtered_tools;
-        set_transient($cache_key, $data, 1); // Cache for 1 hour
+//        set_transient($cache_key, $data, 1); // Cache for 1 hour
     }
 
     // Return the filtered tools
@@ -131,9 +151,14 @@ function get_tools_by_solution_id($solution_id) {
 
 
 function get_solution_name_by_tool_id($tool_id){
-    $solution_id = get_field('tool_solution', $tool_id);
-    $solution = get_post($solution_id[0]);
-    if($solution){
-        return $solution->post_title;
+    $solution_id = get_solutions_for_tool($tool_id);
+    if(array_key_exists(0,$solution_id)){
+        $solution = get_term($solution_id[0]);
+        if($solution){
+            return $solution->name;
+        }else{
+            return '';
+        }
     }
+
 }

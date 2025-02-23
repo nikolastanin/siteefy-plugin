@@ -11,7 +11,7 @@ add_shortcode('most-popular-tasks', function(){
                                 <?php echo esc_html($task->post_title); // Get category from post meta ?>
                             </div>
                             <span class="task-name">
-                               <?php get_task_assigned_category($task); ?>
+                               <?php get_task_assigned_category_name($task); ?>
                             </span>
                         </div>
                     </a>
@@ -23,6 +23,8 @@ add_shortcode('most-popular-tasks', function(){
 add_shortcode('popular-categories', function(){
     ob_start(); // Start output buffering to capture output as string
     $categories = get_all_categories(5);
+//    var_dump(get_tools_and_tasks_by_search_term('solutiontest'));
+
     if (!empty($categories)) {
         foreach ($categories as $category) {
             echo '<a href="' . get_term_link($category) . '" class="popular-task-item__category">';

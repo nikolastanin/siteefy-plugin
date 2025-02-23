@@ -19,11 +19,15 @@ function get_siteefy_footer(){
 }
 add_action('get_siteefy_footer', 'get_siteefy_footer');
 
+/**
+ * @throws Exception
+ */
 function get_siteefy_search(){
+    $use_cache = get_siteefy_settings('use_cache');
     $data = ['data'=>'data123'];
     require_once  WP_PLUGIN_DIR . '/siteefy/templates/search.php';
     wp_enqueue_script('siteefy_main_script');
-    wp_localize_script('siteefy_main_script', 'siteefy_settings_main',array('useCache'=>0));
+    wp_localize_script('siteefy_main_script', 'siteefy_settings_main',array('useCache'=>$use_cache));
 }
 add_action('get_siteefy_search', 'get_siteefy_search');
 
@@ -99,11 +103,11 @@ function get_tools_by_search_term(){
         }
 
         // Retrieve the assigned category for the tool
-        //        todo:get term id by post id by tax = cat
-        $assigned_category = get_field('tool_category', $post_id);
-        $assigned_category = get_post($assigned_category);
-        if ($assigned_category && !empty($assigned_category)) {
-            $category_name_normalized = strtolower(str_replace([' ', '_', '-'], '', $assigned_category->post_title));
+        //        todo:check if it works.....!!!!
+        $assigned_category = get_category_for_tool($post_id);
+        $assigned_category = get_term($assigned_category);
+        if ($assigned_category && !empty($assigned_category) && !is_wp_error($assigned_category)) {
+            $category_name_normalized = strtolower(str_replace([' ', '_', '-'], '', $assigned_category->name));
 
             // Check if the search term matches the category name
             if (strpos($category_name_normalized, $search_term_normalized) !== false) {
@@ -112,27 +116,28 @@ function get_tools_by_search_term(){
             }
         }
 
+
         // Retrieve the assigned solution for the tool
 //        todo:get term id by post id by tax = solution
-        $assigned_solution = get_field('tool_solution', $post_id);
+        $assigned_solution = get_solutions_for_tool($post_id);
         // Loop through each assigned solution
         foreach ($assigned_solution as $solution) {
-            $solution_post = get_post($solution);
+            $solution_post = get_term($solution);
 
             if ($solution_post && !empty($solution_post)) {
-                $solution_name_normalized = strtolower(str_replace([' ', '_', '-'], '', $solution_post->post_title));
+                $solution_name_normalized = strtolower(str_replace([' ', '_', '-'], '', $solution_post->name));
 
-                // Check if the search term matches the category name
+                // Check if the search term matches the solution name
                 if (strpos($solution_name_normalized, $search_term_normalized) !== false) {
                     $filtered_tools[] = $single_tool;
                     break; // Exit the loop as we found a match
                 }
             }
         }
-
         // Check if search term matches in the tasks (also normalize tasks)
         if (!empty($tasks_per_tool[$post_id]) && strpos(strtolower(str_replace([' ', '_', '-'], '', $tasks_per_tool[$post_id])), $search_term_normalized) !== false) {
-            $filtered_tools[] = $single_tool;
+            //        todo: this causes duplicated tools so i commented it out, but maybe it needs to be here?
+            //            $filtered_tools[] = $single_tool;
         }
     }
     return $filtered_tools;
@@ -217,14 +222,17 @@ function get_cpt_posts_by_tax($cpt='',$tax, $category_id){
 }
 
 
-
 //on ajax search
 function get_tools_and_tasks_by_search_term($search_term) {
     // Normalize search term by converting to lowercase and removing underscores, hyphens, and spaces
     $search_term_normalized = strtolower(str_replace([' ', '_', '-'], '', $search_term));
     $cache_key = $search_term_normalized . '--cache';
-    $data = get_transient($cache_key);
-
+    $use_cache = get_siteefy_settings('use_cache');
+    if($use_cache){
+        $data = get_transient($cache_key);
+    }else{
+        $data = false;
+    }
     if (!$data) {
         // Get all tools and tasks
         $all_tools = get_posts(['post_type' => 'tool', 'posts_per_page' => -1]);
@@ -249,7 +257,6 @@ function get_tools_and_tasks_by_search_term($search_term) {
         foreach ($all_tools as $single_tool) {
             $post_id = $single_tool->ID;
             $selected_tasks_ids_for_post = get_tasks_for_tool_from_its_solution($post_id);
-
             // Retrieve and format assigned tasks for the tool
             if (!empty($selected_tasks_ids_for_post)) {
                 $selected_tasks = [];
@@ -270,21 +277,21 @@ function get_tools_and_tasks_by_search_term($search_term) {
             }
 
 
-
+    //        todo: this causes duplicated tools so i commented it out, but maybe it needs to be here?
             // Check if the search term matches in the assigned tasks for the tool
             if (!empty($tasks_per_tool[$post_id]) && strpos(strtolower(str_replace([' ', '_', '-'], '', $tasks_per_tool[$post_id])), $search_term_normalized) !== false) {
-                $filtered_tools[] = $single_tool;
+//                $filtered_tools[] = $single_tool;
             }
 
             // Retrieve the assigned solution for the tool
             //        todo:get term id by post id by tax = solution
-            $assigned_solution = get_field('tool_solution', $post_id);
+            $assigned_solution = get_solutions_for_tool($post_id);
             // Loop through each assigned solution
             foreach ($assigned_solution as $solution) {
-                $solution_post = get_post($solution);
-
+                $solution_post = get_term($solution);
+//                var_dump($solution_post->name);
                 if ($solution_post && !empty($solution_post)) {
-                    $solution_name_normalized = strtolower(str_replace([' ', '_', '-'], '', $solution_post->post_title));
+                    $solution_name_normalized = strtolower(str_replace([' ', '_', '-'], '', $solution_post->name));
 
                     // Check if the search term matches the category name
                     if (strpos($solution_name_normalized, $search_term_normalized) !== false) {
@@ -308,6 +315,8 @@ function get_tools_and_tasks_by_search_term($search_term) {
 
     return $data;
 }
+
+
 
 function get_all_tasks($count=-1){
     $args=array(

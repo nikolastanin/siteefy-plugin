@@ -46,14 +46,13 @@ $post=get_post($post);
             <?php
             $grouped_tools = get_tools_grouped_by_solution_name_by_using_task_id($post->ID);
             $solution_index = 1;
-
             foreach ($grouped_tools as $solution_data) {
                 $solution = $solution_data['solution']; // Full solution object
                 $tools = $solution_data['tools']; // Array of tools related to the solution
                 ?>
                 <h3 class="text-blue">
-                    <a href="<?php echo get_permalink($solution) ?>" class="highlight">
-                        <?php echo $solution->post_title; ?>
+                    <a href="<?php echo get_term_link($solution) ?>" class="highlight">
+                        <?php echo $solution->name; ?>
                     </a>
                 </h3>
                 <?php
@@ -67,12 +66,13 @@ $post=get_post($post);
                             <div class="tool-item__details">
                                 <div class="tool-item__title">
                                     <a href="<?php echo siteefy_get_field('tool_review_link', $tool->ID); ?>">
-                                        <?php echo $tool_index . '. ' . siteefy_get_field('tool_name', $tool->ID); ?>
+                                        <?php  siteefy_get_field('tool_name', $tool->ID); ?>
                                     </a>
                                     <img width="24px" height="24px" src="<?php echo PLUGIN_IMAGE_URL . '/verified-icon.png'; ?>" alt="">
                                 </div>
                                 <div class="tool-item__solution-name">
-                                    <?php echo $solution->post_title; ?>
+<!--                                    todo: this needs to be changes on all templates-->
+                                    <?php echo $solution->name; ?>
                                 </div>
                             </div>
                         </div>
