@@ -947,4 +947,3 @@ function siteefy_prevent_term_creation_if_post_exists( $term_id, $tt_id, $taxono
     }
 }
 add_action( 'create_term', 'siteefy_prevent_term_creation_if_post_exists', 10, 3 );
-
