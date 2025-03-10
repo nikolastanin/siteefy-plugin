@@ -3,7 +3,7 @@
  * Plugin Name:          Siteefy
  * Plugin URI:
  * Description:
- * Version: 1.1.01
+ * Version: 1.4
  * Author:                 Nikola Stanin
  * Author URI:
  * License:
@@ -12,15 +12,50 @@
  * Requires PHP:         7.4
  * Text Domain:
  * Domain Path:
+ * Plugin Dependencies:
+ *  - Yoast SEO
+ *  - Custom Post Type Permalinks (Version 3.5.2 by Toro_Unit)
  */
 
 
 
 defined('ABSPATH') || exit;
-
+require_once  WP_PLUGIN_DIR . '/siteefy/settings.php';
+require_once  WP_PLUGIN_DIR . '/siteefy/solutions.php';
+require_once  WP_PLUGIN_DIR . '/siteefy/category.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/functions.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/ajax.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/shortcodes.php';
+
+
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+// Check for Yoast SEO plugin
+function siteefy_check_dependencies() {
+    if ( ! is_plugin_active( 'wordpress-seo/wp-seo.php' ) ) {
+        // Yoast SEO plugin is not active
+        add_action( 'admin_notices', 'siteefy_missing_cpt_permalink_notice' );
+        return;
+    }
+
+    // Check for Custom Post Type Permalinks plugin (version 3.5.2)
+    if ( !is_plugin_active( 'custom-post-type-permalinks/custom-post-type-permalinks.php' )  ) {
+        // Custom Post Type Permalinks plugin is not active or wrong version
+        add_action( 'admin_notices', 'siteefy_missing_cpt_permalink_notice' );
+        return;
+    }
+
+    // Your plugin logic goes here if dependencies are met
+}
+add_action( 'admin_init', 'siteefy_check_dependencies' );
+
+// Show admin notice if Custom Post Type Permalinks plugin is missing or wrong version
+function siteefy_missing_cpt_permalink_notice() {
+    echo '<div class="error"><p><strong>Siteefy plugin</strong> requires <strong>Custom Post Type Permalinks</strong> & Yoast SEO  plugin to be installed and activated. Please install or update it.</p></div>';
+}
 
 /**
  * Register a custom post type called "Tool".
@@ -57,14 +92,18 @@ function siteefy_tool_init() {
 
     $args = array(
         'labels'             => $labels,
-        'public'             => false,
-        'publicly_queryable' => false,
+        'public'             => true,
+        'publicly_queryable' => true,
         'show_ui'            => true,
         'show_in_menu'       => true,
         'query_var'          => true,
-        'rewrite'            => array( 'slug' => 'tools' ),
+        'rewrite'            => array(
+            'slug'       => 'tools', // No fixed slug
+            'with_front' => false,
+        ),
+        "cptp_permalink_structure" => "/%solution%/%postname%/",
         'capability_type'    => 'post',
-        'has_archive'        => false,
+        'has_archive'        => true,
         'hierarchical'       => false,
         'menu_position'      => 53,
         'menu_icon' => 'dashicons-admin-tools',
@@ -76,59 +115,6 @@ function siteefy_tool_init() {
 add_action( 'init', 'siteefy_tool_init' );
 
 
-
-/**
- * Register a custom post type called "Tool".
- *
- * @see get_post_type_labels() for label keys.
- */
-function siteefy_solution_init() {
-    $labels = array(
-        'name'                  => _x( 'Solution', 'Post type general name', 'textdomain' ),
-        'singular_name'         => _x( 'Solution', 'Post type singular name', 'textdomain' ),
-        'menu_name'             => _x( 'Solutions', 'Admin Menu text', 'textdomain' ),
-        'name_admin_bar'        => _x( 'Solution', 'Add New on Toolbar', 'textdomain' ),
-        'add_new'               => __( 'Add New', 'textdomain' ),
-        'add_new_item'          => __( 'Add New Solution', 'textdomain' ),
-        'new_item'              => __( 'New Solution', 'textdomain' ),
-        'edit_item'             => __( 'Edit Solution', 'textdomain' ),
-        'view_item'             => __( 'View Solution', 'textdomain' ),
-        'all_items'             => __( 'All Solution', 'textdomain' ),
-        'search_items'          => __( 'Search Solutions', 'textdomain' ),
-        'parent_item_colon'     => __( 'Parent Solutions:', 'textdomain' ),
-        'not_found'             => __( 'No Solution found.', 'textdomain' ),
-        'not_found_in_trash'    => __( 'No Solutions found in Trash.', 'textdomain' ),
-        'featured_image'        => _x( 'Solution Cover Image', 'Overrides the “Featured Image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'set_featured_image'    => _x( 'Set cover image', 'Overrides the “Set featured image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'remove_featured_image' => _x( 'Remove cover image', 'Overrides the “Remove featured image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'use_featured_image'    => _x( 'Use as cover image', 'Overrides the “Use as featured image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'archives'              => _x( 'Solution archives', 'The post type archive label used in nav menus. Default “Post Archives”. Added in 4.4', 'textdomain' ),
-        'insert_into_item'      => _x( 'Insert into Solution', 'Overrides the “Insert into post”/”Insert into page” phrase (used when inserting media into a post). Added in 4.4', 'textdomain' ),
-        'uploaded_to_this_item' => _x( 'Uploaded to this Solution', 'Overrides the “Uploaded to this post”/”Uploaded to this page” phrase (used when viewing media attached to a post). Added in 4.4', 'textdomain' ),
-        'filter_items_list'     => _x( 'Filter Solutions list', 'Screen reader text for the filter links heading on the post type listing screen. Default “Filter posts list”/”Filter pages list”. Added in 4.4', 'textdomain' ),
-        'items_list_navigation' => _x( 'Solutions list navigation', 'Screen reader text for the pagination heading on the post type listing screen. Default “Posts list navigation”/”Pages list navigation”. Added in 4.4', 'textdomain' ),
-        'items_list'            => _x( 'Solutions list', 'Screen reader text for the items list heading on the post type listing screen. Default “Posts list”/”Pages list”. Added in 4.4', 'textdomain' ),
-    );
-
-    $args = array(
-        'labels'             => $labels,
-        'public'             => true,
-        'publicly_queryable' => true,
-        'show_ui'            => true,
-        'show_in_menu'       => true,
-        'query_var'          => true,
-        'rewrite'            => array( 'slug' => 'solutions' ),
-        'capability_type'    => 'post',
-        'has_archive'        => true,
-        'hierarchical'       => false,
-        'menu_position'      => 53,
-        'menu_icon' => 'dashicons-admin-tools',
-        'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' ),
-    );
-
-    register_post_type( 'solution', $args );
-}
-add_action( 'init', 'siteefy_solution_init' );
 
 function siteefy_add_options_menu() {
     add_menu_page(
@@ -268,18 +254,160 @@ function siteefy_task__init() {
         'show_ui'            => true,
         'show_in_menu'       => true,
         'query_var'          => true,
-        'rewrite'            => array( 'slug' => 'tasks' ),
+        'rewrite'            => array(
+            'slug'       => 'tasks', // No fixed slug
+            'with_front' => false,
+        ),
+        "cptp_permalink_structure" => "/%category%/%postname%/",
         'capability_type'    => 'post',
         'has_archive'        => true,
         'hierarchical'       => false,
         'menu_position'      => 52,
         'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' ),
     );
-
     register_post_type( 'task', $args );
-}
+    // Register the taxonomy
+    register_taxonomy('category', array('task', 'tool','page', 'post'), array(
+        'label'             => 'Categories',
+        'hierarchical'      => true,
+        'rewrite'           => array('slug' => 'category'),
+        'public' => true,
+    ));
+    register_taxonomy('solution', array('task', 'tool'), array(
+        'labels' => array(
+            'name'              => 'Solutions',
+            'singular_name'     => 'Solution',
+            'menu_name'         => 'Solutions',
+            'all_items'         => 'All Solutions',
+            'edit_item'         => 'Edit Solution',
+            'view_item'         => 'View Solution',
+            'update_item'       => 'Update Solution',
+            'add_new_item'      => 'Add New Solution',
+            'new_item_name'     => 'New Solution Name',
+            'parent_item'       => 'Parent Solution',
+            'parent_item_colon' => 'Parent Solution:',
+            'search_items'      => 'Search Solutions',
+            'not_found'         => 'No Solutions found.',
+        ),
+        'hierarchical'      => true,
+        'rewrite'           => array('slug' => 'solution'),
+        'public'            => true,
+        'show_ui'           => true,
+        'show_admin_column' => true,
+        'query_var'         => true,
+    ));
 
+}
 add_action( 'init', 'siteefy_task__init' );
+
+
+//function modify_category_route($q){
+//    if ($q->is_main_query() && !is_admin() && $q->is_single){
+////        $q->set( 'post_type',  array_merge(array('post'), array('page', 'task'))   );
+//    }
+//    return $q;
+//}
+//add_action('pre_get_posts', 'modify_category_route',  12);
+
+function custom_task_permalink($permalink, $post) {
+    if ($post->post_type === 'task') {
+        $terms = get_the_terms($post->ID, 'category');
+
+        if (!empty($terms) && !is_wp_error($terms)) {
+            // Check for Yoast SEO primary term
+            $primary_term_id = get_post_meta($post->ID, '_yoast_wpseo_primary_category', true);
+
+            if ($primary_term_id) {
+                $primary_term = get_term($primary_term_id);
+                if ($primary_term && !is_wp_error($primary_term)) {
+                    return home_url('/' . $primary_term->slug . '/' . $post->post_name . '/');
+                }
+            }
+
+            // Fallback: Use first term
+            $category_slug = $terms[0]->slug;
+            return home_url('/' . $category_slug . '/' . $post->post_name . '/');
+        }
+    }
+    return $permalink;
+}
+add_filter('post_type_link', 'custom_task_permalink', 10, 2);
+
+
+function custom_solution_permalink($permalink, $post) {
+    if ($post->post_type === 'tool') {
+        $terms = get_the_terms($post->ID, 'solution');
+
+        if (!empty($terms) && !is_wp_error($terms)) {
+            // Check for Yoast SEO primary term
+            $primary_term_id = get_post_meta($post->ID, '_yoast_wpseo_primary_solution', true);
+
+            if ($primary_term_id) {
+                $primary_term = get_term($primary_term_id);
+                if ($primary_term && !is_wp_error($primary_term)) {
+                    return home_url('/' . $primary_term->slug . '/' . $post->post_name . '/');
+                }
+            }
+
+            // Fallback: Use the first term if no primary term is set
+            $category_slug = $terms[0]->slug;
+            return home_url('/' . $category_slug . '/' . $post->post_name . '/');
+        }
+    }
+    return $permalink;
+}
+add_filter('post_type_link', 'custom_solution_permalink', 10, 2);
+
+function custom_task_rewrite_rules() {
+    $categories = get_terms(array(
+        'taxonomy'   => 'category',
+        'hide_empty' => false, // Include all categories
+    ));
+
+    if (!is_wp_error($categories) && !empty($categories)) {
+        foreach ($categories as $category) {
+            add_rewrite_rule(
+                '^' . $category->slug . '/([^/]+)/?$',
+                'index.php?post_type=task&name=$matches[1]',
+                'top'
+            );
+        }
+    }
+}
+add_action('init', 'custom_task_rewrite_rules');
+
+
+
+function add_task_query_vars($query_vars) {
+    $query_vars[] = 'task';
+    return $query_vars;
+}
+add_filter('query_vars', 'add_task_query_vars');
+
+
+function custom_solution_rewrite_rules() {
+    $categories = get_terms(array(
+        'taxonomy'   => 'solution',
+        'hide_empty' => false, // Include all categories
+    ));
+
+    if (!is_wp_error($categories) && !empty($categories)) {
+        foreach ($categories as $category) {
+            add_rewrite_rule(
+                '^' . $category->slug . '/([^/]+)/?$',
+                'index.php?post_type=tool&name=$matches[1]',
+                'top'
+            );
+        }
+    }
+}
+add_action('init', 'custom_solution_rewrite_rules');
+
+function add_custom_query_vars($query_vars) {
+    $query_vars[] = 'tool';
+    return $query_vars;
+}
+add_filter('query_vars', 'add_custom_query_vars');
 
 /**
  * Register a custom post type called "Article".
@@ -316,13 +444,16 @@ function siteefy_article__init() {
 
     $args = array(
         'labels'             => $labels,
-        'public'             => false,
+        'public'             => true,
         'publicly_queryable' => true,
         'show_ui'            => true,
         'show_in_menu'       => true, // Attach CPT menu under the Siteefy Options menu
         'query_var'          => true,
-//todo: this causes 404 on ai-tools/page
-//        'rewrite'            => array( 'slug' => '/', 'with_front' => false, ),
+        'rewrite'            => array(
+            'slug'       => 'tools', // No fixed slug
+            'with_front' => false,
+        ),
+        "cptp_permalink_structure" => "/%solution%/%postname%/",
         'capability_type'    => 'post',
         'has_archive'        => true,
         'hierarchical'       => false,
@@ -330,116 +461,10 @@ function siteefy_article__init() {
         'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' ),
     );
 
-    register_post_type( 'article', $args );
+//    register_post_type( 'article', $args );
 }
 
 add_action( 'init', 'siteefy_article__init' );
-
-/**
- * Register a custom post type called "Article".
- *
- * @see get_post_type_labels() for label keys.
- */
-function siteefy_category__init() {
-    $labels = array(
-        'name'                  => _x( 'Categories', 'Post type general name', 'textdomain' ),
-        'singular_name'         => _x( 'Category', 'Post type singular name', 'textdomain' ),
-        'menu_name'             => _x( 'Categories', 'Admin Menu text', 'textdomain' ),
-        'name_admin_bar'        => _x( 'Categories', 'Add New on Toolbar', 'textdomain' ),
-        'add_new'               => __( 'Add New', 'textdomain' ),
-        'add_new_item'          => __( 'Add New Category', 'textdomain' ),
-        'new_item'              => __( 'New Category', 'textdomain' ),
-        'edit_item'             => __( 'Edit Category', 'textdomain' ),
-        'view_item'             => __( 'View Category', 'textdomain' ),
-        'all_items'             => __( 'All Categories', 'textdomain' ),
-        'search_items'          => __( 'Search Categories', 'textdomain' ),
-        'parent_item_colon'     => __( 'Parent Categories:', 'textdomain' ),
-        'not_found'             => __( 'No categories found.', 'textdomain' ),
-        'not_found_in_trash'    => __( 'No categories found in Trash.', 'textdomain' ),
-        'featured_image'        => _x( 'Category Cover Image', 'Overrides the “Featured Image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'set_featured_image'    => _x( 'Set cover image', 'Overrides the “Set featured image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'remove_featured_image' => _x( 'Remove cover image', 'Overrides the “Remove featured image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'use_featured_image'    => _x( 'Use as cover image', 'Overrides the “Use as featured image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'archives'              => _x( 'Category archives', 'The post type archive label used in nav menus. Default “Post Archives”. Added in 4.4', 'textdomain' ),
-        'insert_into_item'      => _x( 'Insert into Category', 'Overrides the “Insert into post”/”Insert into page” phrase (used when inserting media into a post). Added in 4.4', 'textdomain' ),
-        'uploaded_to_this_item' => _x( 'Uploaded to this Category', 'Overrides the “Uploaded to this post”/”Uploaded to this page” phrase (used when viewing media attached to a post). Added in 4.4', 'textdomain' ),
-        'filter_items_list'     => _x( 'Filter categories list', 'Screen reader text for the filter links heading on the post type listing screen. Default “Filter posts list”/”Filter pages list”. Added in 4.4', 'textdomain' ),
-        'items_list_navigation' => _x( 'Category list navigation', 'Screen reader text for the pagination heading on the post type listing screen. Default “Posts list navigation”/”Pages list navigation”. Added in 4.4', 'textdomain' ),
-        'items_list'            => _x( 'Category list', 'Screen reader text for the items list heading on the post type listing screen. Default “Posts list”/”Pages list”. Added in 4.4', 'textdomain' ),
-    );
-
-    $args = array(
-        'labels'             => $labels,
-        'public'             => true,
-        'publicly_queryable' => true,
-        'show_ui'            => true,
-        'show_in_menu'       => true,
-        'query_var'          => true,
-        'rewrite'            => array( 'slug' => 'categories' ),
-        'capability_type'    => 'post',
-        'has_archive'        => true,
-        'hierarchical'       => false,
-        'menu_position'      => 51,
-        'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' ),
-    );
-
-    register_post_type( 'category', $args );
-}
-
-add_action( 'init', 'siteefy_category__init' );
-
-
-function na_parse_request( $query ) {
-
-    if ( ! $query->is_main_query() || 2 != count( $query->query ) || ! isset( $query->query['page'] ) ) {
-        return;
-    }
-
-    if ( ! empty( $query->query['name'] ) ) {
-        $query->set( 'post_type', array( 'post', 'article', 'page' ) );
-    }
-}
-add_action( 'pre_get_posts', 'na_parse_request' );
-
-
-////CATEGORIES
-//function siteefy_plugin_taxonomies() {
-//    register_taxonomy(
-//        'tool_categories',  // The name of the taxonomy. Name should be in slug form (must not contain capital letters or spaces).
-//        'tool',             // post type name
-//        array(
-//            'hierarchical' => true,
-//            'label' => 'Tools Categories', // display name
-//            'query_var' => true,
-//            'rewrite' => array(
-//                'slug' => 'tool',    // This controls the base slug that will display before each term
-//                'with_front' => false  // Don't display the category base before
-//            )
-//        )
-//    );
-//
-//    register_taxonomy(
-//        'task_categories',  // The name of the taxonomy. Name should be in slug form (must not contain capital letters or spaces).
-//        'task',             // post type name
-//        array(
-//            'hierarchical' => true,
-//            'label' => 'Tasks Categories', // display name
-//            'query_var' => true,
-//            'rewrite' => array(
-//                'slug' => 'task',    // This controls the base slug that will display before each term
-//                'with_front' => false  // Don't display the category base before
-//            )
-//        )
-//    );
-//}
-//add_action( 'init', 'siteefy_plugin_taxonomies');
-
-
-function siteefy_get_categories_for_tool(){
-    //.
-}
-
-
 
 function siteefy_flush_permalinks(){
     flush_rewrite_rules();
@@ -496,46 +521,47 @@ function siteefy_add_custom_templates($template) {
         }
     }elseif(is_single() && get_post_type($post) === 'task'){
         $custom_template = plugin_dir_path(__FILE__) . 'templates/task-template.php';
-        // Check if the custom template exists
         if (file_exists($custom_template)) {
             return $custom_template;
         }
-    }elseif(is_archive() && get_post_type($post) === 'task' ){
+    }elseif(is_archive() && get_post_type($post) === 'task' && get_queried_object()->taxonomy !=='solution'){
         $custom_template = plugin_dir_path(__FILE__) . 'templates/task-archive-template.php';
         // Check if the custom template exists
         if (file_exists($custom_template)) {
             return $custom_template;
         }
     }
-    elseif(is_single() && get_post_type($post) === 'solution'){
-        $custom_template = plugin_dir_path(__FILE__) . 'templates/solution-template.php';
+    elseif(is_archive() && get_queried_object()->taxonomy === 'solution'){
+        $custom_template = plugin_dir_path(__FILE__) . 'templates/cat-single-page-template.php';
         // Check if the custom template exists
         if (file_exists($custom_template)) {
             return $custom_template;
         }
     }
-    elseif(is_archive() && get_post_type($post) === 'solution' ){
+    elseif(is_page() && strtolower(get_the_title())==='solution' ){
         $custom_template = plugin_dir_path(__FILE__) . 'templates/solution-archive-template.php';
         // Check if the custom template exists
         if (file_exists($custom_template)) {
             return $custom_template;
         }
     }
-    elseif(is_archive() && get_post_type($post) === 'category' ){
+    elseif (is_page() && get_the_title()==='category') {
         $custom_template = plugin_dir_path(__FILE__) . 'templates/category-archive-template.php';
         // Check if the custom template exists
         if (file_exists($custom_template)) {
             return $custom_template;
         }
-    }elseif(is_single() && get_post_type($post) === 'category'){
-        $custom_template = plugin_dir_path(__FILE__) . 'templates/category-template.php';
+    }elseif(is_archive() && get_queried_object()->taxonomy === 'category'){
+        $custom_template = plugin_dir_path(__FILE__) . 'templates/cat-single-page-template.php';
         // Check if the custom template exists
         if (file_exists($custom_template)) {
             return $custom_template;
         }
     }
+
     return $template;
 }
+
 add_filter('template_include', 'siteefy_add_custom_templates');
 
 
@@ -546,20 +572,22 @@ function siteefy_add_tool_backend_fields(){
         'fields' => array (
             array (
                 'key' => 'tool_name',
-                'label' => 'Tool Name',
+                'label' => 'Name',
                 'name' => 'tool_name',
                 'type' => 'text',
                 'required' => true,
             ),
             array (
                 'key' => 'tool_review_link',
-                'label' => 'Tool Review Link',
+                'label' => 'Review Link',
                 'name' => 'tool_review_link',
                 'type' => 'link',
+                'instructions' =>'Select a page where users will be redirected when they click on this tool. ',
+
             ),
             array (
                 'key' => 'tool_rating',
-                'label' => 'Tool Rating',
+                'label' => 'Rating',
                 'name' => 'tool_rating',
                 'type' => 'range',
                 'min'=>0,
@@ -568,40 +596,18 @@ function siteefy_add_tool_backend_fields(){
                 'required' => true,
             ),
             array (
-                'key' => 'tool_assigned_tasks',
-                'label' => 'Tool assigned Tasks',
-                'name' => 'tool_assigned_tasks',
-                'type' => 'select',
-                'multiple' => 1,
-                'required' => true,
-            ),
-            array (
-                'key' => 'tool_category',
-                'label' => 'Tool assigned category',
-                'name' => 'tool_category',
-                'type' => 'select',
-                'multiple' => 0,
-                'required' => true,
-            ),
-            array (
-                'key' => 'tool_solution',
-                'label' => 'Tool assigned solution',
-                'name' => 'tool_solution',
-                'type' => 'select',
-                'multiple' => 1,
-                'required' => true,
-            ),
-            array (
                 'key' => 'tool_price',
-                'label' => 'Tool price description',
+                'label' => 'Price description',
                 'name' => 'tool_price',
                 'type' => 'text',
+                'instructions' =>'Subscription price of this tool - if empty will show as "free" on frontend. ',
                 'required' => false,
             ),
             array (
                 'key' => 'tool_is_featured',
-                'label' => 'Tool - is featured ? (appears with blue highlighted border on search page "sponsored")',
+                'label' => 'Is featured ?',
                 'name' => 'tool_is_featured',
+                'instructions' =>'Selecting this will highlight this tool in a blue border so its more visible to users.',
                 'type' => 'true_false',
                 'required' => false,
             ),
@@ -633,26 +639,10 @@ function siteefy_add_task_backend_fields(){
         'fields' => array (
             array (
                 'key' => 'task_nice_title',
-                'label' => 'Task nice title (with emoji)',
+                'label' => 'Nice title (with emoji)',
                 'name' => 'task_nice_title',
                 'type' => 'text',
                 'required' => false,
-            ),
-            array (
-                'key' => 'task_category',
-                'label' => 'Task assigned category',
-                'name' => 'task_category',
-                'type' => 'select',
-                'multiple' => 0,
-                'required' => true,
-            ),
-            array (
-                'key' => 'task_solution',
-                'label' => 'Task assigned solution',
-                'name' => 'task_solution',
-                'type' => 'select',
-                'multiple' => 1,
-                'required' => true,
             ),
         ),
         'location' => array (
@@ -701,53 +691,7 @@ function siteefy_add_homepage_backend_fields(){
 add_action('acf/init', 'siteefy_add_homepage_backend_fields');
 
 
-function populate_category_select_field_for_tasks( $field ) {
-    // Reset choices
-    $field['choices'] = array();
 
-    // Get all "categories" posts
-    $categories = get_posts(array(
-        'post_type' => 'category',
-        'posts_per_page' => -1,
-        'post_status' => 'publish',
-    ));
-
-    // Loop through the tasks and add them to the choices
-    if( $categories ) {
-        foreach( $categories as $category ) {
-            $field['choices'][ $category->ID ] = $category->post_title;
-        }
-    }
-
-    // Return the updated field
-    return $field;
-}
-add_filter('acf/load_field/name=tool_category', 'populate_category_select_field_for_tasks');
-add_filter('acf/load_field/name=task_category', 'populate_category_select_field_for_tasks');
-
-function populate_solution_select_field_for_tasks( $field ) {
-    // Reset choices
-    $field['choices'] = array();
-
-    // Get all "solution" posts
-    $solutions = get_posts(array(
-        'post_type' => 'solution',
-        'posts_per_page' => -1,
-        'post_status' => 'publish',
-    ));
-
-    // Loop through the tasks and add them to the choices
-    if( $solutions ) {
-        foreach( $solutions as $solution ) {
-            $field['choices'][ $solution->ID ] = $solution->post_title;
-        }
-    }
-
-    // Return the updated field
-    return $field;
-}
-add_filter('acf/load_field/name=tool_solution', 'populate_solution_select_field_for_tasks');
-add_filter('acf/load_field/name=task_solution', 'populate_solution_select_field_for_tasks');
 
 function populate_tool_assigned_tasks_field( $field ) {
     // Reset choices
@@ -797,7 +741,7 @@ function siteefy_get_field($field='', $id=false){
             break;
         case 'tool_rating':
             $rating = get_field('tool_rating', $id) ?: '4.9';
-            $rating = (!str_contains($rating ?: '.', '.')) ? $rating . '.0' : $rating;
+            $rating = (strpos($rating ?: '.', '.') === false) ? $rating . '.0' : $rating;
             echo $rating;
             break;
         case 'tool_review_link':
@@ -808,10 +752,9 @@ function siteefy_get_field($field='', $id=false){
             }
             break;
         case 'tool_assigned_tasks':
-            $assigned_task = get_field('tool_assigned_tasks', $id);
+            $assigned_task = get_tasks_for_tool_from_its_solution($id);
             if(is_array($assigned_task) && count($assigned_task)>=0){
                 return $assigned_task[0];
-//               echo get_the_title($assigned_task[0]);
             }else{
                 return '';
             }
@@ -830,28 +773,177 @@ function get_task_by_id($id){
 }
 
 function get_task_by_tool($tool){
-    $task_id = siteefy_get_field('tool_assigned_tasks', $tool->ID);
-    $task = get_task_by_id($task_id);
-    return $task;
-}
-
-
-function get_task_assigned_category($task){
-    $category_id = get_field('task_category', $task->ID);
-    echo get_post($category_id)->post_title ?? '';
-}
-
-
-function get_all_categories($limit=5) {
-    // Get all "categories" posts
-    $categories = get_posts(array(
-        'post_type' => 'category',
-        'posts_per_page' => $limit,
-        'post_status' => 'publish',
-    ));
-    return $categories;
+    return get_tasks_for_tool_from_its_solution($tool->ID);
 }
 
 
 
 
+
+add_filter( 'request', 'rudr_change_term_request', 1, 1 );
+
+function rudr_change_term_request( $query ){
+
+    $tax_name = 'solution'; // specify your taxonomy name here, it can be also 'category' or 'post_tag'
+
+//     Request for child terms differs, we should make an additional check
+    $include_children = false;
+    $name = isset( $query[ 'name' ] ) ? $query[ 'name' ] : '';
+
+    $term = get_term_by( 'slug', $name, $tax_name ); // get the current term to make sure it exists
+
+    if( ! is_wp_error( $term ) && $term ) {
+        // let's not forget about hierarchical taxonomies
+        unset( $query[ 'name' ] );
+
+        switch( $tax_name ) {
+            case 'category' : {
+                $query[ 'category_name' ] = $name; // for categories
+                break;
+            }
+            case 'solution' : {
+                $query[ 'tag' ] = $name; // for post tags
+                break;
+            }
+            default : {
+                $query[ $tax_name ] = $name; // for other taxonomies
+                break;
+            }
+        }
+    }
+
+    return $query;
+
+}
+
+
+function change_solution_permalink( $url, $term, $taxonomy ){
+
+    $taxonomy_name = 'solution'; // your taxonomy name here
+    $taxonomy_slug = 'solution'; // the taxonomy base slug can be different with the taxonomy name (like 'post_tag' and 'tag' )
+
+    // exit the function if this taxonomy slug is not in the URL
+    if( false === strpos( $url, $taxonomy_slug ) || $taxonomy !== $taxonomy_name ) {
+        return $url;
+    }
+
+    // remove taxonomy base slug from term links
+    $url = str_replace( '/' . $taxonomy_slug, '', $url );
+
+    return $url;
+
+}
+add_filter( 'term_link', 'change_solution_permalink', 10, 3 );
+
+function change_category_permalink( $url, $term, $taxonomy ){
+
+    $taxonomy_name = 'category'; // your taxonomy name here
+    $taxonomy_slug = 'category'; // the taxonomy base slug can be different with the taxonomy name (like 'post_tag' and 'tag' )
+
+    // exit the function if this taxonomy slug is not in the URL
+    if( false === strpos( $url, $taxonomy_slug ) || $taxonomy !== $taxonomy_name ) {
+        return $url;
+    }
+
+    // remove taxonomy base slug from term links
+    $url = str_replace( '/' . $taxonomy_slug, '', $url );
+
+    return $url;
+
+}
+add_filter( 'term_link', 'change_category_permalink', 10, 3 );
+
+function custom_solution_rewrite_rules_new() {
+    // Keep the default rule for /solution/test2/
+    add_rewrite_rule(
+        '^solution/([^/]+)/?$',
+        'index.php?solution=$matches[1]',
+        'top'
+    );
+
+    // Fetch all existing solution terms to avoid breaking other pages
+    $terms = get_terms([
+        'taxonomy'   => 'solution',
+        'hide_empty' => false, // Include terms without posts
+    ]);
+
+    if (!empty($terms) && !is_wp_error($terms)) {
+        foreach ($terms as $term) {
+            add_rewrite_rule(
+                '^' . $term->slug . '/?$',
+                'index.php?solution=' . $term->slug,
+                'top'
+            );
+        }
+    }
+
+
+
+
+    //cat - test
+    // Keep the default rule for /solution/test2/
+    add_rewrite_rule(
+        '^category/([^/]+)/?$',
+        'index.php?category=$matches[1]',
+        'top'
+    );
+
+    // Fetch all existing solution terms to avoid breaking other pages
+    $terms = get_terms([
+        'taxonomy'   => 'category',
+        'hide_empty' => false, // Include terms without posts
+    ]);
+
+    if (!empty($terms) && !is_wp_error($terms)) {
+        foreach ($terms as $term) {
+            add_rewrite_rule(
+                '^' . $term->slug . '/?$',
+                'index.php?category=' . $term->slug,
+                'top'
+            );
+        }
+    }
+}
+add_action('init', 'custom_solution_rewrite_rules_new');
+
+function siteefy_flush_permalinks_on_term_save( $term_id, $tt_id, $taxonomy ) {
+    // Check if the taxonomy is the one you're interested in (e.g., 'solution')
+    // Flush the rewrite rules to refresh the permalinks
+    flush_rewrite_rules();
+}
+add_action( 'create_term', 'siteefy_flush_permalinks_on_term_save', 10, 3 );
+add_action( 'edit_term', 'siteefy_flush_permalinks_on_term_save', 10, 3 );
+
+function siteefy_flush_permalinks_on_ajax_term_creation() {
+    // Flush the rewrite rules to refresh the permalinks
+    flush_rewrite_rules();
+}
+add_action( 'wp_ajax_create_term', 'siteefy_flush_permalinks_on_ajax_term_creation' );
+
+add_action('admin_init', function(){
+    flush_rewrite_rules();
+});
+
+
+function siteefy_prevent_term_creation_if_post_exists( $term_id, $tt_id, $taxonomy ) {
+    // Only apply to 'solution' or 'category' taxonomy
+    if ( in_array( $taxonomy, array( 'solution', 'category' ) ) ) {
+
+        // Get the term's slug
+        $term = get_term( $term_id, $taxonomy );
+        $term_slug = $term->slug;
+
+        // Check if a page or post with the same slug already exists
+        $post = get_page_by_path( $term_slug, OBJECT, array( 'post', 'page' ) );
+
+        if ( $post ) {
+            // If a page or post with the same slug exists, delete the term
+            wp_delete_term( $term_id, $taxonomy );
+            flush_rewrite_rules();
+
+            // Return an error message (optional)
+            wp_die('A page or post with the same slug already exists. The term has not been created.');
+        }
+    }
+}
+add_action( 'create_term', 'siteefy_prevent_term_creation_if_post_exists', 10, 3 );

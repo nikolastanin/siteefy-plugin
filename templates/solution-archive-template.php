@@ -38,7 +38,7 @@
                 $solutions = get_all_solutions();
                 foreach ($solutions as $solution){?>
                     <li class="all-tasks__item">
-                        <a href="<?php echo get_permalink( $solution->ID ); ?>"><?php echo ucfirst($solution->post_title) . '<span class="all-tasks__item-counter">('. get_count_of_tools_for_single_solution($solution->ID) . ')</span>'; ?></a>
+                        <a href="<?php echo get_term_link( $solution->term_id ); ?>"><?php echo ucfirst($solution->name) . '<span class="all-tasks__item-counter">('. get_count_of_tools_for_single_solution($solution->term_id) . ')</span>'; ?></a>
                     </li>
                 <?php } ?>
 

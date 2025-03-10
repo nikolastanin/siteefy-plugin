@@ -11,7 +11,7 @@ add_shortcode('most-popular-tasks', function(){
                                 <?php echo esc_html($task->post_title); // Get category from post meta ?>
                             </div>
                             <span class="task-name">
-                               <?php get_task_assigned_category($task); ?>
+                               <?php get_task_assigned_category_name($task); ?>
                             </span>
                         </div>
                     </a>
@@ -23,10 +23,12 @@ add_shortcode('most-popular-tasks', function(){
 add_shortcode('popular-categories', function(){
     ob_start(); // Start output buffering to capture output as string
     $categories = get_all_categories(5);
+//    var_dump(get_tools_and_tasks_by_search_term('solutiontest'));
+
     if (!empty($categories)) {
         foreach ($categories as $category) {
-            echo '<a href="' . get_permalink($category) . '" class="popular-task-item__category">';
-            echo '💼 ' . esc_html($category->post_title); // Output the term name
+            echo '<a href="' . get_term_link($category) . '" class="popular-task-item__category">';
+            echo  esc_html($category->name); // Output the term name
             echo '</a>';
         }
     }
@@ -38,11 +40,11 @@ add_shortcode('tool-of-the-week', function(){
     ob_start(); // Start output buffering to capture output as string
 
     $tool_of_the_week = get_selected_tool_of_the_week();
-    $tool_of_the_week_text = get_selected_tool_of_the_week_text();
+    $choosen_tool_text = get_options(array('tool_of_the_week_text'));
     if($tool_of_the_week->post_type==='tool' && $tool_of_the_week){
     ?>
     <h2 class="text-blue align-center">Tool of the Week</h2>
-    <p><?php echo $tool_of_the_week_text;?></p>
+    <p><?php echo $choosen_tool_text['tool_of_the_week_text'];?></p>
     <div class="tool-item" data-link="<?php siteefy_get_field('tool_review_link',$tool_of_the_week->ID); ?>">
                         <div class="tool-item__inner">
                             <div class="tool-item__img">

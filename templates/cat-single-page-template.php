@@ -12,10 +12,8 @@
 <!--get header-->
 <?php do_action('get_siteefy_nav');?>
 <?php do_action( 'get_siteefy_header_small' );
-$post = get_the_ID();
-$post=get_post($post);
-
-
+$term = get_queried_object();
+$taxonomy = $term->taxonomy;
 ?>
 <div class="content">
     <div class="container">
@@ -28,27 +26,26 @@ $post=get_post($post);
             <span class="separator">
                 <svg xmlns="http://www.w3.org/2000/svg" width="8" height="10" viewBox="0 0 8 10" fill="none"><path d="M1 1L7 5L1 9.5" stroke="black" stroke-opacity="0.3" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </span>
-            <a href="<?php echo get_post_type_archive_link('category');?>">
+            <a href="<?php echo get_siteefy_home_url() . get_taxonomy($taxonomy)->rewrite['slug']?>">
                 <span class="breadcrumbs__page-title">
-                    Categories
+                    <?php echo $taxonomy ?>
                 </span>
             </a>
             <span class="separator">
                 <svg xmlns="http://www.w3.org/2000/svg" width="8" height="10" viewBox="0 0 8 10" fill="none"><path d="M1 1L7 5L1 9.5" stroke="black" stroke-opacity="0.3" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </span>
             <span class="breadcrumbs__page-title">
-                <?php echo $post->post_title; ?>
+                <?php echo $term->name ?>
             </span>
         </div>
-        <h2 class="text-blue"><span class="highlight"><?php echo ucfirst($post->post_title); ?></span></h2>
+        <h2 class="text-blue"><span class="highlight"><?php echo ucfirst($term->name); ?></span></h2>
         <div class="heading-container">
             <h3 class="text-gray w-700">Tools:</h3>
             <div class="line-container"><span class="line"></span></div>
         </div>
         <div class="search-results__container">
             <?php
-
-            $tools_by_category_id = get_tools_by_category_id($post->ID);
+            $tools_by_category_id = get_cpt_posts_by_tax('tool',$taxonomy,$term->term_id);
             foreach ($tools_by_category_id as $tool){?>
                 <div class="tool-item" data-link="<?php siteefy_get_field('tool_review_link', $tool->ID); ?>">
                     <div class="tool-item__inner">
@@ -87,7 +84,7 @@ $post=get_post($post);
         <div class="all-tasks__container">
             <ol class="all-tasks__list no-margin">
                 <?php
-                $tasks = get_tasks_by_category_id($post->ID);
+                $tasks = get_cpt_posts_by_tax('task',$taxonomy,$term->term_id);
                 foreach ($tasks as $task){?>
                     <li class="all-tasks__item">
                         <a href="<?php echo get_permalink( $task->ID ); ?>"><?php echo ucfirst($task->post_title) . '<span class="all-tasks__item-counter">('. get_count_of_tools_for_single_task($task->ID) . ')</span>'; ?></a>

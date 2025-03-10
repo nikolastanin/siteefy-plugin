@@ -13,8 +13,8 @@
                     // Display the categories for task_categories
                     if (!empty($categories)) {
                         foreach ($categories as $category) {
-                            echo '<a href="'.  get_permalink($category)   .'" class="quick-category">';
-                            echo  '#' . esc_html($category->post_title); // Output the term name
+                            echo '<a href="'.  get_term_link($category)   .'" class="quick-category">';
+                            echo  '#' . esc_html($category->name); // Output the term name
                             echo '</a>';
                         }
                     }

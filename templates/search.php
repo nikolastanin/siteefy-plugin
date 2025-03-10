@@ -22,7 +22,7 @@
             </div>
         </div>
         <div id="search-results" class="search-bottom">
-            <div class="popup-search-results__container">
+            <div class="popup-search-results__container placeholder">
                 <div id="popup-tasks-group">
                     <div class="popup-search-result__header header">
                         📝 Tasks <span id="popup-tasks-count">(count)</span>

@@ -32,7 +32,7 @@ function generate_html_for_results($results, $search_term) {
         $tools = array_key_exists('filtered_tools', $results) ? $results['filtered_tools'] : false;
 
         // Start building the HTML output
-        $html_output = '<div class="popup-search-results__container">';
+        $html_output = '<div class="popup-search-results__container ajax-results">';
 
         // Tasks Section
         if ($tasks && is_array($tasks)) {
