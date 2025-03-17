@@ -12,7 +12,7 @@ function get_all_categories($limit=5) {
     // Get all terms from the 'task_category' taxonomy
     $terms = get_terms(array(
         'taxonomy'   => 'category', // Replace with your taxonomy name
-        'hide_empty' => false, // Include terms even if they have no posts
+        'hide_empty' => true, // Include terms even if they have no posts
         'number'     => $limit, // Limit the number of terms returned
     ));
     if (!is_wp_error($terms) && !empty($terms)) {

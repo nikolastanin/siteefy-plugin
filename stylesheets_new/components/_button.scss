@@ -1,0 +1,48 @@
+// -----------------------------------------------------------------------------
+// This file contains all styles related to the button component.
+// -----------------------------------------------------------------------------
+.quick-link__btn{
+  @include font-regular(400);
+  display: flex;
+  height: 40px;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 5px;
+  background: #79A8FF;
+  flex-grow: 1;
+  color: #37477B;
+  transition: 0.2s all;
+  &:hover{
+    border-radius: 5px;
+    background: #AFCAFF;
+    box-shadow: 0px 2px 6.7px 0px #0036C5;
+    text-decoration: none;
+     color: #2546EA;
+    font-weight: 500;
+  }
+}
+
+.show-more__btn{
+  display: flex;
+  width: 186px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 5px;
+  background: #6892FF;
+  box-shadow: 0px 2px 2.5px 0px rgba(7, 68, 227, 0.9);
+  color: #F8FBFF;
+  text-align: center;
+  font-family: Inter;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  align-items: center;
+  line-height: normal;
+  justify-content: center;
+  transition: 0.2s all;
+  &:hover{
+    color: #F8FBFF;
+    text-decoration: none;
+    transform: scale(1.1);
+  }
+}

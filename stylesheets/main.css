@@ -536,6 +536,7 @@ h3 {
   font-style: italic;
   font-weight: 400;
   line-height: normal;
+  min-width: 111px;
 }
 .hero-quick-categories a:hover {
   color: unset;

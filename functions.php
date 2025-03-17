@@ -1,10 +1,61 @@
 <?php
 
 function get_siteefy_header(){
-    $data = ['data'=>'header_data_123'];
-    require_once WP_PLUGIN_DIR . '/siteefy/templates/header.php';
+    $tasks = get_all_tasks(5);
+    $solutions = get_all_solutions(5);
+    $solutions_collection = array();
+    $tools_collection = array();
+    $listing_limit = 6;
+
+    foreach ($tasks as $task){
+        $task_id = $task->ID;
+        $tools_by_task_id = get_tools_by_task_id($task_id);
+        $tools_collection[$task_id] = array_slice($tools_by_task_id, 0, $listing_limit);
+    }
+
+    foreach ($solutions as $solution){
+        $solution_id = $solution->term_id;
+        $tools_by_solution_id = get_tools_by_solution_id($solution_id);
+        $solutions_collection[$solution_id] = array_slice($tools_by_solution_id, 0, $listing_limit);
+    }
+    echo Siteefy::blade()->run('header', [
+        'tasks' => $tasks,
+        'solutions'=>$solutions,
+        'tools_collection_by_tasks' =>$tools_collection,
+        'tools_collection_by_solutions' =>$solutions_collection,
+        'recent_tools' => get_all_tools(3, 'DESC'),
+    ]);
+//    require_once WP_PLUGIN_DIR . '/siteefy/templates/header.php';
 }
 add_action('get_siteefy_header', 'get_siteefy_header');
+
+
+function get_siteefy_tool_of_the_week(){
+    $tool_of_the_week = get_selected_tool_of_the_week();
+    $choosen_tool_text = get_options(array('tool_of_the_week_text'));
+
+    echo Siteefy::blade()->run('tool-of-the-week', [
+        'tool_of_the_week' =>$tool_of_the_week,
+        'choosen_tool_text' => $choosen_tool_text,
+        'solutions' => get_solutions_terms_for_tool($tool_of_the_week->ID),
+    ]);
+}
+add_action('get_siteefy_tool_of_the_week', 'get_siteefy_tool_of_the_week');
+
+function get_siteefy_top_tools_by_categories(){
+    $categories = get_all_categories(3);
+    $tools_by_category = array();
+    foreach ($categories as $cat){
+        $tools_by_category[$cat->term_id] = get_cpt_posts_by_tax('tool',$cat->taxonomy,$cat->term_id);
+    }
+//    var_dump($tools_by_category);
+    echo Siteefy::blade()->run('tools-by-categories', [
+        'categories'=>$categories,
+        'tools_by_category'=>$tools_by_category,
+    ]);
+}
+add_action('get_siteefy_top_tools_by_categories', 'get_siteefy_top_tools_by_categories');
+
 
 function get_siteefy_header_small(){
     $data = ['data'=>'header_data_123'];
@@ -37,8 +88,8 @@ function get_siteefy_nav(){
 }
 add_action('get_siteefy_nav', 'get_siteefy_nav');
 
-function get_siteefy_home_url(){
-    return get_home_url('/'). '/';
+function get_siteefy_home_url($page=''){
+    return get_home_url('/'). $page. '/';
 }
 
 function siteefy_define_globals(){
@@ -49,11 +100,30 @@ add_action('init', 'siteefy_define_globals');
 function siteefy_register_scripts(){
     wp_register_script('siteefy_main_script', plugins_url( '/scripts/main_script.js' , __FILE__ ), ['jquery'], time());
     wp_localize_script( 'siteefy_main_script', 'my_ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
-    wp_enqueue_style('main-siteefy-style', plugins_url( '/stylesheets/main.css' , __FILE__ ), [], time());
+//    wp_enqueue_style('main-siteefy-style', plugins_url( '/stylesheets/main.css' , __FILE__ ), [], time());
+    wp_enqueue_style('main-siteefy-style-new', plugins_url( '/stylesheets_new/main.css' , __FILE__ ), [], time());
     $search_term = array_key_exists('s', $_GET)?  $_GET['s']: '';
     echo('<script>let searchTermOld = "' . htmlspecialchars($search_term, ENT_QUOTES, 'UTF-8') . '";</script>');
 }
 add_action('wp_enqueue_scripts', 'siteefy_register_scripts');
+
+function dequeue_generatepress_styles() {
+    // Remove GeneratePress core styles
+    wp_dequeue_style('generate-style');
+    wp_deregister_style('generate-style');
+
+    // Remove parent theme stylesheet
+    wp_dequeue_style('generatepress');
+    wp_deregister_style('generatepress');
+
+    // Remove child theme stylesheet (if needed)
+    wp_dequeue_style('generatepress-child');
+    wp_deregister_style('generatepress-child');
+}
+add_action('wp_enqueue_scripts', 'dequeue_generatepress_styles', 20);
+
+
+
 
 function siteefy_add_google_fonts() {
     echo '<link rel="preconnect" href="https://fonts.googleapis.com">';
@@ -164,6 +234,20 @@ function get_featured_and_non_featured_tools_from_tools_list($tools_list){
 function is_tool_featured($id){
     return get_field('tool_is_featured', $id) === true;
 }
+
+function get_tool_description($post_id) {
+    $excerpt = get_field('tool_description', $post_id) ?: get_the_excerpt($post_id);
+
+    // If no excerpt, get the post content
+    if (!$excerpt) {
+        $excerpt = get_post_field('post_content', $post_id);
+    }
+
+    // Trim to 95 characters and add "..." if necessary
+    return mb_strimwidth(trim(strip_tags($excerpt)), 0, 95, strlen($excerpt) > 95 ? "..." : "");
+}
+
+
 
 function get_tools_by_task_id($task_id) {
     // Validate the task ID

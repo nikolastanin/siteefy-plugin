@@ -43,6 +43,16 @@ function get_solutions_for_tool($tool_id) {
     return array(); // Return an empty array if no terms are found
 }
 
+function get_solutions_terms_for_tool($tool_id) {
+    $terms = wp_get_post_terms($tool_id, 'solution');
+
+    if (!is_wp_error($terms)) {
+        return $terms; // Returns an array of term IDs
+    }
+
+    return array(); // Return an empty array if no terms are found
+}
+
 function get_solutions_for_task($task_id){
     $terms = wp_get_post_terms($task_id, 'solution', array('fields' => 'ids'));
     if (!is_wp_error($terms)) {
@@ -150,15 +160,17 @@ function get_tools_by_solution_id($solution_id) {
 }
 
 
-function get_solution_name_by_tool_id($tool_id){
+function get_solution_name_by_tool_id($tool_id, $shorten=false){
     $solution_id = get_solutions_for_tool($tool_id);
-    if(array_key_exists(0,$solution_id)){
+    if(array_key_exists(0, $solution_id)){
         $solution = get_term($solution_id[0]);
         if($solution){
-            return $solution->name;
-        }else{
-            return '';
+            $name = $solution->name;
+            if ($shorten && strlen($name) >= 14) {
+                return substr($name, 0, 14) . "...";
+            }
+            return $name;
         }
     }
-
+    return '';
 }

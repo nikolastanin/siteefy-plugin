@@ -17,9 +17,11 @@
  *  - Custom Post Type Permalinks (Version 3.5.2 by Toro_Unit)
  */
 
-
+define( 'PN_PLUGIN_ROOT', plugin_dir_path( __FILE__ ) );
+$plugin_name_libraries = require PN_PLUGIN_ROOT . 'vendor/autoload.php'; //phpcs:ignore
 
 defined('ABSPATH') || exit;
+require_once  WP_PLUGIN_DIR . '/siteefy/blade.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/settings.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/solutions.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/category.php';
@@ -578,12 +580,28 @@ function siteefy_add_tool_backend_fields(){
                 'required' => true,
             ),
             array (
+                'key' => 'tool_exact_price',
+                'label' => 'Exact Price Value',
+                'name' => 'tool_exact_price',
+                'type' => 'number',
+                'required' => true,
+                'instructions' =>'Numeric value of tool price per month, ex : $100. Set 0 - if free '
+            ),
+            array (
+                'key' => 'tool_description',
+                'label' => 'Short Description',
+                'name' => 'tool_description',
+                'type' => 'text',
+                'required' => true,
+                'instructions' =>'Short text description of the tool',
+            ),
+            array (
                 'key' => 'tool_review_link',
                 'label' => 'Review Link',
                 'name' => 'tool_review_link',
                 'type' => 'link',
+                'required' =>true,
                 'instructions' =>'Select a page where users will be redirected when they click on this tool. ',
-
             ),
             array (
                 'key' => 'tool_rating',
@@ -759,9 +777,17 @@ function siteefy_get_field($field='', $id=false){
                 return '';
             }
             break;
-        case 'tool_price';
+        case 'tool_price':
             $price_text = get_field('tool_price', $id) ?:'Free';
             echo $price_text;
+            break;
+        case 'tool_exact_price':
+            $price_exact_text = get_field('tool_exact_price', $id);
+            echo ($price_exact_text === '0' || $price_exact_text === 0 || empty($price_exact_text)) ? 'Free' : '$'.$price_exact_text;
+            break;
+        case 'tool_description':
+            $tool_description = get_field('tool_description', $id) ?: get_the_excerpt($id);
+            echo $tool_description;
             break;
         default:
             return '';
