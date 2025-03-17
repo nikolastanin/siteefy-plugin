@@ -844,6 +844,7 @@ section:not(.categories-homepage) {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  min-height: 426px;
 }
 @media (max-width: 768px) {
   .tab-inner {

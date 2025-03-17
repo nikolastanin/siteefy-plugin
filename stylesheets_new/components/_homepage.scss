@@ -167,6 +167,7 @@ section:not(.categories-homepage){
   display: flex;
   flex-direction: column;
   gap: 20px;
+  min-height: 426px;
   @include responsive(sm){
     padding: 33px;
   }
