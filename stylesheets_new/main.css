@@ -592,6 +592,7 @@ hr {
 @media (max-width: 480px) {
   .hero-inner {
     padding: 50px 0;
+    margin: 30px 0;
   }
 }
 
