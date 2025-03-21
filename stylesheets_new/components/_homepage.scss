@@ -561,7 +561,7 @@ section.tool-of-the-week{
     text-decoration: none;
   }
   &.active{
-    background-color: #AFCAFF;
+    background-color: #AFCAFF !important;
     color: #3F3F3F;
     cursor: pointer;
   }

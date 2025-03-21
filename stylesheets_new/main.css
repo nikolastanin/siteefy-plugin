@@ -1284,7 +1284,7 @@ section.tool-of-the-week .subtitle {
   text-decoration: none;
 }
 .related-item.active {
-  background-color: #AFCAFF;
+  background-color: #AFCAFF !important;
   color: #3F3F3F;
   cursor: pointer;
 }
