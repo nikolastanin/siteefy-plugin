@@ -135,7 +135,7 @@ add_action('wp_head', 'siteefy_add_google_fonts');
 
 // on page load search
 function get_tools_by_search_term(){
-    $search_term = array_key_exists('s',$_GET) ?? $_GET['s'];
+    $search_term = array_key_exists('s',$_GET) ? $_GET['s'] : '';
     // Normalize search term by converting to lowercase and replacing underscores, hyphens, and spaces
     $search_term_normalized = strtolower(str_replace(array(' ', '_', '-'), '', $search_term));
 
