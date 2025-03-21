@@ -46,4 +46,3 @@ class Siteefy {
     }
 
 }
-var_dump(Siteefy::get_env());
