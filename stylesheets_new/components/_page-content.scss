@@ -10,6 +10,7 @@ section.page-content {
     margin-top: 35px;
     @include responsive(md){
       flex-direction: column-reverse;
+      gap:0;
     }
   }
   .row {
@@ -84,7 +85,7 @@ section.page-content {
 }
 .list-item__count{
   display: flex;
-  width: 153px;
+  min-width: 153px;
   height: 36.456px;
   flex-direction: column;
   justify-content: center;
@@ -101,6 +102,9 @@ section.page-content {
   font-style: normal;
   font-weight: 600;
   line-height: normal;
+  @include responsive(xs){
+    min-width: 80px;
+  }
 }
 .row-headline{
   color: #3F3F3F;
