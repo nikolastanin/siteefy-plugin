@@ -1,6 +1,8 @@
 .search-field__main{
   width: 100%;
+  width: 100%;
   position: relative;
+  z-index: 999;
   input{
 
     width: 100%;
@@ -45,10 +47,11 @@
   }
 }
 .search-output__container{
-  position: absolute;
+  position: relative;
   width:100%;
   height: fit-content;
   border-radius: 3px;
+  z-index: 999;
   *{
     color: #63AAEB !important;
     font-family: Inter;

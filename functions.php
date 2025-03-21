@@ -74,13 +74,13 @@ add_action('get_siteefy_footer', 'get_siteefy_footer');
  * @throws Exception
  */
 function get_siteefy_search(){
-    $use_cache = get_siteefy_settings('use_cache');
     $data = ['data'=>'data123'];
     require_once  WP_PLUGIN_DIR . '/siteefy/templates/search.php';
-    wp_enqueue_script('siteefy_main_script');
-    wp_localize_script('siteefy_main_script', 'siteefy_settings_main',array('useCache'=>$use_cache));
 }
 add_action('get_siteefy_search', 'get_siteefy_search');
+
+
+
 
 function get_siteefy_nav(){
     wp_enqueue_script('siteefy_main_script');
@@ -100,6 +100,12 @@ add_action('init', 'siteefy_define_globals');
 function siteefy_register_scripts(){
     wp_register_script('siteefy_main_script', plugins_url( '/scripts/main_script.js' , __FILE__ ), ['jquery'], time());
     wp_localize_script( 'siteefy_main_script', 'my_ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
+
+    //search scripts
+    $use_cache = get_siteefy_settings('use_cache');
+    wp_enqueue_script('siteefy_main_script');
+    wp_localize_script('siteefy_main_script', 'siteefy_settings_main',array('useCache'=>$use_cache));
+
 //    wp_enqueue_style('main-siteefy-style', plugins_url( '/stylesheets/main.css' , __FILE__ ), [], time());
     wp_enqueue_style('main-siteefy-style-new', plugins_url( '/stylesheets_new/main.css' , __FILE__ ), [], time());
     $search_term = array_key_exists('s', $_GET)?  $_GET['s']: '';

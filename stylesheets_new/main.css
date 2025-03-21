@@ -576,7 +576,6 @@ hr {
   flex-direction: column;
   text-align: center;
   position: relative;
-  z-index: 123;
   max-width: 552px;
 }
 .hero-container h1 {
@@ -1407,6 +1406,8 @@ section.tool-of-the-week .subtitle {
 
 .main-hero__search {
   width: 100%;
+  position: relative;
+  z-index: 999;
 }
 
 .search-field__main {

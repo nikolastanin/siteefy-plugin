@@ -572,7 +572,9 @@ h3 {
 
 .search-field__main {
   width: 100%;
+  width: 100%;
   position: relative;
+  z-index: 999;
 }
 .search-field__main input {
   width: 100%;
@@ -615,10 +617,11 @@ h3 {
 }
 
 .search-output__container {
-  position: absolute;
+  position: relative;
   width: 100%;
   height: fit-content;
   border-radius: 3px;
+  z-index: 999;
   background-color: #F9F9F9;
   width: 100%;
   text-align: left;
