@@ -213,6 +213,7 @@ section:not(.categories-homepage){
     width: 36px;
     height: 36px;
     flex-shrink: 0;
+    object-fit: contain;
   }
   .tab-tool__heading{
     color: #303030;

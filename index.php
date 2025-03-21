@@ -784,6 +784,7 @@ add_filter('acf/load_field/name=tool_assigned_tasks', 'populate_tool_assigned_ta
 function siteefy_get_tool_image($id){
     $img = get_field('tool_image', $id);
     if(is_array($img)){
+//        var_dump($img);
         return $img['url'];
     }else{
         return  PLUGIN_IMAGE_URL . '/tool-image-placeholder.png';
