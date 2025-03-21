@@ -64,4 +64,8 @@ hr {
   color: #6892FF;
   @include font-regular(600);
   margin-top: 20px;
+  &:hover{
+    text-decoration: none;
+    color:#6892FF;
+  }
 }

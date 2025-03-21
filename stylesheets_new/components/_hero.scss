@@ -9,6 +9,13 @@
     background: rgb(216,227,255);
     background: radial-gradient(circle, rgba(216,227,255,0.29315476190476186) 0%, rgba(153,176,247,1) 100%);
   }
+  &.hero-small{
+    height: 505px;
+    .hero-inner{
+      margin-top: 64px;
+      padding: 64px 0;
+    }
+  }
 }
 
 .hero-container{
@@ -54,6 +61,12 @@
   @include responsive(xs){
     padding: 50px 0;
     margin: 30px 0;
+  }
+}
+
+.hero-small{
+  .hero-inner{
+
   }
 }
 
@@ -109,4 +122,5 @@
   line-height: 48px; /* 75% */
   transform: rotate(16.607deg);
 }
+
 

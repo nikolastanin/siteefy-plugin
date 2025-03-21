@@ -1,0 +1,36 @@
+.breadcrumbs-and-results{
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+
+  .breadcrumbs-and-results__inner{
+    display: flex;
+    border-bottom: solid 0.2px #89AAFF;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .breadcrumbs-container {
+    display: flex;
+    gap: 7px;
+    align-items: center;
+    margin-bottom: 20px;
+    .breadcrumbs__page-title{
+      color: #3F3F3F !important;
+      font-family: Inter !important;
+      font-size: 15px !important;
+      font-style: normal !important;
+      font-weight: 400 !important;
+      line-height: normal !important;
+    }
+  }
+  .results-container{
+    color: #3F3F3F !important;
+    text-align: right;
+    font-family: Inter !important;
+    font-size: 14px !important;
+    font-style: normal;
+    font-weight: 400 !important;
+    line-height: normal;
+  }
+}

@@ -18,6 +18,7 @@ function get_siteefy_header(){
         $tools_by_solution_id = get_tools_by_solution_id($solution_id);
         $solutions_collection[$solution_id] = array_slice($tools_by_solution_id, 0, $listing_limit);
     }
+
     echo Siteefy::blade()->run('header', [
         'tasks' => $tasks,
         'solutions'=>$solutions,
@@ -25,7 +26,6 @@ function get_siteefy_header(){
         'tools_collection_by_solutions' =>$solutions_collection,
         'recent_tools' => get_all_tools(3, 'DESC'),
     ]);
-//    require_once WP_PLUGIN_DIR . '/siteefy/templates/header.php';
 }
 add_action('get_siteefy_header', 'get_siteefy_header');
 
@@ -135,7 +135,7 @@ add_action('wp_head', 'siteefy_add_google_fonts');
 
 // on page load search
 function get_tools_by_search_term(){
-    $search_term = $_GET['s'];
+    $search_term = array_key_exists('s',$_GET) ?? $_GET['s'];
     // Normalize search term by converting to lowercase and replacing underscores, hyphens, and spaces
     $search_term_normalized = strtolower(str_replace(array(' ', '_', '-'), '', $search_term));
 

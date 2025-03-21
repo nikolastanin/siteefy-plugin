@@ -43,6 +43,16 @@
   &:hover{
     color: #F8FBFF;
     text-decoration: none;
-    transform: scale(1.1);
+    background: #3C6DED;
+    box-shadow: 0px 2px 2.5px 0px rgba(0, 59, 214, 0.90);
+  }
+  &:active{
+    text-decoration: none !important;
+    color: #F8FBFF;
+  }
+  &:visited{
+    text-decoration: none !important;
+    text-underline: none;
+    color: #F8FBFF;
   }
 }

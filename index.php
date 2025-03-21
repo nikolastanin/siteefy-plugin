@@ -514,24 +514,46 @@ register_deactivation_hook(
 
 function siteefy_add_custom_templates($template) {
     global $post;
+    $tools = get_tools_by_search_term();
+    $tool_of_the_week = get_selected_tool_of_the_week();
+    $related_items = get_all_categories(5);
     if (is_search()) {
-        $custom_template = plugin_dir_path(__FILE__) . 'templates/search-page-template.php';
-
-        // Check if the custom template exists
-        if (file_exists($custom_template)) {
-            return $custom_template;
-        }
+        echo Siteefy::blade()->run('pages.search-template', [
+            'page_title'=>'Search result',
+            'page_subtitle' =>'Check out what we have for You!',
+            'archive_title'=>$_GET['s'],
+            'items'=>get_tools_by_search_term(),
+            'term_name'=>'tools',
+            'count' => count($tools),
+            'archive_title'=>$_GET['s'],
+            'related_title' => 'Related categories',
+            'related_link'=>'/category',
+            'related_items' =>$related_items,
+            'tool_of_the_week'=>$tool_of_the_week,
+        ]);
+        exit;
     }elseif(is_single() && get_post_type($post) === 'task'){
         $custom_template = plugin_dir_path(__FILE__) . 'templates/task-template.php';
         if (file_exists($custom_template)) {
             return $custom_template;
         }
     }elseif(is_archive() && get_post_type($post) === 'task' && get_queried_object()->taxonomy !=='solution'){
-        $custom_template = plugin_dir_path(__FILE__) . 'templates/task-archive-template.php';
-        // Check if the custom template exists
-        if (file_exists($custom_template)) {
-            return $custom_template;
-        }
+        $tasks = get_all_tasks(-1);
+        $categories = get_all_categories(5);
+        $tool_of_the_week = get_selected_tool_of_the_week();
+        echo Siteefy::blade()->run('pages.archive-cpt-template', [
+            'page_title'=>false,
+            'page_subtitle' =>false,
+            'items' => $tasks,
+            'term_name'=>'task',
+            'count' => count($tasks),
+            'archive_title'=>'Tasks',
+            'related_title' => 'Related categories',
+            'related_link'=>'/category',
+            'related_items' =>$categories,
+            'tool_of_the_week'=>$tool_of_the_week,
+        ]);
+        exit;
     }
     elseif(is_archive() && get_queried_object()->taxonomy === 'solution'){
         $custom_template = plugin_dir_path(__FILE__) . 'templates/cat-single-page-template.php';
@@ -541,18 +563,42 @@ function siteefy_add_custom_templates($template) {
         }
     }
     elseif(is_page() && strtolower(get_the_title())==='solution' ){
-        $custom_template = plugin_dir_path(__FILE__) . 'templates/solution-archive-template.php';
-        // Check if the custom template exists
-        if (file_exists($custom_template)) {
-            return $custom_template;
-        }
+        //        todo:remove template .php file
+        $solutions = get_all_solutions(-1);
+        $categories = get_all_categories(5);
+        $tool_of_the_week = get_selected_tool_of_the_week();
+        echo Siteefy::blade()->run('pages.archive-template', [
+                'page_title'=>false,
+                'page_subtitle' =>false,
+                'items' => $solutions,
+                'term_name'=>'solution',
+                'count' => count($solutions),
+                'archive_title'=>'Solutions',
+                'related_title' => 'Related categories',
+                'related_link'=>'/category',
+                'related_items' =>$categories,
+                'tool_of_the_week'=>$tool_of_the_week,
+        ]);
+        exit;
     }
     elseif (is_page() && get_the_title()==='category') {
-        $custom_template = plugin_dir_path(__FILE__) . 'templates/category-archive-template.php';
-        // Check if the custom template exists
-        if (file_exists($custom_template)) {
-            return $custom_template;
-        }
+//        todo:remove template .php file
+        $categories = get_all_categories(-1);
+        $solutions = get_all_solutions(5);
+        $tool_of_the_week = get_selected_tool_of_the_week();
+        echo Siteefy::blade()->run('pages.archive-template', [
+            'page_title'=>false,
+            'page_subtitle' =>false,
+            'items' => $categories,
+            'term_name'=>'category',
+            'count' => count($categories),
+            'archive_title'=>'Categories',
+            'related_title' => 'Related solutions',
+            'related_link'=>'/solution',
+            'related_items' =>$solutions,
+            'tool_of_the_week'=>$tool_of_the_week,
+        ]);
+        exit;
     }elseif(is_archive() && get_queried_object()->taxonomy === 'category'){
         $custom_template = plugin_dir_path(__FILE__) . 'templates/cat-single-page-template.php';
         // Check if the custom template exists

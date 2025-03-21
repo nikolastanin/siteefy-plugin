@@ -17,12 +17,12 @@
                 </div>
                 <div class="row-related-container">
                     @foreach($related_items as $related_item)
-                        <div class="related-item">
+                        <a href="{{get_term_link($related_item->term_id)}}" class="related-item">
                             {{$related_item->name}}
-                        </div>
+                        </a>
                     @endforeach
                 </div>
-                <a href="{{get_siteefy_home_url($related_link)}}" class="view-more__link">view more</a>
+                <a href="{{get_siteefy_home_url($related_link)}}" class="view-more__link">>> view more</a>
                 <div class="row-headline">
                     Most recommended:
                 </div>
@@ -98,7 +98,7 @@
                             <a href="{{get_term_link( $item->term_id )}}">
                                 <span class="list-item__index">{{$loop->index+1}}.</span>
                                 {{$item->name}}
-                                <span class="list-item__count">{{get_count_of_tools_for_single_solution($item->term_id)}} results</span>
+                                <span class="list-item__count">{{get_count_of_tools_for_single_term($item->term_id, $term_name)}} results</span>
                             </a>
                         </li>
                     @endforeach

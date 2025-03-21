@@ -179,84 +179,89 @@ section:not(.categories-homepage){
     font-weight: 400;
     line-height: normal;
   }
-  .tab-tool{
-    position: relative;
-    border-radius: 5px;
-    background: #FAFAFA;
+}
+.tab-tool{
+  position: relative;
+  border-radius: 5px;
+  background: #FAFAFA;
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.10);
+  width:calc(100%/3 - 20px);
+  height: 160.581px;
+  flex-shrink: 0;
+  padding: 20px;
+  transition: all .2s;
+  @include responsive(sm){
+    width:calc(50% - 20px);
+  }
+  @include responsive(xs){
+    width:100%;
+  }
+  &:hover{
     box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.10);
-    width:calc(100%/3 - 20px);
-    height: 160.581px;
+    filter: drop-shadow(0px 0px 7px rgba(255, 204, 0, 0.70));
+  }
+  &.full{
+    width: 100%;
+  }
+  .tab-tool__top{
+    display: flex;
+    gap: 7px;
+    align-items: center;
+  }
+  img.tab-tool__image{
+    border-radius: 5px;
+    width: 36px;
+    height: 36px;
     flex-shrink: 0;
-    padding: 20px;
-    @include responsive(sm){
-      width:calc(50% - 20px);
-    }
+  }
+  .tab-tool__heading{
+    color: #303030;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+  }
+  .tab-tool__description{
+    color: #3F3F3F;
+    text-align: center;
+    font-family: Inter;
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+  }
+  .tab-tool__rating{
+    display: flex;
+    width: 66px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 5px;
+    border: 1px solid #50E871;
+    background: #9FF6B2;
+    color: #3F3F3F;
+    text-align: center;
+    font-family: Inter;
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    align-items: center;
+    justify-content: center;
+  }
+  .tab-tool__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    height: 100% !important;
+    justify-content: space-between;
     @include responsive(xs){
-      width:100%;
-    }
-    &:hover{
-      box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.10);
-      filter: drop-shadow(0px 0px 7px rgba(255, 204, 0, 0.70));
-    }
-    .tab-tool__top{
-      display: flex;
-      gap: 7px;
-      align-items: center;
-    }
-    img.tab-tool__image{
-      border-radius: 5px;
-      width: 36px;
-      height: 36px;
-      flex-shrink: 0;
-    }
-    .tab-tool__heading{
-      color: #303030;
-      font-family: Inter;
-      font-size: 16px;
-      font-style: normal;
-      font-weight: 600;
-      line-height: normal;
-    }
-    .tab-tool__description{
-      color: #3F3F3F;
-      text-align: center;
-      font-family: Inter;
-      font-size: 10px;
-      font-style: normal;
-      font-weight: 300;
-      line-height: normal;
-    }
-    .tab-tool__rating{
-      display: flex;
-      width: 66px;
-      height: 28px;
-      flex-shrink: 0;
-      border-radius: 5px;
-      border: 1px solid #50E871;
-      background: #9FF6B2;
-      color: #3F3F3F;
-      text-align: center;
-      font-family: Inter;
-      font-size: 11px;
-      font-style: normal;
-      font-weight: 700;
-      line-height: normal;
-      align-items: center;
-      justify-content: center;
-    }
-    .tab-tool__inner {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 7px;
-      height: 100% !important;
-      justify-content: space-between;
-      @include responsive(xs){
-        display: none;
-      }
+      display: none;
     }
   }
 }
+
 
 .tab-tool__inner-mobile{
   display: none;
@@ -542,15 +547,17 @@ section.tool-of-the-week{
   justify-content: center;
   flex-grow: 1;
   border-radius: 5px;
-  border: 0.5px solid #6892ff45;
-  background: #EEF4FF;
-  box-shadow: 0px 2px 6.7px 0px rgba(93, 123, 201, 0.31);
+  border-radius: 5px;
+  border: 0.5px solid #6892FF;
+  background: #EEF4FF !important;
+  box-shadow: 0px 2px 6.7px 0px rgba(93, 123, 201, 0.31) !important;
   color: #6892FF;
   transition: 0.2s all;
   &:hover{
-    background-color: #AFCAFF;
+    background-color: #AFCAFF !important;
     color: #3F3F3F;
     cursor: pointer;
+    text-decoration: none;
   }
   &.active{
     background-color: #AFCAFF;
@@ -575,11 +582,22 @@ section.tool-of-the-week{
   background: #FAFAFA;
   box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.10);
   overflow: hidden;
+  transition: all .2s;
   @include responsive(sm){
     width: calc(100% / 2 - 21px);
   }
   @include responsive(xs){
     width: 100%;
+  }
+  &.w-50{
+    width: calc(50% - 20px);
+    @include responsive(xs){
+      width: 100%;
+    }
+  }
+  &:hover{
+    box-shadow: 0px 0px 7px 0px rgba(255, 204, 0, 0.70);
+    cursor: pointer;
   }
 
 }

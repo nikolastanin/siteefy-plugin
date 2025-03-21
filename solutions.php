@@ -33,6 +33,24 @@ function get_count_of_tools_for_single_solution($solution_id) {
 
     return $query->found_posts; // Return the count of matching posts
 }
+
+function get_count_of_tools_for_single_term($solution_id, $tax_name='solution') {
+    $query = new WP_Query(array(
+        'post_type'      => array('tool', 'task'),  // CPT name
+        'posts_per_page' => -1,      // Get all posts
+        'fields'         => 'ids',   // Only fetch post IDs (improves performance)
+        'tax_query'      => array(
+            array(
+                'taxonomy' => $tax_name, // Change this to your actual taxonomy
+                'field'    => 'term_id',      // Match by term ID
+                'terms'    => $solution_id,   // Category to check
+            ),
+        ),
+    ));
+
+    return $query->found_posts; // Return the count of matching posts
+}
+
 function get_solutions_for_tool($tool_id) {
     $terms = wp_get_post_terms($tool_id, 'solution', array('fields' => 'ids'));
 

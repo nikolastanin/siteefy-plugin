@@ -158,12 +158,7 @@ span.btn-search {
 span.btn-text-clear{
   cursor: pointer;
 }
-span.btn-search:before {
-  content: '';
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='30' viewBox='0 0 2 30' fill='none'%3E%3Cpath d='M1 0L1 30' stroke='%23AFD9FF' stroke-width='0.3'/%3E%3C/svg%3E");
-  width: 1px;
-  height: 30px;
-}
+
 .hidden{
   display: none !important;
 }
