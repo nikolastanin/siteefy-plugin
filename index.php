@@ -533,7 +533,6 @@ function siteefy_add_custom_templates($template) {
         ]);
         exit;
     }elseif(is_single() && get_post_type($post) === 'task'){
-        var_dump('helloe ');
         $tools = get_tools_by_task_id($post->ID);
         $tasks = get_all_tasks(5, $post->post_name);
         echo Siteefy::blade()->run('pages.single-cpt-template', [
@@ -549,8 +548,7 @@ function siteefy_add_custom_templates($template) {
             'related_items' =>$tasks,
             'tool_of_the_week'=>$tool_of_the_week,
         ]);
-        var_dump('hellossss');
-//        exit;
+        exit;
     }elseif(is_archive() && get_post_type($post) === 'task' && get_queried_object()->taxonomy !=='solution'){
         $tasks = get_all_tasks(-1);
         $categories = get_all_categories(5);
