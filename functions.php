@@ -408,11 +408,14 @@ function get_tools_and_tasks_by_search_term($search_term) {
 
 
 
-function get_all_tasks($count=-1){
-    $args=array(
-        'post_type'        => 'task',
-        'numberposts'      => $count,
+function get_all_tasks($count = -1, $exclude_slug = '') {
+    $args = array(
+        'post_type'      => 'task',
+        'numberposts'    => $count,
+        'post_status'    => 'publish',
+        'exclude'        => !empty($exclude_slug) ? get_page_by_path($exclude_slug, OBJECT, 'task')->ID : array(),
     );
+
     $tasks = get_posts($args);
     return $tasks;
 }

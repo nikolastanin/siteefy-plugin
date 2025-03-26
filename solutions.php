@@ -1,21 +1,32 @@
 <?php
 //todo:done
 
-function get_all_solutions($limit=-1) {
-    if($limit===-1){
-        $limit=0;
+function get_all_solutions($limit = -1, $exclude_term = '') {
+    if ($limit === -1) {
+        $limit = 0;
     }
+
     $terms = get_terms(array(
-        'taxonomy'   => 'solution', // Replace with your taxonomy name
-        'hide_empty' => false, // Include terms even if they have no posts
-        'number'     => $limit, // Limit the number of terms returned
+        'taxonomy'   => 'solution',
+        'hide_empty' => false,
+        'number'     => $limit,
     ));
+
     if (!is_wp_error($terms) && !empty($terms)) {
+        if (!empty($exclude_term)) {
+            $terms = array_filter($terms, function ($term) use ($exclude_term) {
+                return $term->slug !== $exclude_term;
+            });
+
+            // Reset array keys
+            $terms = array_values($terms);
+        }
         return $terms;
     }
 
     return array();
 }
+
 
 function get_count_of_tools_for_single_solution($solution_id) {
     $query = new WP_Query(array(
@@ -36,7 +47,8 @@ function get_count_of_tools_for_single_solution($solution_id) {
 
 function get_count_of_tools_for_single_term($solution_id, $tax_name='solution') {
     $query = new WP_Query(array(
-        'post_type'      => array('tool', 'task'),  // CPT name
+//        todo:add tool, task if wanna count both like on old page design
+        'post_type'      => array('tool'),  // CPT name
         'posts_per_page' => -1,      // Get all posts
         'fields'         => 'ids',   // Only fetch post IDs (improves performance)
         'tax_query'      => array(

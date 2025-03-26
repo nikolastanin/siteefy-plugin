@@ -5,22 +5,33 @@ function get_task_assigned_category_name($task){
 }
 
 //cat-fixed
-function get_all_categories($limit=5) {
-    if($limit===-1){
-        $limit=0;
+function get_all_categories($limit = 5, $exclude_term = '') {
+    if ($limit === -1) {
+        $limit = 0;
     }
-    // Get all terms from the 'task_category' taxonomy
+
+    // Get all terms from the 'category' taxonomy
     $terms = get_terms(array(
-        'taxonomy'   => 'category', // Replace with your taxonomy name
-        'hide_empty' => true, // Include terms even if they have no posts
-        'number'     => $limit, // Limit the number of terms returned
+        'taxonomy'   => 'category',
+        'hide_empty' => true,
+        'number'     => $limit,
     ));
+
     if (!is_wp_error($terms) && !empty($terms)) {
+        if (!empty($exclude_term)) {
+            $terms = array_filter($terms, function ($term) use ($exclude_term) {
+                return $term->slug !== $exclude_term;
+            });
+
+            // Reset array keys
+            $terms = array_values($terms);
+        }
         return $terms;
     }
 
     return array();
 }
+
 
 function get_count_of_tools_for_single_category($category_id) {
     $query = new WP_Query(array(
