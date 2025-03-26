@@ -628,6 +628,7 @@ function siteefy_add_custom_templates($template) {
         ]);
         exit;
     }elseif(is_archive() && get_queried_object()->taxonomy === 'category'){
+        var_dump('here');
         $term = get_queried_object();
         $taxonomy = $term->taxonomy;
         $categories = get_all_categories(5, $term->slug);
