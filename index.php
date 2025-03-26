@@ -548,19 +548,6 @@ function siteefy_add_custom_templates($template) {
             'related_items' =>$tasks,
             'tool_of_the_week'=>$tool_of_the_week,
         ]);
-        var_dump(Siteefy::blade()->run('pages.single-cpt-template', [
-            'page_title'=>ucfirst($post->post_title),
-            'page_subtitle' =>false,
-            'items' => $tools,
-            'term_name'=>'task',
-            'cpt'=>$post->post_type,
-            'count' => count($tools),
-            'archive_title'=>'Tasks',
-            'related_title' => 'Related tasks',
-            'related_link'=>'/tasks',
-            'related_items' =>$tasks,
-            'tool_of_the_week'=>$tool_of_the_week,
-        ]));
         exit;
     }elseif(is_archive() && get_post_type($post) === 'task' && get_queried_object()->taxonomy !=='solution'){
         $tasks = get_all_tasks(-1);
