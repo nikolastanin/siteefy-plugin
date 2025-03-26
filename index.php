@@ -533,6 +533,7 @@ function siteefy_add_custom_templates($template) {
         ]);
         exit;
     }elseif(is_single() && get_post_type($post) === 'task'){
+        var_dump('helloe ');
         $tools = get_tools_by_task_id($post->ID);
         $tasks = get_all_tasks(5, $post->post_name);
         echo Siteefy::blade()->run('pages.single-cpt-template', [
@@ -628,7 +629,6 @@ function siteefy_add_custom_templates($template) {
         ]);
         exit;
     }elseif(is_archive() && get_queried_object()->taxonomy === 'category'){
-        var_dump('here');
         $term = get_queried_object();
         $taxonomy = $term->taxonomy;
         $categories = get_all_categories(5, $term->slug);
