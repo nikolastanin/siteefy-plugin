@@ -2018,4 +2018,8 @@ section.page-content .main {
   line-height: normal;
 }
 
+.container a {
+  display: inherit !important;
+}
+
 /*# sourceMappingURL=main.css.map */

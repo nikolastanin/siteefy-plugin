@@ -609,7 +609,7 @@ function siteefy_add_custom_templates($template) {
         ]);
         exit;
     }
-    elseif (is_page() && get_the_title()==='category') {
+    elseif (is_page() && strtolower(get_the_title())==='category') {
 //        todo:remove template .php file
         $categories = get_all_categories(-1);
         $solutions = get_all_solutions(5);
