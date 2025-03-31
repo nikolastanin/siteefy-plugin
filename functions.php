@@ -98,7 +98,8 @@ function siteefy_define_globals(){
 add_action('init', 'siteefy_define_globals');
 
 function siteefy_register_scripts(){
-    wp_register_script('siteefy_main_script', plugins_url( '/scripts/main_script.js' , __FILE__ ), ['jquery'], time());
+    $version_of_plugin = Siteefy::get_plugin_version();
+    wp_register_script('siteefy_main_script', plugins_url( '/scripts/main_script.js' , __FILE__ ), ['jquery'], $version_of_plugin );
     wp_localize_script( 'siteefy_main_script', 'my_ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
 
     //search scripts
@@ -106,25 +107,39 @@ function siteefy_register_scripts(){
     wp_enqueue_script('siteefy_main_script');
     wp_localize_script('siteefy_main_script', 'siteefy_settings_main',array('useCache'=>$use_cache));
 
-//    wp_enqueue_style('main-siteefy-style', plugins_url( '/stylesheets/main.css' , __FILE__ ), [], time());
-    wp_enqueue_style('main-siteefy-style-new', plugins_url( '/stylesheets_new/main.css' , __FILE__ ), [], time());
+    wp_register_style('main-siteefy-style-new', plugins_url( '/stylesheets_new/main.css' , __FILE__ ), [], $version_of_plugin);
+    wp_register_style('main-siteefy-nav-override', plugins_url( '/stylesheets_new/nav-override.css' , __FILE__ ), [], $version_of_plugin);
     $search_term = array_key_exists('s', $_GET)?  $_GET['s']: '';
     echo('<script>let searchTermOld = "' . htmlspecialchars($search_term, ENT_QUOTES, 'UTF-8') . '";</script>');
 }
 add_action('wp_enqueue_scripts', 'siteefy_register_scripts');
 
 function dequeue_generatepress_styles() {
-    // Remove GeneratePress core styles
-    wp_dequeue_style('generate-style');
-    wp_deregister_style('generate-style');
+    global $post;
+    if (
+        is_search() ||
+        (is_single() && get_post_type($post) === 'task') ||
+        (is_archive() && get_post_type($post) === 'task' && get_queried_object()->taxonomy !== 'solution') ||
+        (is_archive() && get_queried_object()->taxonomy === 'solution') ||
+        (is_page() && strtolower(get_the_title()) === 'solution') ||
+        (is_page() && get_the_title() === 'category') ||
+        (is_archive() && get_queried_object()->taxonomy === 'category') ||
+        (is_front_page())
+    ) {
+        // Remove GeneratePress core styles
+        wp_dequeue_style('generate-style');
+        wp_deregister_style('generate-style');
 
-    // Remove parent theme stylesheet
-    wp_dequeue_style('generatepress');
-    wp_deregister_style('generatepress');
+        // Remove parent theme stylesheet
+        wp_dequeue_style('generatepress');
+        wp_deregister_style('generatepress');
 
-    // Remove child theme stylesheet (if needed)
-    wp_dequeue_style('generatepress-child');
-    wp_deregister_style('generatepress-child');
+        // Remove child theme stylesheet (if needed)
+        wp_dequeue_style('generatepress-child');
+        wp_deregister_style('generatepress-child');
+    }
+    wp_enqueue_style('main-siteefy-nav-override');
+
 }
 add_action('wp_enqueue_scripts', 'dequeue_generatepress_styles', 20);
 

@@ -45,4 +45,14 @@ class Siteefy {
         return $env;
     }
 
+    public static function get_plugin_version(){
+        $env = self::get_env();
+
+        if($env === 'dev'){
+            return time();
+        }else{
+            return date('n');
+        }
+    }
+
 }

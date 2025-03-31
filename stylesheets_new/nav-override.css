@@ -1,0 +1,33 @@
+.gb-container.gb-container-045d53c4 {
+    background:radial-gradient(circle, rgb(216, 227, 255) 0%, rgb(153, 176, 247) 100%)!important;
+}
+
+.site-header {
+    box-shadow: unset !important;
+    box-shadow:none !important;
+}
+.site-header {
+    background: linear-gradient(158deg, rgb(207, 220, 255) 18.38%, rgb(237, 242, 255) 57.07%, rgb(153, 181, 255) 88.75%) !important;
+}
+
+.site-header ul li a {
+    color: #3F3F3F !important;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+.site-header ul.sub-menu li a{
+    color : white !important;
+}
+
+h1.gb-headline-a39e9a85{
+    color: rgb(73, 75, 103) !important;
+}
+.gb-container-5532dbc1 p {
+    color: rgb(73, 75, 103) !important;
+}
+.gb-container-5532dbc1 a{
+    color: rgb(73, 75, 103) !important;
+}
