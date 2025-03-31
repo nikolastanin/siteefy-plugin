@@ -114,6 +114,12 @@ function siteefy_register_scripts(){
 }
 add_action('wp_enqueue_scripts', 'siteefy_register_scripts');
 
+function remove_customizer_custom_css() {
+    add_filter('wp_get_custom_css', '__return_empty_string');
+}
+add_action('after_setup_theme', 'remove_customizer_custom_css');
+
+
 function dequeue_generatepress_styles() {
     global $post;
     if (
