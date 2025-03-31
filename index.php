@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name:          Siteefy
+ * Plugin Name:          Siteefy 1.5
  * Plugin URI:
  * Description:
- * Version: 1.4
+ * Version: 1.5
  * Author:                 Nikola Stanin
  * Author URI:
  * License:

@@ -18,6 +18,7 @@
     font-weight: 500;
     line-height: normal;
 }
+
 .site-header ul.sub-menu li a{
     color : white !important;
 }
@@ -37,4 +38,9 @@ a.gb-button.gb-button-41599730.gb-button-text{
 }
 .gb-container-5532dbc1 a{
     color: rgb(73, 75, 103) !important;
+}
+
+a.gb-button{
+    background-color: #00dafc !important;
+    color: #fff !important;
 }
