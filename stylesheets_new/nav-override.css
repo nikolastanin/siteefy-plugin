@@ -6,7 +6,7 @@
     box-shadow: unset !important;
     box-shadow:none !important;
 }
-.site-header {
+.site-header, .gb-container-1bdffbe9, .gb-container-86d05583, .gb-container-50b07b6a {
     background: linear-gradient(158deg, rgb(207, 220, 255) 18.38%, rgb(237, 242, 255) 57.07%, rgb(153, 181, 255) 88.75%) !important;
 }
 
@@ -21,9 +21,16 @@
 .site-header ul.sub-menu li a{
     color : white !important;
 }
-
-h1.gb-headline-a39e9a85{
+/*color for h1 on blog, about us, contact us pages*/
+h1.gb-headline-a39e9a85, h1.gb-headline-58da3955, h1.gb-headline-c30d63af{
     color: rgb(73, 75, 103) !important;
+}
+/*paragraph color for under h1*/
+p.gb-headline-ccefc90b, p.gb-headline-ad4f7f2e{
+    color: rgb(73, 75, 103) !important;
+}
+a.gb-button.gb-button-41599730.gb-button-text{
+    background-color: #0a68dc;
 }
 .gb-container-5532dbc1 p {
     color: rgb(73, 75, 103) !important;

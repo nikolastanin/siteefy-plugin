@@ -51,7 +51,7 @@ class Siteefy {
         if($env === 'dev'){
             return time();
         }else{
-            return date('n');
+            return time();
         }
     }
 
