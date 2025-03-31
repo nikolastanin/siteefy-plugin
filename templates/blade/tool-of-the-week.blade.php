@@ -22,7 +22,7 @@
                     @endforeach
                 </div>
                 <div class="tool-of-the-week__price">
-                    Free
+                    {{ siteefy_get_field('tool_price', $tool_of_the_week->ID) }}
                 </div>
 
             </div>
