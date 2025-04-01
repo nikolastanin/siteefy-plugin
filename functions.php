@@ -30,31 +30,9 @@ function get_siteefy_header(){
 add_action('get_siteefy_header', 'get_siteefy_header');
 
 
-function get_siteefy_tool_of_the_week(){
-    $tool_of_the_week = get_selected_tool_of_the_week();
-    $choosen_tool_text = get_options(array('tool_of_the_week_text'));
 
-    echo Siteefy::blade()->run('tool-of-the-week', [
-        'tool_of_the_week' =>$tool_of_the_week,
-        'choosen_tool_text' => $choosen_tool_text,
-        'solutions' => get_solutions_terms_for_tool($tool_of_the_week->ID),
-    ]);
-}
-add_action('get_siteefy_tool_of_the_week', 'get_siteefy_tool_of_the_week');
 
-function get_siteefy_top_tools_by_categories(){
-    $categories = get_all_categories(3);
-    $tools_by_category = array();
-    foreach ($categories as $cat){
-        $tools_by_category[$cat->term_id] = get_cpt_posts_by_tax('tool',$cat->taxonomy,$cat->term_id);
-    }
-//    var_dump($tools_by_category);
-    echo Siteefy::blade()->run('tools-by-categories', [
-        'categories'=>$categories,
-        'tools_by_category'=>$tools_by_category,
-    ]);
-}
-add_action('get_siteefy_top_tools_by_categories', 'get_siteefy_top_tools_by_categories');
+
 
 
 function get_siteefy_header_small(){
