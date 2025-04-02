@@ -1,4 +1,4 @@
-.gb-container.gb-container-045d53c4 {
+.gb-container.gb-container-045d53c4, nav#mobile-header {
     background:radial-gradient(circle, rgb(216, 227, 255) 0%, rgb(153, 176, 247) 100%)!important;
 }
 
@@ -17,11 +17,34 @@
     font-style: normal;
     font-weight: 500;
     line-height: normal;
+    transform: none;
+
 }
 
 .site-header ul.sub-menu li a{
     color : white !important;
+    transform: none;
 }
+
+/*mobile header*/
+nav#mobile-header ul li a {
+    color: #3F3F3F !important;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    /*line-height: normal;*/
+}
+
+nav#mobile-header ul.sub-menu li a{
+    color : white !important;
+}
+
+nav#mobile-header * > a:hover {
+    transform: none;
+}
+
+/*end mobile header*/
 /*color for h1 on blog, about us, contact us pages*/
 h1.gb-headline-a39e9a85, h1.gb-headline-58da3955, h1.gb-headline-c30d63af{
     color: rgb(73, 75, 103) !important;
@@ -47,4 +70,19 @@ a.gb-button.gb-button-41599730.gb-button-text{
 a.gb-button{
     background-color: #00dafc !important;
     color: #fff !important;
+}
+
+
+/*AI humanizer page*/
+body.page-template-default.page.page-id-59920.logged-in.admin-bar.wp-custom-logo.wp-embed-responsive.post-image-aligned-center.sticky-menu-fade.mobile-header.mobile-header-logo.both-sidebars.nav-float-right.separate-containers.fluid-header.active-footer-widgets-3.header-aligned-left.dropdown-hover.full-width-content.customize-support.using-mouse {
+    background-image:radial-gradient(circle, rgb(216, 227, 255) 0%, rgb(153, 176, 247) 100%)!important;
+}
+
+body.page.page-id-59998{
+    background-image:radial-gradient(circle, rgb(216, 227, 255) 0%, rgb(153, 176, 247) 100%)!important;
+}
+
+.feedback-buttons button {
+    background: #6892FF;
+    color: white;
 }
