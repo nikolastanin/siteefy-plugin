@@ -83,8 +83,8 @@ body.page.page-id-59998{
 }
 
 .feedback-buttons button {
-    background: #6892FF;
-    color: white;
+    background: #6892FF !important;
+    color: white !important;
 }
 
 
