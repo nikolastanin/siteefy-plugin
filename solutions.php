@@ -196,8 +196,8 @@ function get_solution_name_by_tool_id($tool_id, $shorten=false){
         $solution = get_term($solution_id[0]);
         if($solution){
             $name = $solution->name;
-            if ($shorten && strlen($name) >= 14) {
-                return substr($name, 0, 14) . "...";
+            if ($shorten && strlen($name) >= 50) {
+                return substr($name, 0, 50) . "...";
             }
             return $name;
         }
