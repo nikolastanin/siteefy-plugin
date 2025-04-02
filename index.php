@@ -849,7 +849,7 @@ function siteefy_get_field($field='', $id=false){
             echo $title;
             break;
         case 'tool_rating':
-            $rating = get_field('tool_rating', $id) ?: '4.9';
+            $rating = get_field('tool_rating', $id) ;
             $rating = (strpos($rating ?: '.', '.') === false) ? $rating . '.0' : $rating;
             echo $rating;
             break;
