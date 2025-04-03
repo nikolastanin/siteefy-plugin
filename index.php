@@ -725,6 +725,10 @@ function siteefy_add_tool_backend_fields(){
                 'name' => 'sub_title',
                 'type' => 'image',
                 'required' => true,
+                'min_width' => 250,     // ✅ Sets minimum width (UI hint only)
+                'min_height' => 50,     // ✅ Sets minimum height (UI hint only)
+                'max_width' => '',       // Optional
+                'max_height' => '',
             )
         ),
         'location' => array (
