@@ -78,8 +78,8 @@ section:not(.categories-homepage){
 
 .category-of-tools__container{
   display: flex;
-  justify-content: space-between;
   flex-wrap: wrap;
+  gap: 30px;
   @include responsive(sm) {
     gap:22px;
   }

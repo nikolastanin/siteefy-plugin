@@ -28,6 +28,7 @@ require_once  WP_PLUGIN_DIR . '/siteefy/category.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/functions.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/ajax.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/shortcodes.php';
+require_once  WP_PLUGIN_DIR . '/siteefy/validation.php';
 
 
 // Exit if accessed directly
@@ -1046,25 +1047,4 @@ add_action('admin_init', function(){
 });
 
 
-function siteefy_prevent_term_creation_if_post_exists( $term_id, $tt_id, $taxonomy ) {
-    // Only apply to 'solution' or 'category' taxonomy
-    if ( in_array( $taxonomy, array( 'solution', 'category' ) ) ) {
 
-        // Get the term's slug
-        $term = get_term( $term_id, $taxonomy );
-        $term_slug = $term->slug;
-
-        // Check if a page or post with the same slug already exists
-        $post = get_page_by_path( $term_slug, OBJECT, array( 'post', 'page' ) );
-
-        if ( $post ) {
-            // If a page or post with the same slug exists, delete the term
-            wp_delete_term( $term_id, $taxonomy );
-            flush_rewrite_rules();
-
-            // Return an error message (optional)
-            wp_die('A page or post with the same slug already exists. The term has not been created.');
-        }
-    }
-}
-add_action( 'create_term', 'siteefy_prevent_term_creation_if_post_exists', 10, 3 );
