@@ -28,3 +28,4 @@ function siteefy_prevent_term_creation_if_post_or_cross_term_exists( $term_id, $
     }
 }
 add_action( 'create_term', 'siteefy_prevent_term_creation_if_post_or_cross_term_exists', 10, 3 );
+

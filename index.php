@@ -1046,5 +1046,7 @@ add_action('admin_init', function(){
     flush_rewrite_rules();
 });
 
-
+add_action('admin_enqueue_scripts', function(){
+    wp_enqueue_script( 'admin-script', plugin_dir_url( __FILE__ ) . 'scripts/admin.js', array('jquery'), '1.0' );
+});
 
