@@ -124,7 +124,7 @@ add_shortcode('recent-tools', function(){
 });
 
 add_shortcode('top-tools-by-categories', function(){
-    $categories = get_all_categories(3);
+    $categories = get_all_categories(5);
     $tools_by_category = array();
     foreach ($categories as $cat){
         $tools_by_category[$cat->term_id] = get_cpt_posts_by_tax('tool',$cat->taxonomy,$cat->term_id);
