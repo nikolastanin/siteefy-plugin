@@ -123,8 +123,13 @@ section:not(.categories-homepage){
   filter: drop-shadow(0px -3px 11.2px rgba(104, 146, 255, 0.5));
   @include responsive(xs){
     filter:unset;
+    .tabs-switcher__container > :nth-child(n+4) {
+      display: none;
+    }
+
   }
 }
+
 .tabs-container {
   /* width: 100%; */
   position: relative;
@@ -296,6 +301,9 @@ section:not(.categories-homepage){
 }
 
 .rounded-tab{
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-width: 100px;
   padding: 10px;
   color: #5282FF;

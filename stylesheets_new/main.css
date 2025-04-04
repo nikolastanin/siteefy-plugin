@@ -824,6 +824,9 @@ section:not(.categories-homepage) {
   .tabs-switcher__container {
     filter: unset;
   }
+  .tabs-switcher__container .tabs-switcher__container > :nth-child(n+4) {
+    display: none;
+  }
 }
 
 .tabs-container {
@@ -1008,6 +1011,9 @@ section:not(.categories-homepage) {
 }
 
 .rounded-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-width: 100px;
   padding: 10px;
   color: #5282FF;
