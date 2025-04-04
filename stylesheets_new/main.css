@@ -824,7 +824,10 @@ section:not(.categories-homepage) {
   .tabs-switcher__container {
     filter: unset;
   }
-  .tabs-switcher__container .tabs-switcher__container > :nth-child(n+4) {
+}
+
+@media (max-width: 480px) {
+  .tabs-switcher__container > :nth-child(n+4) {
     display: none;
   }
 }
