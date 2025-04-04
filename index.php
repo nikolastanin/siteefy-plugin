@@ -655,8 +655,8 @@ function siteefy_add_custom_templates($template) {
         $tool_of_the_week = get_selected_tool_of_the_week();
         $related_items = get_all_categories(5);
         echo Siteefy::blade()->run('pages.search-template', [
-            'page_title'=>'Search result',
-            'page_subtitle' =>'Check out what we have for You!',
+            'page_title'=>'All tools',
+            'page_subtitle' =>'All tools in our library.',
             'archive_title'=>$_GET['s'],
             'items'=>$tools,
             'term_name'=>'tools',
