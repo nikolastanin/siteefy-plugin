@@ -676,6 +676,7 @@ function siteefy_add_tool_backend_fields(){
                 'name' => 'tool_exact_price',
                 'type' => 'number',
                 'required' => true,
+                'min'=>0,
                 'instructions' =>'Numeric value of tool price per month, ex : $100. Set 0 - if free '
             ),
             array (
