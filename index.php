@@ -1046,7 +1046,24 @@ add_action('admin_init', function(){
     flush_rewrite_rules();
 });
 
-add_action('admin_enqueue_scripts', function(){
-    wp_enqueue_script( 'admin-script', plugin_dir_url( __FILE__ ) . 'scripts/admin.js', array('jquery'), '1.0' );
+add_action('admin_enqueue_scripts', function($hook) {
+    global $post;
+
+    // Only load on post edit or create screens
+    if (!in_array($hook, ['post.php', 'post-new.php'])) return;
+
+    // Get post type safely
+    $post_type = $post ? $post->post_type : (isset($_GET['post_type']) ? $_GET['post_type'] : '');
+
+    // Only enqueue for 'tool' or 'task'
+    if (in_array($post_type, ['tool', 'task'])) {
+        wp_enqueue_script(
+            'admin-script',
+            plugin_dir_url(__FILE__) . 'scripts/admin.js',
+            ['jquery'],
+            '1.0',
+            true
+        );
+    }
 });
 

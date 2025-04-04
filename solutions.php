@@ -1,7 +1,7 @@
 <?php
 //todo:done
 
-function get_all_solutions($limit = -1, $exclude_term = '') {
+function get_all_solutions($limit = -1, $exclude_term = '', $order='DESC') {
     if ($limit === -1) {
         $limit = 0;
     }
@@ -10,6 +10,8 @@ function get_all_solutions($limit = -1, $exclude_term = '') {
         'taxonomy'   => 'solution',
         'hide_empty' => false,
         'number'     => $limit,
+        'orderby'    => 'id',
+        'order'      => 'DESC', // Newest first
     ));
 
     if (!is_wp_error($terms) && !empty($terms)) {

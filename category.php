@@ -5,7 +5,7 @@ function get_task_assigned_category_name($task){
 }
 
 //cat-fixed
-function get_all_categories($limit = 5, $exclude_term = '') {
+function get_all_categories($limit = 5, $exclude_term = '', $order='DESC') {
     if ($limit === -1) {
         $limit = 0;
     }
@@ -15,6 +15,8 @@ function get_all_categories($limit = 5, $exclude_term = '') {
         'taxonomy'   => 'category',
         'hide_empty' => true,
         'number'     => $limit,
+        'orderby'    => 'id',
+        'order'      => 'DESC', // Newest first
     ));
 
     if (!is_wp_error($terms) && !empty($terms)) {
