@@ -289,7 +289,6 @@ section:not(.categories-homepage){
     display: flex;
     flex-direction: column;
     width: 100%;
-    margin-right: 6px;
   }
   .tab-tool__right-top {
     display: flex;
@@ -298,7 +297,7 @@ section:not(.categories-homepage){
     width: 100%;
     margin-bottom: 16px;
     flex-wrap: wrap;
-    row-gap: 8px;
+    gap: 6px;
   }
   .tab-tool__description {
     text-align: left !important;
