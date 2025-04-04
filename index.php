@@ -651,14 +651,17 @@ function siteefy_add_custom_templates($template) {
         exit;
 
     }elseif(is_archive() && get_post_type($post) === 'tool'){
+        $tools = get_all_tools();
+        $tool_of_the_week = get_selected_tool_of_the_week();
+        $related_items = get_all_categories(5);
         echo Siteefy::blade()->run('pages.search-template', [
             'page_title'=>'Search result',
             'page_subtitle' =>'Check out what we have for You!',
             'archive_title'=>$_GET['s'],
-            'items'=>get_tools_by_search_term(),
+            'items'=>$tools,
             'term_name'=>'tools',
             'count' => count($tools),
-            'archive_title'=>$_GET['s'],
+            'archive_title'=>'All Tools',
             'related_title' => 'Related categories',
             'related_link'=>'/category',
             'related_items' =>$related_items,
