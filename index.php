@@ -701,7 +701,7 @@ function siteefy_add_tool_backend_fields(){
                 'name' => 'tool_rating',
                 'type' => 'range',
                 'min'=>0,
-                'max'=>10,
+                'max'=>5,
                 'step'=> '0.1',
                 'required' => true,
             ),
