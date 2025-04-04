@@ -109,6 +109,7 @@ function check_if_is_siteefy_new_pages(){
         (is_page() && strtolower(get_the_title()) === 'solution') ||
         (is_page() && get_the_title() === 'category') ||
         (is_archive() && get_queried_object()->taxonomy === 'category') ||
+        (is_archive() && get_post_type($post) === 'tool') ||
         (is_front_page())
     ) {
       return true;
