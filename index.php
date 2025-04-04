@@ -650,6 +650,21 @@ function siteefy_add_custom_templates($template) {
         ]);
         exit;
 
+    }elseif(is_archive() && get_post_type($post) === 'tool'){
+        echo Siteefy::blade()->run('pages.search-template', [
+            'page_title'=>'Search result',
+            'page_subtitle' =>'Check out what we have for You!',
+            'archive_title'=>$_GET['s'],
+            'items'=>get_tools_by_search_term(),
+            'term_name'=>'tools',
+            'count' => count($tools),
+            'archive_title'=>$_GET['s'],
+            'related_title' => 'Related categories',
+            'related_link'=>'/category',
+            'related_items' =>$related_items,
+            'tool_of_the_week'=>$tool_of_the_week,
+        ]);
+        exit;
     }
 
     return $template;
