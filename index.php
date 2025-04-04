@@ -657,11 +657,10 @@ function siteefy_add_custom_templates($template) {
         echo Siteefy::blade()->run('pages.search-template', [
             'page_title'=>'All tools',
             'page_subtitle' =>'All tools in our library.',
-            'archive_title'=>$_GET['s'],
+            'archive_title'=>'All tools',
             'items'=>$tools,
             'term_name'=>'tools',
             'count' => count($tools),
-            'archive_title'=>'All Tools',
             'related_title' => 'Related categories',
             'related_link'=>'/category',
             'related_items' =>$related_items,
