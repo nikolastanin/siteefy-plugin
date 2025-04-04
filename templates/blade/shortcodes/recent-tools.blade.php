@@ -10,9 +10,9 @@
                         <a href="<?php siteefy_get_field('tool_review_link', $tool->ID); ?>"><?php siteefy_get_field('tool_name', $tool->ID); ?></a>
                         <img width="24px" height="24px" src="<?php echo get_siteefy_home_url(); ?>wp-content/plugins/siteefy/assets/verified-icon.png" alt="Verified">
                     </div>
-                    <div class="tool-item__solution-name">
+                    <a href="{{get_solution_link_by_tool_id($tool->ID)}}" class="tool-item__solution-name">
                         <?php echo get_solution_name_by_tool_id($tool->ID, true); ?>
-                    </div>
+                    </a>
                 </div>
             </div>
             <div class="tool-item__bottom">

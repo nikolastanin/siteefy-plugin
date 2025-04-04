@@ -88,18 +88,21 @@ a.tool-item__link {
     align-items: center;
     line-height: normal;
     margin-bottom: 15px;
-    justify-content: space-between;
   a{
     font-weight: 600;
     color: #303030;
     font-family: Inter;
     font-size: 24px;
     font-style: normal;
+    margin-right: 6px;
     font-size: 24px;
-      color: #303030;
+    color: #303030;
   }
 }
 .tool-item__solution-name{
+  display: block;
+  position: relative;
+  z-index: 999;
   color: unset;
   padding: 12px;
   flex-shrink: 0;
@@ -107,6 +110,9 @@ a.tool-item__link {
   border-radius: 5px;
   border: 1px solid #E1EBFF;
   background: #EEF4FF;
+  &:hover{
+    text-decoration: none;
+  }
 }
 .tool-item__bottom{
   display: flex;

@@ -1686,7 +1686,6 @@ a.tool-item__link {
   align-items: center;
   line-height: normal;
   margin-bottom: 15px;
-  justify-content: space-between;
 }
 .tool-item__title a {
   font-weight: 600;
@@ -1694,11 +1693,15 @@ a.tool-item__link {
   font-family: Inter;
   font-size: 24px;
   font-style: normal;
+  margin-right: 6px;
   font-size: 24px;
   color: #303030;
 }
 
 .tool-item__solution-name {
+  display: block;
+  position: relative;
+  z-index: 999;
   color: unset;
   padding: 12px;
   flex-shrink: 0;
@@ -1706,6 +1709,9 @@ a.tool-item__link {
   border-radius: 5px;
   border: 1px solid #E1EBFF;
   background: #EEF4FF;
+}
+.tool-item__solution-name:hover {
+  text-decoration: none;
 }
 
 .tool-item__bottom {

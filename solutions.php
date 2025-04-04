@@ -206,3 +206,11 @@ function get_solution_name_by_tool_id($tool_id, $shorten=false){
     }
     return '';
 }
+
+function get_solution_link_by_tool_id($tool_id){
+    $solution_id = get_solutions_for_tool($tool_id);
+    if(array_key_exists(0, $solution_id)){
+        $solution = get_term($solution_id[0]);
+       return get_term_link($solution);
+    }
+}
