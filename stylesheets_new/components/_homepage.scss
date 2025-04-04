@@ -287,6 +287,8 @@ section:not(.categories-homepage){
     justify-content: space-between;
     width: 100%;
     margin-bottom: 16px;
+    flex-wrap: wrap;
+    row-gap: 8px;
   }
   .tab-tool__description {
     text-align: left !important;
