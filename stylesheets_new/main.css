@@ -1416,6 +1416,10 @@ section.tool-of-the-week .subtitle {
   background: #6892FF;
 }
 
+#pojo-a11y-toolbar {
+  top: 100px !important;
+}
+
 .main-hero__search {
   width: 100%;
   position: relative;
