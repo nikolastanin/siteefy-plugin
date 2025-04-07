@@ -1418,9 +1418,14 @@ section.tool-of-the-week .subtitle {
 }
 
 #pojo-a11y-toolbar {
-  top: 100px !important;
+  top: 130px !important;
 }
 
+@media (max-width: 767px) {
+  #pojo-a11y-toolbar {
+    top: 130px !important;
+  }
+}
 .main-hero__search {
   width: 100%;
   position: relative;
