@@ -305,10 +305,10 @@ function get_tools_by_task_id($task_id) {
 
 
 
-function get_cpt_posts_by_tax($cpt='',$tax, $category_id){
+function get_cpt_posts_by_tax($cpt='',$tax, $category_id, $limit=-1){
     $query = new WP_Query(array(
         'post_type'      => $cpt,
-        'posts_per_page' => -1,
+        'posts_per_page' => $limit,
         'tax_query'      => array(
             array(
                 'taxonomy' => $tax,

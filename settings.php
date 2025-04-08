@@ -1,6 +1,8 @@
 <?php
 define('CATEGORY_PAGE_SLUG', 'categories');
+define('CATEGORY_PAGE_PATH', '/categories');
 define('SOLUTION_PAGE_SLUG', 'solutions');
+define('SOLUTION_PAGE_PATH', '/solutions');
 
 function get_siteefy_settings($array_key){
     if(Siteefy::get_env()==='dev'){

@@ -127,7 +127,7 @@ add_shortcode('top-tools-by-categories', function(){
     $categories = get_all_categories(5);
     $tools_by_category = array();
     foreach ($categories as $cat){
-        $tools_by_category[$cat->term_id] = get_cpt_posts_by_tax('tool',$cat->taxonomy,$cat->term_id);
+        $tools_by_category[$cat->term_id] = get_cpt_posts_by_tax('tool',$cat->taxonomy,$cat->term_id, 2);
     }
     return Siteefy::blade()->run('tools-by-categories', [
         'categories'=>$categories,

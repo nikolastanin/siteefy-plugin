@@ -273,7 +273,7 @@ function siteefy_task__init() {
     register_taxonomy('category', array('task', 'tool','page', 'post'), array(
         'label'             => 'Categories',
         'hierarchical'      => true,
-        'rewrite'           => array('slug' => 'category'),
+        'rewrite'           => array('slug' => CATEGORY_PAGE_SLUG ),
         'public' => true,
     ));
     register_taxonomy('solution', array('task', 'tool'), array(
@@ -293,7 +293,7 @@ function siteefy_task__init() {
             'not_found'         => 'No Solutions found.',
         ),
         'hierarchical'      => true,
-        'rewrite'           => array('slug' => 'solution'),
+        'rewrite'           => array('slug' => SOLUTION_PAGE_SLUG),
         'public'            => true,
         'show_ui'           => true,
         'show_admin_column' => true,
@@ -528,7 +528,7 @@ function siteefy_add_custom_templates($template) {
             'count' => count($tools),
             'archive_title'=>$_GET['s'],
             'related_title' => 'Related categories',
-            'related_link'=>'/category',
+            'related_link'=>CATEGORY_PAGE_PATH,
             'related_items' =>$related_items,
             'tool_of_the_week'=>$tool_of_the_week,
         ]);
@@ -562,7 +562,7 @@ function siteefy_add_custom_templates($template) {
             'count' => count($tasks),
             'archive_title'=>'Tasks',
             'related_title' => 'Related categories',
-            'related_link'=>'/category',
+            'related_link'=>CATEGORY_PAGE_PATH,
             'related_items' =>$categories,
             'tool_of_the_week'=>$tool_of_the_week,
         ]);
@@ -582,16 +582,16 @@ function siteefy_add_custom_templates($template) {
             'count' => count($tools),
             'archive_title'=>$taxonomy,
             'related_title' => 'Related solutions',
-            'related_link'=>'/solution',
+            'related_link'=>SOLUTION_PAGE_PATH,
             'related_items' =>$solutions,
             'term' => $term,
-            'taxonomy'=>$taxonomy,
+            'taxonomy'=>SOLUTION_PAGE_SLUG,
             'tool_of_the_week'=>$tool_of_the_week,
         ]);
         exit;
 
     }
-    elseif(is_page() && strtolower(get_the_title())==='solution' ){
+    elseif(is_page() && strtolower(get_the_title())===SOLUTION_PAGE_SLUG ){
         //        todo:remove template .php file
         $solutions = get_all_solutions(-1);
         $categories = get_all_categories(5);
@@ -604,13 +604,13 @@ function siteefy_add_custom_templates($template) {
                 'count' => count($solutions),
                 'archive_title'=>'Solutions',
                 'related_title' => 'Related categories',
-                'related_link'=>'/category',
+                'related_link'=>CATEGORY_PAGE_PATH,
                 'related_items' =>$categories,
                 'tool_of_the_week'=>$tool_of_the_week,
         ]);
         exit;
     }
-    elseif (is_page() && strtolower(get_the_title())==='category') {
+    elseif (is_page() && strtolower(get_the_title())===CATEGORY_PAGE_SLUG) {
 //        todo:remove template .php file
         $categories = get_all_categories(-1);
         $solutions = get_all_solutions(5);
@@ -623,7 +623,7 @@ function siteefy_add_custom_templates($template) {
             'count' => count($categories),
             'archive_title'=>'Categories',
             'related_title' => 'Related solutions',
-            'related_link'=>'/solution',
+            'related_link'=>SOLUTION_PAGE_PATH,
             'related_items' =>$solutions,
             'tool_of_the_week'=>$tool_of_the_week,
         ]);
@@ -642,10 +642,10 @@ function siteefy_add_custom_templates($template) {
             'count' => count($tools),
             'archive_title'=>$taxonomy,
             'related_title' => 'Related categories',
-            'related_link'=>'/category',
+            'related_link'=>CATEGORY_PAGE_PATH,
             'related_items' =>$categories,
             'term' => $term,
-            'taxonomy'=>$taxonomy,
+            'taxonomy'=>CATEGORY_PAGE_SLUG,
             'tool_of_the_week'=>$tool_of_the_week,
         ]);
         exit;
@@ -662,7 +662,7 @@ function siteefy_add_custom_templates($template) {
             'term_name'=>'tools',
             'count' => count($tools),
             'related_title' => 'Related categories',
-            'related_link'=>'/category',
+            'related_link'=>CATEGORY_PAGE_PATH,
             'related_items' =>$related_items,
             'tool_of_the_week'=>$tool_of_the_week,
         ]);
@@ -960,7 +960,7 @@ function rudr_change_term_request( $query ){
 function change_solution_permalink( $url, $term, $taxonomy ){
 
     $taxonomy_name = 'solution'; // your taxonomy name here
-    $taxonomy_slug = 'solution'; // the taxonomy base slug can be different with the taxonomy name (like 'post_tag' and 'tag' )
+    $taxonomy_slug = SOLUTION_PAGE_SLUG; // the taxonomy base slug can be different with the taxonomy name (like 'post_tag' and 'tag' )
 
     // exit the function if this taxonomy slug is not in the URL
     if( false === strpos( $url, $taxonomy_slug ) || $taxonomy !== $taxonomy_name ) {
@@ -978,7 +978,7 @@ add_filter( 'term_link', 'change_solution_permalink', 10, 3 );
 function change_category_permalink( $url, $term, $taxonomy ){
 
     $taxonomy_name = 'category'; // your taxonomy name here
-    $taxonomy_slug = 'category'; // the taxonomy base slug can be different with the taxonomy name (like 'post_tag' and 'tag' )
+    $taxonomy_slug = CATEGORY_PAGE_SLUG; // the taxonomy base slug can be different with the taxonomy name (like 'post_tag' and 'tag' )
 
     // exit the function if this taxonomy slug is not in the URL
     if( false === strpos( $url, $taxonomy_slug ) || $taxonomy !== $taxonomy_name ) {
@@ -996,7 +996,7 @@ add_filter( 'term_link', 'change_category_permalink', 10, 3 );
 function custom_solution_rewrite_rules_new() {
     // Keep the default rule for /solution/test2/
     add_rewrite_rule(
-        '^solution/([^/]+)/?$',
+        '^'.SOLUTION_PAGE_SLUG.'/([^/]+)/?$',
         'index.php?solution=$matches[1]',
         'top'
     );
@@ -1021,9 +1021,9 @@ function custom_solution_rewrite_rules_new() {
 
 
     //cat - test
-    // Keep the default rule for /solution/test2/
+    // Keep the default rule for /category/test2/
     add_rewrite_rule(
-        '^category/([^/]+)/?$',
+        '^'.CATEGORY_PAGE_SLUG.'/([^/]+)/?$',
         'index.php?category=$matches[1]',
         'top'
     );
@@ -1084,4 +1084,3 @@ add_action('admin_enqueue_scripts', function($hook) {
         );
     }
 });
-

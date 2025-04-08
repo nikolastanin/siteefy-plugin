@@ -12,8 +12,8 @@
                 <?php do_action( 'get_siteefy_search' ); ?>
             </div>
             <div class="hero-quick-links">
-                <a href="<?php echo get_siteefy_home_url('/category'); ?>" class="quick-link__btn">🥇 Top rated</a>
-                <a href="<?php echo get_siteefy_home_url('/category'); ?>" class="quick-link__btn">📁 Categories</a>
+                <a href="<?php echo get_siteefy_home_url(CATEGORY_PAGE_PATH); ?>" class="quick-link__btn">🥇 Top rated</a>
+                <a href="<?php echo get_siteefy_home_url(CATEGORY_PAGE_PATH); ?>" class="quick-link__btn">📁 Categories</a>
                 <a href="<?php echo get_siteefy_home_url('/tasks'); ?>" class="quick-link__btn">📋 Tasks</a>
                 <a href="<?php echo get_siteefy_home_url('/tools'); ?>" class="quick-link__btn">🔧 Tools</a>
             </div>

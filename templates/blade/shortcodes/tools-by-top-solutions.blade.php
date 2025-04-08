@@ -75,5 +75,5 @@
 
 @endforeach
 <div class="button-container">
-    <a class="show-more__btn" href="<?php echo get_siteefy_home_url('/solution');?>">view more</a>
+    <a class="show-more__btn" href="<?php echo get_siteefy_home_url(SOLUTION_PAGE_PATH);?>">view more</a>
 </div>
