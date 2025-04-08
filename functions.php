@@ -106,8 +106,8 @@ function check_if_is_siteefy_new_pages(){
         (is_single() && get_post_type($post) === 'task') ||
         (is_archive() && get_post_type($post) === 'task' && get_queried_object()->taxonomy !== 'solution') ||
         (is_archive() && get_queried_object()->taxonomy === 'solution') ||
-        (is_page() && strtolower(get_the_title()) === 'solution') ||
-        (is_page() && get_the_title() === 'category') ||
+        (is_page() && strtolower(get_the_title()) === SOLUTION_PAGE_SLUG) ||
+        (is_page() && get_the_title() === CATEGORY_PAGE_SLUG) ||
         (is_archive() && get_queried_object()->taxonomy === 'category') ||
         (is_archive() && get_post_type($post) === 'tool') ||
         (is_front_page())
