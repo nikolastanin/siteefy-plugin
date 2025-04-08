@@ -78,6 +78,10 @@ body.page-template-default.page.page-id-59920.logged-in.admin-bar.wp-custom-logo
     background-image:radial-gradient(circle, rgb(216, 227, 255) 0%, rgb(153, 176, 247) 100%)!important;
 }
 
+body.page-template-default {
+    background: radial-gradient(circle, rgb(216, 227, 255) 0%, rgb(153, 176, 247) 100%) !important;
+}
+
 body.page.page-id-59998{
     background-image:radial-gradient(circle, rgb(216, 227, 255) 0%, rgb(153, 176, 247) 100%)!important;
 }
