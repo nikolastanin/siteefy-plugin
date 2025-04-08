@@ -597,7 +597,7 @@ function siteefy_add_custom_templates($template) {
         $categories = get_all_categories(5);
         $tool_of_the_week = get_selected_tool_of_the_week();
         echo Siteefy::blade()->run('pages.archive-template', [
-                'page_title'=>false,
+                'page_title'=>'All Solutions',
                 'page_subtitle' =>false,
                 'items' => $solutions,
                 'term_name'=>'solution',
@@ -616,7 +616,7 @@ function siteefy_add_custom_templates($template) {
         $solutions = get_all_solutions(5);
         $tool_of_the_week = get_selected_tool_of_the_week();
         echo Siteefy::blade()->run('pages.archive-template', [
-            'page_title'=>false,
+            'page_title'=>'All Categories',
             'page_subtitle' =>false,
             'items' => $categories,
             'term_name'=>'category',
