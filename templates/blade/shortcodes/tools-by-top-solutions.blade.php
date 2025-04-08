@@ -23,9 +23,9 @@
                         {{get_tool_description($tool->ID)}}
                     </div>
                     <div class="one-tool__tags">
-                        <div class="one-tool__task">
+                        <a href="{{get_solution_link_by_tool_id($tool->ID)}}" class="one-tool__task">
                             <?php echo get_solution_name_by_tool_id($tool->ID); ?>
-                        </div>
+                        </a>
                         <div class="one-tool__price">
                             <?php siteefy_get_field('tool_exact_price', $tool->ID); ?>
                         </div>

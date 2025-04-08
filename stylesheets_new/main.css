@@ -1232,6 +1232,12 @@ section.tool-of-the-week .subtitle {
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+  z-index: 55;
+}
+.popular-task-item__category:hover {
+  text-decoration: none;
+  background-color: #AFCAFF !important;
+  color: #3F3F3F;
 }
 
 .listing-section {
@@ -1396,6 +1402,12 @@ section.tool-of-the-week .subtitle {
   font-style: normal;
   font-weight: 700;
   line-height: normal;
+  z-index: 55;
+}
+.one-tool__tags .one-tool__task:hover {
+  text-decoration: none;
+  background-color: #AFCAFF !important;
+  color: #3F3F3F;
 }
 .one-tool__tags .one-tool__price {
   display: flex;
@@ -1719,9 +1731,12 @@ a.tool-item__link {
   border-radius: 5px;
   border: 1px solid #E1EBFF;
   background: #EEF4FF;
+  transition: all 0.2s;
 }
 .tool-item__solution-name:hover {
   text-decoration: none;
+  background-color: #AFCAFF !important;
+  color: #3F3F3F;
 }
 
 .tool-item__bottom {

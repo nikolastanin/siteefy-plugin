@@ -1011,6 +1011,7 @@ header.new .inside-header {
   font-style: normal;
   font-weight: 500;
   line-height: normal;
+  z-index: 55 !important;
 }
 
 .subtask-name {

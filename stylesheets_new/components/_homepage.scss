@@ -512,6 +512,12 @@ section.tool-of-the-week{
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+  z-index: 55;
+  &:hover{
+    text-decoration: none;
+    background-color: #AFCAFF !important;
+    color: #3F3F3F;
+  }
 }
 
 
@@ -668,6 +674,12 @@ section.tool-of-the-week{
     font-style: normal;
     font-weight: 700;
     line-height: normal;
+    z-index: 55;
+    &:hover{
+      text-decoration: none;
+      background-color: #AFCAFF !important;
+      color: #3F3F3F;
+    }
   }
   .one-tool__price{
     display: flex;
