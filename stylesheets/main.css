@@ -536,6 +536,7 @@ h3 {
   font-style: italic;
   font-weight: 400;
   line-height: normal;
+  min-width: 111px;
 }
 .hero-quick-categories a:hover {
   color: unset;
@@ -571,7 +572,9 @@ h3 {
 
 .search-field__main {
   width: 100%;
+  width: 100%;
   position: relative;
+  z-index: 999;
 }
 .search-field__main input {
   width: 100%;
@@ -614,10 +617,11 @@ h3 {
 }
 
 .search-output__container {
-  position: absolute;
+  position: relative;
   width: 100%;
   height: fit-content;
   border-radius: 3px;
+  z-index: 999;
   background-color: #F9F9F9;
   width: 100%;
   text-align: left;
@@ -1007,6 +1011,7 @@ header.new .inside-header {
   font-style: normal;
   font-weight: 500;
   line-height: normal;
+  z-index: 55 !important;
 }
 
 .subtask-name {

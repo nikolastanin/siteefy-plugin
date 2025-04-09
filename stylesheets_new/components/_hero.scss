@@ -1,0 +1,127 @@
+#hero{
+  background: rgb(216,227,255);
+  background: radial-gradient(circle, rgb(216 227 255) 0%, rgb(153, 176, 247) 100%);
+  width: 100%;
+  height: 800px;
+  position: relative;
+  @include responsive(xs){
+    height: auto;
+    background: rgb(216,227,255);
+    background: radial-gradient(circle, rgba(216,227,255,0.29315476190476186) 0%, rgba(153,176,247,1) 100%);
+  }
+  &.hero-small{
+    height: 505px;
+    .hero-inner{
+      margin-top: 64px;
+      padding: 64px 0;
+    }
+  }
+}
+
+.hero-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  position: relative;
+  max-width: 552px;
+  h1{
+    font-size: 3em;
+    line-height: 48px;
+    @include responsive(xs){
+      font-size: 2.125em;
+      line-height: 32px;
+    }
+  }
+  p{
+    font-size: 14px;
+  }
+}
+.hero-quick-links {
+    display: flex;
+    gap: 10px;
+    padding: 20px 0;
+    flex-wrap: wrap;
+    z-index: 500;
+    position: relative;
+  a{
+    min-width: 111px;
+    color: #3C4AA5;
+    text-align: center;
+    font-family: Inter;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+  }
+}
+.hero-inner{
+  width: 100%;
+  padding: 150px 0;
+  @include responsive(xs){
+    padding: 50px 0;
+    margin: 30px 0;
+  }
+}
+
+.hero-small{
+  .hero-inner{
+
+  }
+}
+
+//icons
+.hero-icons{
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.8;
+  @include responsive(md){
+    display: none;
+  }
+}
+#dotted-line{
+  position: absolute;
+  width: 255.27px;
+  height: 605px;
+  left: 16%;
+}
+#lightbulb-icon{
+  position: absolute;
+  width: 67.32px;
+  height: 100.77px;
+  right: 25%;
+  top: 25%;
+}
+
+#envelop-icon{
+  position: absolute;
+  width: 70.22px;
+  height: 47.06px;
+  left: 23%;
+  top: 27%;
+}
+#tick-icon {
+  position: absolute;
+  width: 74.82px;
+  height: 70.66px;
+  right: 20%;
+  bottom: 45%;
+}
+#monkey-icon{
+  position: absolute;
+  bottom: 20%;
+  left: calc(50% - 61px/2 + 154.22px);
+  color: #89AAFF;
+  text-align: center;
+  font-family: "Inria Sans";
+  font-size: 64px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 48px; /* 75% */
+  transform: rotate(16.607deg);
+}
+
+

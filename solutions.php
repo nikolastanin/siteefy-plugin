@@ -1,21 +1,34 @@
 <?php
 //todo:done
 
-function get_all_solutions($limit=-1) {
-    if($limit===-1){
-        $limit=0;
+function get_all_solutions($limit = -1, $exclude_term = '', $order='DESC') {
+    if ($limit === -1) {
+        $limit = 0;
     }
+
     $terms = get_terms(array(
-        'taxonomy'   => 'solution', // Replace with your taxonomy name
-        'hide_empty' => false, // Include terms even if they have no posts
-        'number'     => $limit, // Limit the number of terms returned
+        'taxonomy'   => 'solution',
+        'hide_empty' => false,
+        'number'     => $limit,
+        'orderby'    => 'id',
+        'order'      => 'DESC', // Newest first
     ));
+
     if (!is_wp_error($terms) && !empty($terms)) {
+        if (!empty($exclude_term)) {
+            $terms = array_filter($terms, function ($term) use ($exclude_term) {
+                return $term->slug !== $exclude_term;
+            });
+
+            // Reset array keys
+            $terms = array_values($terms);
+        }
         return $terms;
     }
 
     return array();
 }
+
 
 function get_count_of_tools_for_single_solution($solution_id) {
     $query = new WP_Query(array(
@@ -33,8 +46,37 @@ function get_count_of_tools_for_single_solution($solution_id) {
 
     return $query->found_posts; // Return the count of matching posts
 }
+
+function get_count_of_tools_for_single_term($solution_id, $tax_name='solution') {
+    $query = new WP_Query(array(
+//        todo:add tool, task if wanna count both like on old page design
+        'post_type'      => array('tool'),  // CPT name
+        'posts_per_page' => -1,      // Get all posts
+        'fields'         => 'ids',   // Only fetch post IDs (improves performance)
+        'tax_query'      => array(
+            array(
+                'taxonomy' => $tax_name, // Change this to your actual taxonomy
+                'field'    => 'term_id',      // Match by term ID
+                'terms'    => $solution_id,   // Category to check
+            ),
+        ),
+    ));
+
+    return $query->found_posts; // Return the count of matching posts
+}
+
 function get_solutions_for_tool($tool_id) {
     $terms = wp_get_post_terms($tool_id, 'solution', array('fields' => 'ids'));
+
+    if (!is_wp_error($terms)) {
+        return $terms; // Returns an array of term IDs
+    }
+
+    return array(); // Return an empty array if no terms are found
+}
+
+function get_solutions_terms_for_tool($tool_id) {
+    $terms = wp_get_post_terms($tool_id, 'solution');
 
     if (!is_wp_error($terms)) {
         return $terms; // Returns an array of term IDs
@@ -150,15 +192,25 @@ function get_tools_by_solution_id($solution_id) {
 }
 
 
-function get_solution_name_by_tool_id($tool_id){
+function get_solution_name_by_tool_id($tool_id, $shorten=false){
     $solution_id = get_solutions_for_tool($tool_id);
-    if(array_key_exists(0,$solution_id)){
+    if(array_key_exists(0, $solution_id)){
         $solution = get_term($solution_id[0]);
         if($solution){
-            return $solution->name;
-        }else{
-            return '';
+            $name = $solution->name;
+            if ($shorten && strlen($name) >= 50) {
+                return substr($name, 0, 50) . "...";
+            }
+            return $name;
         }
     }
+    return '';
+}
 
+function get_solution_link_by_tool_id($tool_id){
+    $solution_id = get_solutions_for_tool($tool_id);
+    if(array_key_exists(0, $solution_id)){
+        $solution = get_term($solution_id[0]);
+       return get_term_link($solution);
+    }
 }

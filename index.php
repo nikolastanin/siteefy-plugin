@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name:          Siteefy
+ * Plugin Name:          Siteefy 1.5
  * Plugin URI:
  * Description:
- * Version: 1.4
+ * Version: 1.5
  * Author:                 Nikola Stanin
  * Author URI:
  * License:
@@ -17,15 +17,18 @@
  *  - Custom Post Type Permalinks (Version 3.5.2 by Toro_Unit)
  */
 
-
+define( 'PN_PLUGIN_ROOT', plugin_dir_path( __FILE__ ) );
+$plugin_name_libraries = require PN_PLUGIN_ROOT . 'vendor/autoload.php'; //phpcs:ignore
 
 defined('ABSPATH') || exit;
+require_once  WP_PLUGIN_DIR . '/siteefy/blade.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/settings.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/solutions.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/category.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/functions.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/ajax.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/shortcodes.php';
+require_once  WP_PLUGIN_DIR . '/siteefy/validation.php';
 
 
 // Exit if accessed directly
@@ -270,7 +273,7 @@ function siteefy_task__init() {
     register_taxonomy('category', array('task', 'tool','page', 'post'), array(
         'label'             => 'Categories',
         'hierarchical'      => true,
-        'rewrite'           => array('slug' => 'category'),
+        'rewrite'           => array('slug' => CATEGORY_PAGE_SLUG ),
         'public' => true,
     ));
     register_taxonomy('solution', array('task', 'tool'), array(
@@ -290,7 +293,7 @@ function siteefy_task__init() {
             'not_found'         => 'No Solutions found.',
         ),
         'hierarchical'      => true,
-        'rewrite'           => array('slug' => 'solution'),
+        'rewrite'           => array('slug' => SOLUTION_PAGE_SLUG),
         'public'            => true,
         'show_ui'           => true,
         'show_admin_column' => true,
@@ -512,51 +515,158 @@ register_deactivation_hook(
 
 function siteefy_add_custom_templates($template) {
     global $post;
+    $tools = get_tools_by_search_term();
+    $tool_of_the_week = get_selected_tool_of_the_week();
+    $related_items = get_all_categories(5);
     if (is_search()) {
-        $custom_template = plugin_dir_path(__FILE__) . 'templates/search-page-template.php';
-
-        // Check if the custom template exists
-        if (file_exists($custom_template)) {
-            return $custom_template;
-        }
+        echo Siteefy::blade()->run('pages.search-template', [
+            'page_title'=>'Search result',
+            'page_subtitle' =>'Check out what we have for You!',
+            'archive_title'=>$_GET['s'],
+            'items'=>get_tools_by_search_term(),
+            'term_name'=>'tools',
+            'count' => count($tools),
+            'archive_title'=>$_GET['s'],
+            'related_title' => 'Related categories',
+            'related_link'=>CATEGORY_PAGE_PATH,
+            'related_items' =>$related_items,
+            'tool_of_the_week'=>$tool_of_the_week,
+        ]);
+        exit;
     }elseif(is_single() && get_post_type($post) === 'task'){
-        $custom_template = plugin_dir_path(__FILE__) . 'templates/task-template.php';
-        if (file_exists($custom_template)) {
-            return $custom_template;
-        }
+        $tools = get_tools_by_task_id($post->ID);
+        $tasks = get_all_tasks(5, $post->post_name);
+        echo Siteefy::blade()->run('pages.single-cpt-template', [
+            'page_title'=>ucfirst($post->post_title),
+            'page_subtitle' =>false,
+            'items' => $tools,
+            'term_name'=>'task',
+            'cpt'=>$post->post_type,
+            'count' => count($tools),
+            'archive_title'=>'Tasks',
+            'related_title' => 'Related tasks',
+            'related_link'=>'/tasks',
+            'related_items' =>$tasks,
+            'tool_of_the_week'=>$tool_of_the_week,
+        ]);
+        exit;
     }elseif(is_archive() && get_post_type($post) === 'task' && get_queried_object()->taxonomy !=='solution'){
-        $custom_template = plugin_dir_path(__FILE__) . 'templates/task-archive-template.php';
-        // Check if the custom template exists
-        if (file_exists($custom_template)) {
-            return $custom_template;
-        }
+        $tasks = get_all_tasks(-1);
+        $categories = get_all_categories(5);
+        $tool_of_the_week = get_selected_tool_of_the_week();
+        echo Siteefy::blade()->run('pages.archive-cpt-template', [
+            'page_title'=>false,
+            'page_subtitle' =>false,
+            'items' => $tasks,
+            'term_name'=>'task',
+            'count' => count($tasks),
+            'archive_title'=>'Tasks',
+            'related_title' => 'Related categories',
+            'related_link'=>CATEGORY_PAGE_PATH,
+            'related_items' =>$categories,
+            'tool_of_the_week'=>$tool_of_the_week,
+        ]);
+        exit;
     }
     elseif(is_archive() && get_queried_object()->taxonomy === 'solution'){
-        $custom_template = plugin_dir_path(__FILE__) . 'templates/cat-single-page-template.php';
-        // Check if the custom template exists
-        if (file_exists($custom_template)) {
-            return $custom_template;
-        }
+        $term = get_queried_object();
+        $taxonomy = $term->taxonomy;
+        $solutions = get_all_solutions(5, $term->slug);
+        $tools = get_cpt_posts_by_tax('tool', $taxonomy,$term->term_id);
+
+        echo Siteefy::blade()->run('pages.single-tax-template', [
+            'page_title'=>ucfirst($term->name),
+            'page_subtitle' =>false,
+            'items' => $tools,
+            'term_name'=>'Solution',
+            'count' => count($tools),
+            'archive_title'=>$taxonomy,
+            'related_title' => 'Related solutions',
+            'related_link'=>SOLUTION_PAGE_PATH,
+            'related_items' =>$solutions,
+            'term' => $term,
+            'taxonomy'=>SOLUTION_PAGE_SLUG,
+            'tool_of_the_week'=>$tool_of_the_week,
+        ]);
+        exit;
+
     }
-    elseif(is_page() && strtolower(get_the_title())==='solution' ){
-        $custom_template = plugin_dir_path(__FILE__) . 'templates/solution-archive-template.php';
-        // Check if the custom template exists
-        if (file_exists($custom_template)) {
-            return $custom_template;
-        }
+    elseif(is_page() && strtolower(get_the_title())===SOLUTION_PAGE_SLUG ){
+        //        todo:remove template .php file
+        $solutions = get_all_solutions(-1);
+        $categories = get_all_categories(5);
+        $tool_of_the_week = get_selected_tool_of_the_week();
+        echo Siteefy::blade()->run('pages.archive-template', [
+                'page_title'=>'All Solutions',
+                'page_subtitle' =>false,
+                'items' => $solutions,
+                'term_name'=>'solution',
+                'count' => count($solutions),
+                'archive_title'=>'Solutions',
+                'related_title' => 'Related categories',
+                'related_link'=>CATEGORY_PAGE_PATH,
+                'related_items' =>$categories,
+                'tool_of_the_week'=>$tool_of_the_week,
+        ]);
+        exit;
     }
-    elseif (is_page() && get_the_title()==='category') {
-        $custom_template = plugin_dir_path(__FILE__) . 'templates/category-archive-template.php';
-        // Check if the custom template exists
-        if (file_exists($custom_template)) {
-            return $custom_template;
-        }
+    elseif (is_page() && strtolower(get_the_title())===CATEGORY_PAGE_SLUG) {
+//        todo:remove template .php file
+        $categories = get_all_categories(-1);
+        $solutions = get_all_solutions(5);
+        $tool_of_the_week = get_selected_tool_of_the_week();
+        echo Siteefy::blade()->run('pages.archive-template', [
+            'page_title'=>'All Categories',
+            'page_subtitle' =>false,
+            'items' => $categories,
+            'term_name'=>'category',
+            'count' => count($categories),
+            'archive_title'=>'Categories',
+            'related_title' => 'Related solutions',
+            'related_link'=>SOLUTION_PAGE_PATH,
+            'related_items' =>$solutions,
+            'tool_of_the_week'=>$tool_of_the_week,
+        ]);
+        exit;
     }elseif(is_archive() && get_queried_object()->taxonomy === 'category'){
-        $custom_template = plugin_dir_path(__FILE__) . 'templates/cat-single-page-template.php';
-        // Check if the custom template exists
-        if (file_exists($custom_template)) {
-            return $custom_template;
-        }
+        $term = get_queried_object();
+        $taxonomy = $term->taxonomy;
+        $categories = get_all_categories(5, $term->slug);
+        $tools = get_cpt_posts_by_tax('tool', $taxonomy,$term->term_id);
+
+        echo Siteefy::blade()->run('pages.single-tax-template', [
+            'page_title'=>ucfirst($term->name),
+            'page_subtitle' =>false,
+            'items' => $tools,
+            'term_name'=>'Category',
+            'count' => count($tools),
+            'archive_title'=>$taxonomy,
+            'related_title' => 'Related categories',
+            'related_link'=>CATEGORY_PAGE_PATH,
+            'related_items' =>$categories,
+            'term' => $term,
+            'taxonomy'=>CATEGORY_PAGE_SLUG,
+            'tool_of_the_week'=>$tool_of_the_week,
+        ]);
+        exit;
+
+    }elseif(is_archive() && get_post_type($post) === 'tool'){
+        $tools = get_all_tools();
+        $tool_of_the_week = get_selected_tool_of_the_week();
+        $related_items = get_all_categories(5);
+        echo Siteefy::blade()->run('pages.search-template', [
+            'page_title'=>'All tools',
+            'page_subtitle' =>'All tools in our library.',
+            'archive_title'=>'Tools',
+            'items'=>$tools,
+            'term_name'=>'tools',
+            'count' => count($tools),
+            'related_title' => 'Related categories',
+            'related_link'=>CATEGORY_PAGE_PATH,
+            'related_items' =>$related_items,
+            'tool_of_the_week'=>$tool_of_the_week,
+        ]);
+        exit;
     }
 
     return $template;
@@ -578,12 +688,29 @@ function siteefy_add_tool_backend_fields(){
                 'required' => true,
             ),
             array (
+                'key' => 'tool_exact_price',
+                'label' => 'Exact Price Value',
+                'name' => 'tool_exact_price',
+                'type' => 'number',
+                'required' => true,
+                'min'=>0,
+                'instructions' =>'Numeric value of tool price per month, ex : $100. Set 0 - if free '
+            ),
+            array (
+                'key' => 'tool_description',
+                'label' => 'Short Description',
+                'name' => 'tool_description',
+                'type' => 'text',
+                'required' => true,
+                'instructions' =>'Short text description of the tool',
+            ),
+            array (
                 'key' => 'tool_review_link',
                 'label' => 'Review Link',
                 'name' => 'tool_review_link',
                 'type' => 'link',
+                'required' =>true,
                 'instructions' =>'Select a page where users will be redirected when they click on this tool. ',
-
             ),
             array (
                 'key' => 'tool_rating',
@@ -591,7 +718,7 @@ function siteefy_add_tool_backend_fields(){
                 'name' => 'tool_rating',
                 'type' => 'range',
                 'min'=>0,
-                'max'=>10,
+                'max'=>5,
                 'step'=> '0.1',
                 'required' => true,
             ),
@@ -617,6 +744,10 @@ function siteefy_add_tool_backend_fields(){
                 'name' => 'sub_title',
                 'type' => 'image',
                 'required' => true,
+                'min_width' => 250,     // ✅ Sets minimum width (UI hint only)
+                'min_height' => 50,     // ✅ Sets minimum height (UI hint only)
+                'max_width' => '',       // Optional
+                'max_height' => '',
             )
         ),
         'location' => array (
@@ -720,6 +851,7 @@ add_filter('acf/load_field/name=tool_assigned_tasks', 'populate_tool_assigned_ta
 function siteefy_get_tool_image($id){
     $img = get_field('tool_image', $id);
     if(is_array($img)){
+//        var_dump($img);
         return $img['url'];
     }else{
         return  PLUGIN_IMAGE_URL . '/tool-image-placeholder.png';
@@ -740,7 +872,7 @@ function siteefy_get_field($field='', $id=false){
             echo $title;
             break;
         case 'tool_rating':
-            $rating = get_field('tool_rating', $id) ?: '4.9';
+            $rating = get_field('tool_rating', $id) ;
             $rating = (strpos($rating ?: '.', '.') === false) ? $rating . '.0' : $rating;
             echo $rating;
             break;
@@ -759,9 +891,17 @@ function siteefy_get_field($field='', $id=false){
                 return '';
             }
             break;
-        case 'tool_price';
+        case 'tool_price':
             $price_text = get_field('tool_price', $id) ?:'Free';
             echo $price_text;
+            break;
+        case 'tool_exact_price':
+            $price_exact_text = get_field('tool_exact_price', $id);
+            echo ($price_exact_text === '0' || $price_exact_text === 0 || empty($price_exact_text)) ? 'Free' : '$'.$price_exact_text;
+            break;
+        case 'tool_description':
+            $tool_description = get_field('tool_description', $id) ?: get_the_excerpt($id);
+            echo $tool_description;
             break;
         default:
             return '';
@@ -820,7 +960,7 @@ function rudr_change_term_request( $query ){
 function change_solution_permalink( $url, $term, $taxonomy ){
 
     $taxonomy_name = 'solution'; // your taxonomy name here
-    $taxonomy_slug = 'solution'; // the taxonomy base slug can be different with the taxonomy name (like 'post_tag' and 'tag' )
+    $taxonomy_slug = SOLUTION_PAGE_SLUG; // the taxonomy base slug can be different with the taxonomy name (like 'post_tag' and 'tag' )
 
     // exit the function if this taxonomy slug is not in the URL
     if( false === strpos( $url, $taxonomy_slug ) || $taxonomy !== $taxonomy_name ) {
@@ -838,7 +978,7 @@ add_filter( 'term_link', 'change_solution_permalink', 10, 3 );
 function change_category_permalink( $url, $term, $taxonomy ){
 
     $taxonomy_name = 'category'; // your taxonomy name here
-    $taxonomy_slug = 'category'; // the taxonomy base slug can be different with the taxonomy name (like 'post_tag' and 'tag' )
+    $taxonomy_slug = CATEGORY_PAGE_SLUG; // the taxonomy base slug can be different with the taxonomy name (like 'post_tag' and 'tag' )
 
     // exit the function if this taxonomy slug is not in the URL
     if( false === strpos( $url, $taxonomy_slug ) || $taxonomy !== $taxonomy_name ) {
@@ -856,7 +996,7 @@ add_filter( 'term_link', 'change_category_permalink', 10, 3 );
 function custom_solution_rewrite_rules_new() {
     // Keep the default rule for /solution/test2/
     add_rewrite_rule(
-        '^solution/([^/]+)/?$',
+        '^'.SOLUTION_PAGE_SLUG.'/([^/]+)/?$',
         'index.php?solution=$matches[1]',
         'top'
     );
@@ -881,9 +1021,9 @@ function custom_solution_rewrite_rules_new() {
 
 
     //cat - test
-    // Keep the default rule for /solution/test2/
+    // Keep the default rule for /category/test2/
     add_rewrite_rule(
-        '^category/([^/]+)/?$',
+        '^'.CATEGORY_PAGE_SLUG.'/([^/]+)/?$',
         'index.php?category=$matches[1]',
         'top'
     );
@@ -924,26 +1064,23 @@ add_action('admin_init', function(){
     flush_rewrite_rules();
 });
 
+add_action('admin_enqueue_scripts', function($hook) {
+    global $post;
 
-function siteefy_prevent_term_creation_if_post_exists( $term_id, $tt_id, $taxonomy ) {
-    // Only apply to 'solution' or 'category' taxonomy
-    if ( in_array( $taxonomy, array( 'solution', 'category' ) ) ) {
+    // Only load on post edit or create screens
+    if (!in_array($hook, ['post.php', 'post-new.php'])) return;
 
-        // Get the term's slug
-        $term = get_term( $term_id, $taxonomy );
-        $term_slug = $term->slug;
+    // Get post type safely
+    $post_type = $post ? $post->post_type : (isset($_GET['post_type']) ? $_GET['post_type'] : '');
 
-        // Check if a page or post with the same slug already exists
-        $post = get_page_by_path( $term_slug, OBJECT, array( 'post', 'page' ) );
-
-        if ( $post ) {
-            // If a page or post with the same slug exists, delete the term
-            wp_delete_term( $term_id, $taxonomy );
-            flush_rewrite_rules();
-
-            // Return an error message (optional)
-            wp_die('A page or post with the same slug already exists. The term has not been created.');
-        }
+    // Only enqueue for 'tool' or 'task'
+    if (in_array($post_type, ['tool', 'task'])) {
+        wp_enqueue_script(
+            'admin-script',
+            plugin_dir_url(__FILE__) . 'scripts/admin.js',
+            ['jquery'],
+            '1.0',
+            true
+        );
     }
-}
-add_action( 'create_term', 'siteefy_prevent_term_creation_if_post_exists', 10, 3 );
+});
