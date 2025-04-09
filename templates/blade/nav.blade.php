@@ -1,7 +1,7 @@
 <header id="main-header">
     <div class="nav container">
         <a href="<?php echo get_siteefy_home_url();  ?>">
-            <img src="<?php echo get_siteefy_home_url(); ?>wp-content/plugins/siteefy/assets/siteefy-logo-black.png" width="141px" height="59px" alt="siteefy logo">
+            <img class="nolazyload" src="<?php echo get_siteefy_home_url(); ?>wp-content/plugins/siteefy/assets/siteefy-logo-black.png" width="141px" height="59px" alt="siteefy logo">
         </a>
         <div class="main-menu">
             <?php wp_nav_menu(); ?>
