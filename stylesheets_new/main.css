@@ -1233,11 +1233,12 @@ section.tool-of-the-week .subtitle {
   font-weight: 400;
   line-height: normal;
   z-index: 55;
+  transition: all 0.2s;
 }
 .popular-task-item__category:hover {
   text-decoration: none;
-  background-color: #AFCAFF !important;
-  color: #3F3F3F;
+  background-color: rgba(175, 202, 255, 0.3019607843) !important;
+  color: #6892FF !important;
 }
 
 .listing-section {
@@ -1295,14 +1296,14 @@ section.tool-of-the-week .subtitle {
   transition: 0.2s all;
 }
 .related-item:hover {
-  background-color: #AFCAFF !important;
-  color: #3F3F3F;
+  background-color: rgb(181, 206, 255) !important;
+  color: #303030 !important;
   cursor: pointer;
   text-decoration: none;
 }
 .related-item.active {
-  background-color: #AFCAFF !important;
-  color: #3F3F3F;
+  background-color: rgb(181, 206, 255) !important;
+  color: #303030;
   cursor: pointer;
 }
 
@@ -1403,11 +1404,12 @@ section.tool-of-the-week .subtitle {
   font-weight: 700;
   line-height: normal;
   z-index: 55;
+  transition: all 0.2s;
 }
 .one-tool__tags .one-tool__task:hover {
   text-decoration: none;
-  background-color: #AFCAFF !important;
-  color: #3F3F3F;
+  background-color: #d7e3fb !important;
+  border: 1px solid #b2c9f6;
 }
 .one-tool__tags .one-tool__price {
   display: flex;
@@ -1735,8 +1737,9 @@ a.tool-item__link {
 }
 .tool-item__solution-name:hover {
   text-decoration: none;
-  background-color: #AFCAFF !important;
+  background-color: rgba(175, 202, 255, 0.4117647059) !important;
   color: #3F3F3F;
+  border-color: #c4d7fe;
 }
 
 .tool-item__bottom {

@@ -513,10 +513,11 @@ section.tool-of-the-week{
   font-weight: 400;
   line-height: normal;
   z-index: 55;
+  transition: all .2s;
   &:hover{
     text-decoration: none;
-    background-color: #AFCAFF !important;
-    color: #3F3F3F;
+    background-color: rgba(175, 202, 255, 0.3019607843) !important;
+    color: #6892FF !important;
   }
 }
 
@@ -575,14 +576,14 @@ section.tool-of-the-week{
   color: #6892FF;
   transition: 0.2s all;
   &:hover{
-    background-color: ##afcaff4d !important;
-    color: #6892FF !important;
+    background-color: rgb(181 206 255) !important;
+    color: #303030 !important;
     cursor: pointer;
     text-decoration: none;
   }
   &.active{
-    background-color: #AFCAFF !important;
-    color: #3F3F3F;
+    background-color: rgb(181 206 255) !important;
+    color: #303030;
     cursor: pointer;
   }
 }
@@ -675,10 +676,11 @@ section.tool-of-the-week{
     font-weight: 700;
     line-height: normal;
     z-index: 55;
+    transition: all .2s;
     &:hover{
       text-decoration: none;
-      background-color: #AFCAFF !important;
-      color: #3F3F3F;
+      background-color: #d7e3fb !important;
+      border: 1px solid #b2c9f6;
     }
   }
   .one-tool__price{
