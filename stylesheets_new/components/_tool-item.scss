@@ -113,8 +113,9 @@ a.tool-item__link {
   transition: all .2s;
   &:hover{
     text-decoration: none;
-    background-color: #AFCAFF !important;
+    background-color: #afcaff69 !important;
     color: #3F3F3F;
+    border-color: #c4d7fe;
   }
 }
 .tool-item__bottom{
