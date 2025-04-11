@@ -79,6 +79,7 @@ a.gb-button{
     border-radius: 40px;
     background-color: #ffffff;
     color: #1656ea;
+    padding: 12px 30px !important;
     border-color:none !important;
     text-decoration: none;
 }
