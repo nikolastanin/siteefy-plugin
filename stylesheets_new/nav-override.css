@@ -89,6 +89,9 @@ a.gb-button:hover{
 
 .gb-button:nth-of-type(2) {
     background-color: #ffffff !important;
+    color: inherit !important;
+    box-shadow: none !important;
+    border: none !important;
 }
 
 
