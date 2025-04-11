@@ -94,7 +94,7 @@ a.gb-button:hover{
 }
 
 .gb-headline strong > a{
-    color:#494b67;
+    color:#494b67 !important;
 }
 
 /*AI humanizer page*/
