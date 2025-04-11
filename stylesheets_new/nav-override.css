@@ -87,6 +87,10 @@ a.gb-button:hover{
     transform:scale(1.1);
 }
 
+.gb-button:nth-of-type(2) {
+    background-color: #ffffff !important;
+}
+
 
 /*AI humanizer page*/
 body.page-template-default.page.page-id-59920.logged-in.admin-bar.wp-custom-logo.wp-embed-responsive.post-image-aligned-center.sticky-menu-fade.mobile-header.mobile-header-logo.both-sidebars.nav-float-right.separate-containers.fluid-header.active-footer-widgets-3.header-aligned-left.dropdown-hover.full-width-content.customize-support{
