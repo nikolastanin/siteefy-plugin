@@ -68,8 +68,22 @@ a.gb-button.gb-button-41599730.gb-button-text{
 }
 
 a.gb-button{
-    background-color: #00dafc !important;
+    background-color: #6892FF !important;
     color: #fff !important;
+    transition:all .2s;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 30px;
+    margin-right: 5px;
+    border-radius: 40px;
+    background-color: #ffffff;
+    color: #1656ea;
+    border-color:none !important;
+    text-decoration: none;
+}
+a.gb-button:hover{
+    transform:scale(1.1);
 }
 
 
