@@ -193,9 +193,8 @@ function get_tools_by_solution_id($solution_id) {
 
 
 function get_solution_name_by_tool_id($tool_id, $shorten=false){
-    $solution_id = get_solutions_for_tool($tool_id);
-    if(array_key_exists(0, $solution_id)){
-        $solution = get_term($solution_id[0]);
+    $solution_id = get_primary_solution_for_tool($tool_id);
+        $solution = get_term($solution_id);
         if($solution){
             $name = $solution->name;
             if ($shorten && strlen($name) >= 50) {
@@ -203,14 +202,34 @@ function get_solution_name_by_tool_id($tool_id, $shorten=false){
             }
             return $name;
         }
-    }
     return '';
 }
 
 function get_solution_link_by_tool_id($tool_id){
-    $solution_id = get_solutions_for_tool($tool_id);
-    if(array_key_exists(0, $solution_id)){
-        $solution = get_term($solution_id[0]);
-       return get_term_link($solution);
+    $solution_id = get_primary_solution_for_tool($tool_id);
+    $solution = get_term($solution_id);
+   return get_term_link($solution);
+}
+
+
+function get_primary_solution_for_tool($tool_id) {
+    // Check if Yoast SEO's primary term class exists
+    if (class_exists('WPSEO_Primary_Term')) {
+        $primary_term = new WPSEO_Primary_Term('solution', $tool_id);
+        $primary_term_id = $primary_term->get_primary_term();
+
+        // If a primary term is set, return it
+        if (!is_wp_error($primary_term_id) && $primary_term_id) {
+            return (int) $primary_term_id;
+        }
     }
+
+    // Fallback: return first term ID if no primary is set
+    $terms = wp_get_post_terms($tool_id, 'solution', array('fields' => 'ids'));
+    if (!empty($terms) && !is_wp_error($terms)) {
+        return (int) $terms[0];
+    }
+
+    // Return null if nothing is found
+    return null;
 }
