@@ -195,7 +195,7 @@ function get_tools_by_solution_id($solution_id) {
 function get_solution_name_by_tool_id($tool_id, $shorten=false){
     $solution_id = get_primary_solution_for_tool($tool_id);
         $solution = get_term($solution_id);
-        if($solution){
+        if($solution && !is_wp_error($solution)){
             $name = $solution->name;
             if ($shorten && strlen($name) >= 50) {
                 return substr($name, 0, 50) . "...";
@@ -208,7 +208,11 @@ function get_solution_name_by_tool_id($tool_id, $shorten=false){
 function get_solution_link_by_tool_id($tool_id){
     $solution_id = get_primary_solution_for_tool($tool_id);
     $solution = get_term($solution_id);
-   return get_term_link($solution);
+    if(!is_wp_error($solution)){
+        return get_term_link($solution);
+    }else{
+        return '';
+    }
 }
 
 
