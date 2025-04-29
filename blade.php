@@ -14,8 +14,10 @@ class Siteefy {
         if (self::$blade === null) {
             $views = __DIR__ . '/templates/blade';  // Template files
             $cache = __DIR__ . '/cache';      // Cache folder
-            if(Siteefy::get_env()==='prod' || Siteefy::get_env() ==='stg'){
+            if(Siteefy::get_env()==='prod' ){
                 self::$blade = new BladeOne($views, $cache, BladeOne::MODE_FAST);
+            }elseif(Siteefy::get_env() ==='stg'){
+                self::$blade = new BladeOne($views, $cache, BladeOne::MODE_DEBUG);
             }else{
                 self::$blade = new BladeOne($views, $cache, BladeOne::MODE_DEBUG);
             }
