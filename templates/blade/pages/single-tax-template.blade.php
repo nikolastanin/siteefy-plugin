@@ -26,50 +26,7 @@
                 <div class="row-headline">
                     Most recommended:
                 </div>
-                <div class="row-top-tool">
-                    <div class="tab-tool full">
-                        <div class="tab-tool__inner">
-                            <div class="tab-tool__top">
-                                <img class="tab-tool__image" src="{{siteefy_get_field('tool_image',$tool_of_the_week->ID)}}" alt="tool image">
-                                <div class="tab-tool__heading">
-                                    {{siteefy_get_field('tool_name',$tool_of_the_week->ID)}}
-                                </div>
-                                <img width="18px" height="18px" src="{{ get_siteefy_home_url() . '/wp-content/plugins/siteefy/assets/verified-icon.png'}}" alt="Verified">
-                            </div>
-                            <div class="tab-tool__description">
-                                {{siteefy_get_field('tool_description', $tool_of_the_week->ID)}}
-                            </div>
-                            <div class="tab-tool__rating">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="12" viewBox="0 0 11 12" fill="none">
-                                    <path d="M2.86 6.40777V11.0886H8.58V6.40777H11L5.5 0.088623L0 6.40777H2.86Z" fill="#029D24"></path>
-                                </svg>
-                                {{siteefy_get_field('tool_rating', $tool_of_the_week->ID)}}
-                            </div>
-                        </div>
-                        <div class="tab-tool__inner-mobile">
-                            <img class="tab-tool__image" src="{{siteefy_get_field('tool_image',$tool_of_the_week->ID)}}" alt="tool image">
-                            <div class="tab-tool__right">
-                                <div class="tab-tool__right-top">
-                                    <div class="tab-tool__heading">
-                                        {{siteefy_get_field('tool_name',$tool_of_the_week->ID)}}
-                                    </div>
-                                    <img width="18px" height="18px" src="{{ get_siteefy_home_url() . '/wp-content/plugins/siteefy/assets/verified-icon.png'}}" alt="Verified">
-                                    <div class="tab-tool__rating">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="11" height="12" viewBox="0 0 11 12" fill="none">
-                                            <path d="M2.86 6.40777V11.0886H8.58V6.40777H11L5.5 0.088623L0 6.40777H2.86Z" fill="#029D24"></path>
-                                        </svg>
-                                        {{siteefy_get_field('tool_rating', $tool_of_the_week->ID)}}
-                                    </div>
-                                </div>
-                                <div class="tab-tool__description">
-                                    {{siteefy_get_field('tool_description', $tool_of_the_week->ID)}}
-                                </div>
-                            </div>
-                        </div>
-
-                        <a class="tool-item__link" href="{{siteefy_get_field('tool_review_link', $tool_of_the_week->ID)}}"></a>
-                    </div>
-                </div>
+                @include('components.featured-tool')
             </div>
             <div class="main">
                 <div class="breadcrumbs-and-results">

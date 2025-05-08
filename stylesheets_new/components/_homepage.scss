@@ -266,43 +266,10 @@ section:not(.categories-homepage){
     gap: 7px;
     height: 100% !important;
     justify-content: space-between;
-    @include responsive(xs){
-      display: none;
-    }
   }
 }
 
 
-.tab-tool__inner-mobile{
-  display: none;
-  @include responsive(xs){
-    display: flex;
-  }
-  img.tab-tool__image{
-    width: 90px !important;
-    height: 90px !important;
-    flex-shrink: 0;
-    margin-right: 18px;
-  }
-
-  .tab-tool__right {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-  .tab-tool__right-top {
-    display: flex;
-    align-items: center;
-    //justify-content: space-between;
-    width: 100%;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  .tab-tool__description {
-    text-align: left !important;
-  }
-}
 
 .rounded-tab{
   display: flex;
@@ -665,6 +632,7 @@ section.tool-of-the-week{
     align-items: center;
     height: 28px;
     min-width: 150px;
+    padding: 0 8px;
     flex-shrink: 0;
     border-radius: 5px;
     border: 1px solid #E1EBFF;
