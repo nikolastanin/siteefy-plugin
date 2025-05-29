@@ -1,7 +1,7 @@
 body{
   overflow-x: hidden;
 }
-section:not(.categories-homepage){
+section:not(.newly-discovered-tools-section){
   margin: 60px 0;
 }
 .body-line-icon{
@@ -25,9 +25,10 @@ section:not(.categories-homepage){
     display: block;
   }
 }
-.categories-homepage{
+.newly-discovered-tools-section{
   position: relative;
   z-index: 2;
+  background-color: rgb(238, 244, 255);
   //top: -500px;
   @include responsive(xs){
 
@@ -76,7 +77,11 @@ section:not(.categories-homepage){
 
 }
 
-
+.category-of-tools-section{
+  h2{
+    text-align: center;
+  }
+}
 .category-of-tools__container{
   display: flex;
   flex-wrap: wrap;
