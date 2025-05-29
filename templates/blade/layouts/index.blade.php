@@ -11,7 +11,7 @@
     {{wp_enqueue_style('main-siteefy-style-new')}}
     <?php wp_head();?>
 </head>
-<body>
+<body {{ body_class() }}>
 @include('nav')
 <div class="content">
     @yield('content')

@@ -10,7 +10,7 @@ section:not(.categories-homepage){
   top: 750px;
   left: 5%;
   z-index: -1;
-  @include responsive(xs){
+  @include responsive(md){
     display: none;
   }
 }
@@ -21,7 +21,7 @@ section:not(.categories-homepage){
   //left: 5%;
   z-index: -1;
   display: none;
-  @include responsive(xs){
+  @include responsive(md){
     display: block;
   }
 }
@@ -67,6 +67,7 @@ section:not(.categories-homepage){
   .container:first-of-type{
     z-index: 5;
     position: relative;
+    background-color: #EEF4FF;
   }
   h2{
     text-align: center;
@@ -129,8 +130,8 @@ section:not(.categories-homepage){
 }
 
 .tabs-switcher__container > :nth-child(n+4) {
-  @include responsive(xs){
-    display: none;
+  @include responsive(md){
+    display: none !important;
   }
 }
 
@@ -362,7 +363,6 @@ section:not(.categories-homepage){
 }
 //tool of the week
 section.tool-of-the-week{
-  margin-top: 160px;
   .subtitle{
     margin-bottom: 20px;
   }
@@ -381,6 +381,10 @@ section.tool-of-the-week{
   height: 347px;
   margin: 40px auto;
   max-width: 90%;
+  @include responsive(md){
+    max-width: 100% !important;
+    margin:0 !important;
+  }
   overflow: hidden;
   filter: drop-shadow(0px 3px 9.5px rgba(0, 67, 243, 0.41));
   border-radius: 5px;
@@ -492,7 +496,9 @@ section.tool-of-the-week{
 //build a website section.
 
 .listing-section{
-  padding: 40px 0;
+  &.solutions{
+    padding: 40px 0;
+  }
    h2 {
     text-align: center;
      margin: 0;
@@ -626,6 +632,8 @@ section.tool-of-the-week{
 .one-tool__tags{
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
   .one-tool__task{
     display: flex;
     justify-content: center;

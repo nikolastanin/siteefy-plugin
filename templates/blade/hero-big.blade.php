@@ -1,4 +1,9 @@
 <div id="hero">
+    <div id="hero-bottom">
+        <svg viewBox="0 0 1440 349" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <path d="M1011 136.986C1091.5 67.916 1082.5 68.4864 1151 136.986C1219.5 205.486 1267.5 306.986 1441 35.9862V348.5H713.5H-0.500005V185.13C-0.516198 185.059 -0.500005 184.986 -0.500005 184.986V185.13C-0.295793 186.02 5.05914 186.548 113 35.9862C181.466 -59.5138 173.23 50.5731 684 184.986C882.5 237.223 884 245.954 1011 136.986Z" fill="#EEF4FF"></path>
+        </svg>
+    </div>
     <div class="hero-container container">
         <div class="hero-inner">
             <div class="highlighted-text">

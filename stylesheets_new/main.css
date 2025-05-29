@@ -562,11 +562,17 @@ hr {
   }
 }
 #hero.hero-small {
-  height: 505px;
+  height: 430px;
 }
 #hero.hero-small .hero-inner {
   margin-top: 64px;
   padding: 64px 0;
+}
+#hero #hero-bottom {
+  position: absolute;
+  bottom: -10px;
+  width: 100%;
+  z-index: 5;
 }
 
 .hero-container {
@@ -627,7 +633,7 @@ hr {
   top: 0;
   width: 100%;
   height: 100%;
-  opacity: 0.8;
+  opacity: 0.5;
 }
 @media (max-width: 992px) {
   .hero-icons {
@@ -695,7 +701,7 @@ section:not(.categories-homepage) {
   left: 5%;
   z-index: -1;
 }
-@media (max-width: 480px) {
+@media (max-width: 992px) {
   .body-line-icon {
     display: none;
   }
@@ -708,7 +714,7 @@ section:not(.categories-homepage) {
   z-index: -1;
   display: none;
 }
-@media (max-width: 480px) {
+@media (max-width: 992px) {
   .body-line-icon-mobile {
     display: block;
   }
@@ -757,6 +763,7 @@ section:not(.categories-homepage) {
 .categories-homepage .container:first-of-type {
   z-index: 5;
   position: relative;
+  background-color: #EEF4FF;
 }
 .categories-homepage h2 {
   text-align: center;
@@ -826,9 +833,9 @@ section:not(.categories-homepage) {
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 992px) {
   .tabs-switcher__container > :nth-child(n+4) {
-    display: none;
+    display: none !important;
   }
 }
 
@@ -1068,9 +1075,6 @@ section:not(.categories-homepage) {
   margin-top: 30px;
 }
 
-section.tool-of-the-week {
-  margin-top: 160px;
-}
 section.tool-of-the-week .subtitle {
   margin-bottom: 20px;
 }
@@ -1095,6 +1099,12 @@ section.tool-of-the-week .subtitle {
   border-radius: 5px;
   background: #EEF4FF;
   box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
+}
+@media (max-width: 992px) {
+  .tool-of-the-week-item {
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
 }
 .tool-of-the-week-item img.tool-of-the-week__image {
   width: 50%;
@@ -1205,7 +1215,7 @@ section.tool-of-the-week .subtitle {
   color: #6892FF !important;
 }
 
-.listing-section {
+.listing-section.solutions {
   padding: 40px 0;
 }
 .listing-section h2 {
@@ -1350,6 +1360,8 @@ section.tool-of-the-week .subtitle {
 .one-tool__tags {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 .one-tool__tags .one-tool__task {
   display: flex;
@@ -1911,7 +1923,13 @@ section.page-content .main {
   border-radius: 5px;
   border: 0.5px solid #E1EBFF;
   background: #FAFAFA;
+  text-align: center;
   transition: all 0.2s;
+}
+@media (max-width: 480px) {
+  .list-item a {
+    padding: 8px 12px;
+  }
 }
 .list-item a:hover {
   box-shadow: 0px 1px 4px 0px rgba(255, 207, 16, 0.43);
@@ -2032,9 +2050,10 @@ section.page-content .main {
   line-height: normal;
 }
 
-.site-footer {
+.home .site-footer {
   margin-top: 120px;
 }
+
 .site-footer a {
   font-family: "Montserrat";
   font-weight: 500;
