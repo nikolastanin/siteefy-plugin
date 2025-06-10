@@ -1,9 +1,10 @@
 <div class="row-top-tool">
     <div class="tab-tool full">
+        <div class="tag">
+            🔥 Tool of the Week </div>
         <div class="tab-tool__inner">
 {{--            <div class="featured-tool__title">Tool of the Week</div>--}}
-            <div class="tag">
-                🔥 Tool of the Week </div>
+
             <img class="tab-tool__image" src="{{siteefy_get_field('tool_image',$tool_of_the_week->ID)}}" alt="tool image">
             <div class="tab-tool__top">
                 <div class="tab-tool__heading">

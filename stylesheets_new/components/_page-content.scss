@@ -6,7 +6,7 @@ section.page-content {
   background-color: #EEF4FF;
   .container{
     display: flex;
-    gap: 113px;
+    gap: 60px;
     margin-top: 35px;
     @include responsive(md){
       flex-direction: column-reverse;
