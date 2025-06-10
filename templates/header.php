@@ -293,7 +293,7 @@
 <section class="tool-of-the-week">
     <div class="container">
         <h2 class="tool-of-the-week__heading">
-            Tool of the Week:
+            Most recommended:
         </h2>
         <div class="tool-of-the-week-item">
             <img class="tool-of-the-week__image" src="https://wordpress-1021474-4844794.cloudwaysapps.com/wp-content/uploads/2024/07/Yuzzit-homepage.png" alt="tool of the week image">
