@@ -680,7 +680,7 @@ section:not(.newly-discovered-tools-section) {
   /* position: absolute; */
   background: rgb(104, 146, 255);
   top: 15px;
-  width: 150px;
+  width: auto;
   left: 15px;
 }
 
