@@ -19,7 +19,9 @@
 'layout/footer';
 
 // 5. Components
-@import 'components/homepage';
+@import 'components/homepage',
+  'components/tool-item',
+'components/reusable';
 //'components/button',
 //'components/hero',
 //'components/search',
