@@ -307,6 +307,179 @@ template {
   display: none;
 }
 
+/**
+ * Set up a decent box model on the root element
+ */
+html {
+  box-sizing: border-box;
+}
+
+/**
+ * Make all elements from the DOM inherit from the parent box-sizing
+ * Since `*` has a specificity of 0, it does not override the `html` value
+ * making all elements inheriting from the root box-sizing value
+ * See: https://css-tricks.com/inheriting-box-sizing-probably-slightly-better-best-practice/
+ */
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+/**
+ * Basic styles for links
+ */
+a {
+  color: rgb(229, 0, 80);
+  text-decoration: none;
+}
+a:hover, a:active, a:focus, a:focus-within {
+  color: #494B67;
+  text-decoration: underline;
+}
+
+/**
+ * Basic typography style for copy text
+ */
+body {
+  color: #494B67 !important;
+  font: normal 16px/1.4 "Montserrat", "Helvetica Neue Light", "Helvetica Neue", "Helvetica", "Arial", sans-serif !important;
+}
+
+h1 {
+  font-size: 3.5em;
+}
+@media (max-width: 480px) {
+  h1 {
+    font-size: 2.125em;
+  }
+}
+
+h2 {
+  font-size: 2.375em;
+}
+@media (max-width: 480px) {
+  h2 {
+    font-size: 1.75em;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: Montserrat, Helvetica, sans-serif !important;
+  font-weight: 700 !important;
+}
+
+.highlight {
+  position: relative;
+  z-index: 1;
+}
+.highlight::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 5px;
+  width: 100%;
+  z-index: -1;
+  height: 13px;
+  z-index: -1;
+  background-color: #FFD900;
+}
+
+.subtitle {
+  color: #3F3F3F;
+  font-family: Inter;
+  font-size: 14px;
+  font-style: normal;
+  line-height: normal;
+  text-align: center;
+  max-width: 425px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+hr {
+  border-color: #AFD9FF;
+  opacity: 0.2;
+}
+
+.view-more__link {
+  display: flex;
+  width: 134px;
+  height: 47.021px;
+  flex-direction: column;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: auto;
+  color: #6892FF;
+  font-weight: 600;
+  flex-shrink: 0;
+  text-align: center;
+  font-family: Inter;
+  font-size: 14px;
+  font-style: normal;
+  line-height: normal;
+  margin-top: 20px;
+}
+.view-more__link:hover {
+  text-decoration: none;
+  color: #6892FF;
+}
+
+/**
+ * Clear inner floats
+ */
+.clearfix::after {
+  clear: both;
+  content: "";
+  display: table;
+}
+
+/**
+ * Main content containers
+ * 1. Make the container full-width with a maximum width
+ * 2. Center it in the viewport
+ * 3. Leave some space on the edges, especially valuable on small screens
+ */
+.container {
+  max-width: 1000px; /* 1 */
+  margin-left: auto; /* 2 */
+  margin-right: auto; /* 2 */
+  width: 100%; /* 1 */
+}
+@media (max-width: 992px) {
+  .container {
+    padding: 0 20px;
+  }
+}
+
+/**
+ * Hide text while making it readable for screen readers
+ * 1. Needed in WebKit-based browsers because of an implementation bug;
+ *    See: https://code.google.com/p/chromium/issues/detail?id=457146
+ */
+.hide-text {
+  overflow: hidden;
+  padding: 0; /* 1 */
+  text-indent: 101%;
+  white-space: nowrap;
+}
+
+/**
+ * Hide element while making it readable for screen readers
+ * Shamelessly borrowed from HTML5Boilerplate:
+ * https://github.com/h5bp/html5-boilerplate/blob/master/src/css/main.css#L119-L133
+ */
+.visually-hidden {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
 .gb-container-ddd840a8 {
   margin-top: 0 !important;
 }
