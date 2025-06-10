@@ -147,6 +147,14 @@ add_shortcode('tool-of-the-week', function(){
     ]);
 });
 
+add_shortcode('featured-tool', function() {
+    $tool_of_the_week = get_selected_tool_of_the_week();
+    return Siteefy::blade()->run('components.featured-tool', [
+        'tool_of_the_week' =>$tool_of_the_week,
+    ]);
+});
+
+
 add_shortcode('tools-by-top-tasks', function(){
     $tasks = get_all_tasks(5);
     $tools_collection = array();
