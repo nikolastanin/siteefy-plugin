@@ -87,6 +87,7 @@ function siteefy_register_scripts(){
 
     wp_register_style('main-siteefy-style-new', plugins_url( '/stylesheets_new/main.css' , __FILE__ ), [], $version_of_plugin);
     wp_register_style('main-siteefy-nav-override', plugins_url( '/stylesheets_new/nav-override.css' , __FILE__ ), [], $version_of_plugin);
+    wp_register_style('main-siteefy-reusable', plugins_url( '/stylesheets_new/reusable.css' , __FILE__ ), [], $version_of_plugin);
     $search_term = array_key_exists('s', $_GET)?  $_GET['s']: '';
     echo('<script>let searchTermOld = "' . htmlspecialchars($search_term, ENT_QUOTES, 'UTF-8') . '";</script>');
 }
@@ -132,6 +133,8 @@ function dequeue_generatepress_styles() {
         wp_dequeue_style('generatepress-child');
         wp_deregister_style('generatepress-child');
     }else{
+        //this is styles that are new, but used on old pages(componenet from homepage, used on ai-tools/tool-xyz
+        wp_enqueue_style('main-siteefy-reusable');
         wp_enqueue_style('main-siteefy-nav-override');
     }
 }

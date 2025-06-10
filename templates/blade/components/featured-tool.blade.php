@@ -1,4 +1,4 @@
-<div class="row-top-tool featurednidzo">
+<div class="row-top-tool">
     <div class="tab-tool full">
         <div class="tab-tool__inner">
             <div class="tab-tool__top">
