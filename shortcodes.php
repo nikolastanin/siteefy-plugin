@@ -151,7 +151,7 @@ add_shortcode('featured-tool', function() {
     $tool_of_the_week = get_selected_tool_of_the_week();
     return Siteefy::blade()->run('components.featured-tool', [
         'tool_of_the_week' =>$tool_of_the_week,
-        'no_margin'=>true,
+        'margin'=>true,
     ]);
 });
 
