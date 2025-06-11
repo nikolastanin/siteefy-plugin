@@ -930,7 +930,7 @@ section:not(.newly-discovered-tools-section) {
 }
 .tab-tool.full {
   margin: 20px 0;
-  width: 100%;
+  width: 98%;
 }
 .tab-tool .tab-tool__top {
   display: flex;
@@ -957,8 +957,6 @@ section:not(.newly-discovered-tools-section) {
   left: calc(50% - 90px);
   width: 180px;
   box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
-  --angle: 45deg;
-  background: linear-gradient(var(--angle), oklab(69% 0.101 0.126), oklab(70.3% 0.155 0.031));
 }
 .tab-tool img.tab-tool__image {
   border-radius: 5px;
