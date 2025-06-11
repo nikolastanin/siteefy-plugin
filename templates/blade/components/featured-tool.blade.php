@@ -1,5 +1,5 @@
 <div class="row-top-tool">
-    <div class="tab-tool full">
+    <div class="tab-tool full {{ !isset($margin) && !$margin ? 'margin' : '' }}">
         <div class="tag">
             🔥 Tool of the Week </div>
         <div class="tab-tool__inner">
