@@ -1307,4 +1307,10 @@ span.line {
   top: -15px;
 }
 
+container.gb-container-bfdd51a6 > .gb-inside-container {
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0px;
+}
+
 /*# sourceMappingURL=reusable.css.map */
