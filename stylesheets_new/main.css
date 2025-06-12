@@ -970,7 +970,7 @@ section:not(.newly-discovered-tools-section) {
 .tab-tool .tab-tool__heading {
   color: #303030;
   font-family: Inter;
-  font-size: 14px;
+  font-size: 16px;
   font-style: normal;
   font-weight: 600;
   text-transform: capitalize;
