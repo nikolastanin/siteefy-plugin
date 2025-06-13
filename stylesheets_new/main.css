@@ -331,7 +331,6 @@ html {
  * Basic styles for links
  */
 a {
-  color: rgb(229, 0, 80);
   text-decoration: none;
 }
 a:hover, a:active, a:focus, a:focus-within {
