@@ -566,8 +566,8 @@ function get_count_of_items_for_yoast() {
     }
     // Category page (tasks page)
     elseif (is_page() && strtolower(get_the_title()) === CATEGORY_PAGE_SLUG) {
-        $tasks = get_all_tasks();
-        return count($tasks);
+        $counted = get_all_categories();
+        return count($counted);
     }
     // Category archive
     elseif (is_archive() && get_queried_object()->taxonomy === 'category') {
