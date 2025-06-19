@@ -29,6 +29,7 @@ require_once  WP_PLUGIN_DIR . '/siteefy/functions.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/ajax.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/shortcodes.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/validation.php';
+require_once  WP_PLUGIN_DIR . '/siteefy/yoast.php';
 
 
 // Exit if accessed directly
