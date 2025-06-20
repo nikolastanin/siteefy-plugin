@@ -2,6 +2,18 @@
 //todo:done
 
 function get_all_solutions($limit = -1, $exclude_term = '', $order='DESC') {
+    // Create cache key based on parameters
+    $cache_key = 'siteefy_all_solutions_' . $limit . '_' . $exclude_term . '_' . $order;
+
+    // Check if caching is enabled
+    $use_cache = get_siteefy_settings('use_cache');
+    if ($use_cache) {
+        $data = get_transient($cache_key);
+        if ($data !== false) {
+            return $data;
+        }
+    }
+
     if ($limit === -1) {
         $limit = 0;
     }
@@ -11,7 +23,7 @@ function get_all_solutions($limit = -1, $exclude_term = '', $order='DESC') {
         'hide_empty' => false,
         'number'     => $limit,
         'orderby'    => 'id',
-        'order'      => 'DESC', // Newest first
+        'order'      => $order,
     ));
 
     if (!is_wp_error($terms) && !empty($terms)) {
@@ -23,12 +35,22 @@ function get_all_solutions($limit = -1, $exclude_term = '', $order='DESC') {
             // Reset array keys
             $terms = array_values($terms);
         }
+
+        // Cache the results for 24 hours if caching is enabled
+        if ($use_cache) {
+            set_transient($cache_key, $terms, 86400);
+        }
+
         return $terms;
+    }
+
+    // Cache empty results too
+    if ($use_cache) {
+        set_transient($cache_key, array(), 86400);
     }
 
     return array();
 }
-
 
 function get_count_of_tools_for_single_solution($solution_id) {
     $query = new WP_Query(array(
@@ -92,6 +114,7 @@ function get_solutions_for_task($task_id){
     }
     return array(); // Return an empty array if no terms are found
 }
+
 
 
 //todo:check if it works

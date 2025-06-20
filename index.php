@@ -519,17 +519,16 @@ function siteefy_add_custom_templates($template) {
     global $count_of_items;
     $count_of_items = 0;
 
-
-    $tools = get_tools_by_search_term();
-    $tool_of_the_week = get_selected_tool_of_the_week();
-    $related_items = get_all_categories(5);
-    $count_of_items = count($tools);
     if (is_search()) {
+        $tools = get_tools_by_search_term();
+        $tool_of_the_week = get_selected_tool_of_the_week();
+        $related_items = get_all_categories(5);
+        $count_of_items = count($tools);
         echo Siteefy::blade()->run('pages.search-template', [
             'page_title'=>'Search result',
             'page_subtitle' =>'Check out what we have for You!',
             'archive_title'=>$_GET['s'],
-            'items'=>get_tools_by_search_term(),
+            'items'=>$tools,
             'term_name'=>'tools',
             'count' => $count_of_items,
             'archive_title'=>$_GET['s'],
@@ -542,6 +541,7 @@ function siteefy_add_custom_templates($template) {
     }elseif(is_single() && get_post_type($post) === 'task'){
         $tools = get_tools_by_task_id($post->ID);
         $tasks = get_all_tasks(5, $post->post_name);
+        $tool_of_the_week = get_selected_tool_of_the_week();
         $count_of_items = count($tools);
         echo Siteefy::blade()->run('pages.single-cpt-template', [
             'page_title'=>ucfirst($post->post_title),
@@ -581,6 +581,7 @@ function siteefy_add_custom_templates($template) {
         $taxonomy = $term->taxonomy;
         $solutions = get_all_solutions(5, $term->slug);
         $tools = get_cpt_posts_by_tax('tool', $taxonomy,$term->term_id);
+        $tool_of_the_week = get_selected_tool_of_the_week();
         $count_of_items = count($tools);
         echo Siteefy::blade()->run('pages.single-tax-template', [
             'page_title'=>ucfirst($term->name),
@@ -643,6 +644,7 @@ function siteefy_add_custom_templates($template) {
         $taxonomy = $term->taxonomy;
         $categories = get_all_categories(5, $term->slug);
         $tools = get_cpt_posts_by_tax('tool', $taxonomy,$term->term_id);
+        $tool_of_the_week = get_selected_tool_of_the_week();
         $count_of_items = count($tools);
         echo Siteefy::blade()->run('pages.single-tax-template', [
             'page_title'=>ucfirst($term->name),

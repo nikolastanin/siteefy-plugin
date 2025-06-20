@@ -157,6 +157,23 @@ function get_tools_by_search_term(){
     // Normalize search term by converting to lowercase and replacing underscores, hyphens, and spaces
     $search_term_normalized = strtolower(str_replace(array(' ', '_', '-'), '', $search_term));
 
+    // If search term is empty after normalization, return empty array
+    if (empty($search_term_normalized)) {
+        return array();
+    }
+
+    // Create cache key based on normalized search term
+    $cache_key = 'siteefy_search_tools_' . $search_term_normalized;
+    
+    // Check if caching is enabled
+    $use_cache = get_siteefy_settings('use_cache');
+    if ($use_cache) {
+        $data = get_transient($cache_key);
+        if ($data !== false) {
+            return $data;
+        }
+    }
+
     // Get all tools
     $all_tools = get_posts(array(
         'post_type' => 'tool',
@@ -228,6 +245,12 @@ function get_tools_by_search_term(){
             //            $filtered_tools[] = $single_tool;
         }
     }
+    
+    // Cache the results for 24 hours if caching is enabled
+    if ($use_cache) {
+        set_transient($cache_key, $filtered_tools, 86400);
+    }
+    
     return $filtered_tools;
 }
 
@@ -328,91 +351,104 @@ function get_cpt_posts_by_tax($cpt='',$tax, $category_id, $limit=-1){
 function get_tools_and_tasks_by_search_term($search_term) {
     // Normalize search term by converting to lowercase and removing underscores, hyphens, and spaces
     $search_term_normalized = strtolower(str_replace([' ', '_', '-'], '', $search_term));
-    $cache_key = $search_term_normalized . '--cache';
-    $use_cache = get_siteefy_settings('use_cache');
-    if($use_cache){
-        $data = get_transient($cache_key);
-    }else{
-        $data = false;
-    }
-    if (!$data) {
-        // Get all tools and tasks
-        $all_tools = get_posts(['post_type' => 'tool', 'posts_per_page' => -1]);
-        $all_tasks = get_posts(['post_type' => 'task', 'posts_per_page' => -1]);
-
-        $tasks_per_tool = [];
-        $filtered_tools = [];
-        $filtered_tasks = [];
-
-        // Filter tasks based on the search term
-        foreach ($all_tasks as $task) {
-            $task_title_normalized = strtolower(str_replace([' ', '_', '-'], '', $task->post_title));
-
-            // Check if the search term matches in the normalized task title
-            if (strpos($task_title_normalized, $search_term_normalized) !== false) {
-                $filtered_tasks[] = $task;
-            }
-        }
-
-
-        // Filter tools based on title, assigned tasks, or categories
-        foreach ($all_tools as $single_tool) {
-            $post_id = $single_tool->ID;
-            $selected_tasks_ids_for_post = get_tasks_for_tool_from_its_solution($post_id);
-            // Retrieve and format assigned tasks for the tool
-            if (!empty($selected_tasks_ids_for_post)) {
-                $selected_tasks = [];
-                foreach ($selected_tasks_ids_for_post as $task_id) {
-                    $task = get_post($task_id);
-                    $selected_tasks[] = $task->post_title;
-                }
-                $tasks_per_tool[$post_id] = implode(',', $selected_tasks);
-            }
-
-            // Normalize the tool title
-            $post_title_normalized = strtolower(str_replace([' ', '_', '-'], '', $single_tool->post_title));
-
-            // Check if the search term matches the tool title
-            if (strpos($post_title_normalized, $search_term_normalized) !== false) {
-                $filtered_tools[] = $single_tool;
-                continue;
-            }
-
-
-    //        todo: this causes duplicated tools so i commented it out, but maybe it needs to be here?
-            // Check if the search term matches in the assigned tasks for the tool
-            if (!empty($tasks_per_tool[$post_id]) && strpos(strtolower(str_replace([' ', '_', '-'], '', $tasks_per_tool[$post_id])), $search_term_normalized) !== false) {
-//                $filtered_tools[] = $single_tool;
-            }
-
-            // Retrieve the assigned solution for the tool
-            //        todo:get term id by post id by tax = solution
-            $assigned_solution = get_solutions_for_tool($post_id);
-            // Loop through each assigned solution
-            foreach ($assigned_solution as $solution) {
-                $solution_post = get_term($solution);
-//                var_dump($solution_post->name);
-                if ($solution_post && !empty($solution_post)) {
-                    $solution_name_normalized = strtolower(str_replace([' ', '_', '-'], '', $solution_post->name));
-
-                    // Check if the search term matches the category name
-                    if (strpos($solution_name_normalized, $search_term_normalized) !== false) {
-                        $filtered_tools[] = $single_tool;
-                        break; // Exit the loop as we found a match
-                    }
-                }
-            }
-        }
-
-        // Prepare the data to cache
-        $data = [
-
-            'filtered_tools' => $filtered_tools,
-            'filtered_tasks' => $filtered_tasks,
+    
+    // If search term is empty after normalization, return empty results
+    if (empty($search_term_normalized)) {
+        return [
+            'filtered_tools' => [],
+            'filtered_tasks' => [],
         ];
+    }
+    
+    // Create cache key based on normalized search term
+    $cache_key = 'siteefy_tools_tasks_search_' . $search_term_normalized;
+    
+    // Check if caching is enabled
+    $use_cache = get_siteefy_settings('use_cache');
+    if ($use_cache) {
+        $data = get_transient($cache_key);
+        if ($data !== false) {
+            return $data;
+        }
+    }
+    
+    // Get all tools and tasks
+    $all_tools = get_posts(['post_type' => 'tool', 'posts_per_page' => -1]);
+    $all_tasks = get_posts(['post_type' => 'task', 'posts_per_page' => -1]);
 
-        // Cache the results for 1 hour
-        set_transient($cache_key, $data, HOUR_IN_SECONDS);
+    $tasks_per_tool = [];
+    $filtered_tools = [];
+    $filtered_tasks = [];
+
+    // Filter tasks based on the search term
+    foreach ($all_tasks as $task) {
+        $task_title_normalized = strtolower(str_replace([' ', '_', '-'], '', $task->post_title));
+
+        // Check if the search term matches in the normalized task title
+        if (strpos($task_title_normalized, $search_term_normalized) !== false) {
+            $filtered_tasks[] = $task;
+        }
+    }
+
+
+    // Filter tools based on title, assigned tasks, or categories
+    foreach ($all_tools as $single_tool) {
+        $post_id = $single_tool->ID;
+        $selected_tasks_ids_for_post = get_tasks_for_tool_from_its_solution($post_id);
+        // Retrieve and format assigned tasks for the tool
+        if (!empty($selected_tasks_ids_for_post)) {
+            $selected_tasks = [];
+            foreach ($selected_tasks_ids_for_post as $task_id) {
+                $task = get_post($task_id);
+                $selected_tasks[] = $task->post_title;
+            }
+            $tasks_per_tool[$post_id] = implode(',', $selected_tasks);
+        }
+
+        // Normalize the tool title
+        $post_title_normalized = strtolower(str_replace([' ', '_', '-'], '', $single_tool->post_title));
+
+        // Check if the search term matches the tool title
+        if (strpos($post_title_normalized, $search_term_normalized) !== false) {
+            $filtered_tools[] = $single_tool;
+            continue;
+        }
+
+
+//        todo: this causes duplicated tools so i commented it out, but maybe it needs to be here?
+        // Check if the search term matches in the assigned tasks for the tool
+        if (!empty($tasks_per_tool[$post_id]) && strpos(strtolower(str_replace([' ', '_', '-'], '', $tasks_per_tool[$post_id])), $search_term_normalized) !== false) {
+//            $filtered_tools[] = $single_tool;
+        }
+
+        // Retrieve the assigned solution for the tool
+        //        todo:get term id by post id by tax = solution
+        $assigned_solution = get_solutions_for_tool($post_id);
+        // Loop through each assigned solution
+        foreach ($assigned_solution as $solution) {
+            $solution_post = get_term($solution);
+//            var_dump($solution_post->name);
+            if ($solution_post && !empty($solution_post)) {
+                $solution_name_normalized = strtolower(str_replace([' ', '_', '-'], '', $solution_post->name));
+
+                // Check if the search term matches the category name
+                if (strpos($solution_name_normalized, $search_term_normalized) !== false) {
+                    $filtered_tools[] = $single_tool;
+                    break; // Exit the loop as we found a match
+                }
+            }
+        }
+    }
+
+    // Prepare the data to cache
+    $data = [
+        'filtered_tools' => $filtered_tools,
+        'filtered_tasks' => $filtered_tasks,
+    ];
+
+    // Cache the results for 24 hours if caching is enabled
+    if ($use_cache) {
+        set_transient($cache_key, $data, 86400);
     }
 
     return $data;
@@ -421,6 +457,18 @@ function get_tools_and_tasks_by_search_term($search_term) {
 
 
 function get_all_tasks($count = -1, $exclude_slug = '') {
+    // Create cache key based on parameters
+    $cache_key = 'siteefy_all_tasks_' . $count . '_' . $exclude_slug;
+    
+    // Check if caching is enabled
+    $use_cache = get_siteefy_settings('use_cache');
+    if ($use_cache) {
+        $data = get_transient($cache_key);
+        if ($data !== false) {
+            return $data;
+        }
+    }
+    
     $args = array(
         'post_type'      => 'task',
         'numberposts'    => $count,
@@ -429,10 +477,28 @@ function get_all_tasks($count = -1, $exclude_slug = '') {
     );
 
     $tasks = get_posts($args);
+    
+    // Cache the results for 24 hours if caching is enabled
+    if ($use_cache) {
+        set_transient($cache_key, $tasks, 86400);
+    }
+    
     return $tasks;
 }
 
 function get_all_tools($count=-1, $sort='ASC'){
+    // Create cache key based on parameters
+    $cache_key = 'siteefy_all_tools_' . $count . '_' . $sort;
+    
+    // Check if caching is enabled
+    $use_cache = get_siteefy_settings('use_cache');
+    if ($use_cache) {
+        $data = get_transient($cache_key);
+        if ($data !== false) {
+            return $data;
+        }
+    }
+    
     $args=array(
         'post_type'        => 'tool',
         'numberposts'      => $count,
@@ -440,6 +506,12 @@ function get_all_tools($count=-1, $sort='ASC'){
         'order'          => $sort,
     );
     $tools = get_posts($args);
+    
+    // Cache the results for 24 hours if caching is enabled
+    if ($use_cache) {
+        set_transient($cache_key, $tools, 86400);
+    }
+    
     return $tools;
 }
 
@@ -501,6 +573,115 @@ add_action('template_redirect', 'disable_attachment_pages');
 function siteefy_get_search_value(){
     $search_value = isset($_GET['s']) ? $_GET['s'] : '';
     echo $search_value;
+}
+
+
+
+/**
+ * Purge all Siteefy cache when posts or terms are created/updated/deleted
+ */
+function siteefy_purge_cache($post_id = null, $post = null, $update = null) {
+    // Only proceed if this is a relevant post type
+    if ($post && !in_array($post->post_type, ['tool', 'task'])) {
+        return;
+    }
+    
+    // Delete all cached transients that start with 'siteefy_'
+    global $wpdb;
+    
+    // Get all transients that start with 'siteefy_'
+    $transients = $wpdb->get_col(
+        $wpdb->prepare(
+            "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
+            '_transient_siteefy_%'
+        )
+    );
+    
+    // Delete each transient
+    foreach ($transients as $transient) {
+        $transient_name = str_replace('_transient_', '', $transient);
+        delete_transient($transient_name);
+    }
+    
+    // Also purge search cache
+    $search_transients = $wpdb->get_col(
+        $wpdb->prepare(
+            "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
+            '_transient_--cache'
+        )
+    );
+    
+    foreach ($search_transients as $transient) {
+        $transient_name = str_replace('_transient_', '', $transient);
+        delete_transient($transient_name);
+    }
+    
+    // Purge tools by task ID cache
+    $task_tools_transients = $wpdb->get_col(
+        $wpdb->prepare(
+            "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
+            '_transient_tools_by_task_id_%'
+        )
+    );
+    
+    foreach ($task_tools_transients as $transient) {
+        $transient_name = str_replace('_transient_', '', $transient);
+        delete_transient($transient_name);
+    }
+    
+    // Purge search tools cache (get_tools_by_search_term)
+    $search_tools_transients = $wpdb->get_col(
+        $wpdb->prepare(
+            "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
+            '_transient_siteefy_search_tools_%'
+        )
+    );
+    
+    foreach ($search_tools_transients as $transient) {
+        $transient_name = str_replace('_transient_', '', $transient);
+        delete_transient($transient_name);
+    }
+    
+    // Purge tools and tasks search cache (get_tools_and_tasks_by_search_term)
+    $tools_tasks_search_transients = $wpdb->get_col(
+        $wpdb->prepare(
+            "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
+            '_transient_siteefy_tools_tasks_search_%'
+        )
+    );
+    
+    foreach ($tools_tasks_search_transients as $transient) {
+        $transient_name = str_replace('_transient_', '', $transient);
+        delete_transient($transient_name);
+    }
+}
+
+/**
+ * Purge cache when terms are created/updated/deleted
+ */
+function siteefy_purge_cache_on_term_change($term_id, $tt_id, $taxonomy) {
+    // Only proceed if this is a relevant taxonomy
+    if (!in_array($taxonomy, ['solution', 'category'])) {
+        return;
+    }
+    
+    siteefy_purge_cache();
+}
+
+// Hook into WordPress actions to purge cache
+add_action('save_post', 'siteefy_purge_cache', 10, 3);
+add_action('delete_post', 'siteefy_purge_cache', 10, 1);
+add_action('wp_trash_post', 'siteefy_purge_cache', 10, 1);
+add_action('create_term', 'siteefy_purge_cache_on_term_change', 10, 3);
+add_action('edit_term', 'siteefy_purge_cache_on_term_change', 10, 3);
+add_action('delete_term', 'siteefy_purge_cache_on_term_change', 10, 3);
+
+/**
+ * Manual cache purge function (can be called from admin)
+ */
+function siteefy_manual_purge_cache() {
+    siteefy_purge_cache();
+    return true;
 }
 
 
