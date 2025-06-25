@@ -52,7 +52,6 @@ function get_count_of_tools_for_single_category($category_id) {
     return $query->found_posts; // Return the count of matching posts
 }
 
-
 function get_category_for_task($task_id){
     $terms = wp_get_post_terms($task_id, 'category', array('fields' => 'ids'));
 

@@ -30,11 +30,6 @@ function get_siteefy_header(){
 add_action('get_siteefy_header', 'get_siteefy_header');
 
 
-
-
-
-
-
 function get_siteefy_header_small(){
     $data = ['data'=>'header_data_123'];
     require_once WP_PLUGIN_DIR . '/siteefy/templates/header-small.php';
@@ -654,6 +649,37 @@ function siteefy_purge_cache($post_id = null, $post = null, $update = null) {
         $transient_name = str_replace('_transient_', '', $transient);
         delete_transient($transient_name);
     }
+    
+    // Purge WP Rocket cache if the plugin is active
+    if (function_exists('rocket_clean_domain')) {
+        rocket_clean_domain();
+    }
+    
+    // Also purge WP Rocket cache for specific URLs if we have a post ID
+    if ($post_id && function_exists('rocket_clean_post')) {
+        rocket_clean_post($post_id);
+    }
+    
+    // Purge WP Rocket cache for related URLs (homepage, search pages, etc.)
+    if (function_exists('rocket_clean_files')) {
+        // Get the home URL and search URL to purge
+        $home_url = home_url('/');
+        $search_url = home_url('/?s=');
+        
+        // Purge homepage cache
+        rocket_clean_files($home_url);
+        
+        // Purge search page cache (this will clear all search results)
+        rocket_clean_files($search_url);
+        
+        // If we have a specific post, also purge its related pages
+        if ($post_id) {
+            $post_url = get_permalink($post_id);
+            if ($post_url) {
+                rocket_clean_files($post_url);
+            }
+        }
+    }
 }
 
 /**
@@ -681,6 +707,29 @@ add_action('delete_term', 'siteefy_purge_cache_on_term_change', 10, 3);
  */
 function siteefy_manual_purge_cache() {
     siteefy_purge_cache();
+    
+    // Additional WP Rocket cache clearing for manual purge
+    if (function_exists('rocket_clean_domain')) {
+        rocket_clean_domain();
+    }
+    
+    // Clear all WP Rocket cache files
+    if (function_exists('rocket_clean_files')) {
+        // Clear homepage
+        rocket_clean_files(home_url('/'));
+        
+        // Clear search pages
+        rocket_clean_files(home_url('/?s='));
+        
+        // Clear archive pages for tools and tasks
+        rocket_clean_files(home_url('/tool/'));
+        rocket_clean_files(home_url('/task/'));
+        
+        // Clear solution and category archive pages
+        rocket_clean_files(home_url('/solution/'));
+        rocket_clean_files(home_url('/category/'));
+    }
+    
     return true;
 }
 
