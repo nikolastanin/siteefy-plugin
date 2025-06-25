@@ -34,13 +34,7 @@
         </h2>
         <div class="all-tasks__container">
             <ol class="all-tasks__list">
-                <?php
-                $tasks = get_all_tasks();
-                foreach ($tasks as $task){?>
-                    <li class="all-tasks__item">
-                        <a href="<?php echo get_permalink( $task->ID ); ?>"><?php echo ucfirst($task->post_title) . '<span class="all-tasks__item-counter">('. get_count_of_tools_for_single_task($task->ID) . ')</span>'; ?></a>
-                    </li>
-                <?php } ?>
+                
 
             </ol>
 
