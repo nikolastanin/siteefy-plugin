@@ -29,13 +29,11 @@ function get_siteefy_header(){
 }
 add_action('get_siteefy_header', 'get_siteefy_header');
 
-
 function get_siteefy_header_small(){
     $data = ['data'=>'header_data_123'];
     require_once WP_PLUGIN_DIR . '/siteefy/templates/header-small.php';
 }
 add_action('get_siteefy_header_small', 'get_siteefy_header_small');
-
 
 function get_siteefy_footer(){
     $data = ['data'=>'data123'];
@@ -51,9 +49,6 @@ function get_siteefy_search(){
     require_once  WP_PLUGIN_DIR . '/siteefy/templates/search.php';
 }
 add_action('get_siteefy_search', 'get_siteefy_search');
-
-
-
 
 function get_siteefy_nav(){
     wp_enqueue_script('siteefy_main_script');
@@ -113,6 +108,7 @@ function check_if_is_siteefy_new_pages(){
         return false;
     }
 }
+
 function dequeue_generatepress_styles() {
     global $post;
     if (check_if_is_siteefy_new_pages()) {
@@ -135,9 +131,6 @@ function dequeue_generatepress_styles() {
 }
 add_action('wp_enqueue_scripts', 'dequeue_generatepress_styles', 20);
 
-
-
-
 function siteefy_add_google_fonts() {
     echo '<link rel="preconnect" href="https://fonts.googleapis.com">';
     echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>';
@@ -145,6 +138,11 @@ function siteefy_add_google_fonts() {
     echo '<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">';
 }
 add_action('wp_head', 'siteefy_add_google_fonts');
+
+function siteefy_get_search_value(){
+    $search_value = isset($_GET['s']) ? $_GET['s'] : '';
+    echo $search_value;
+}
 
 // on page load search
 function get_tools_by_search_term(){
@@ -216,7 +214,6 @@ function get_tools_by_search_term(){
             }
         }
 
-
         // Retrieve the assigned solution for the tool
 //        todo:get term id by post id by tax = solution
         $assigned_solution = get_solutions_for_tool($post_id);
@@ -283,8 +280,6 @@ function get_tool_description($post_id) {
     return mb_strimwidth(trim(strip_tags($excerpt)), 0, 95, strlen($excerpt) > 95 ? "..." : "");
 }
 
-
-
 function get_tools_by_task_id($task_id) {
     // Validate the task ID
     if (!is_numeric($task_id)) {
@@ -323,9 +318,6 @@ function get_tools_by_task_id($task_id) {
     return $data;
 }
 
-
-
-
 function get_cpt_posts_by_tax($cpt='',$tax, $category_id, $limit=-1){
     $query = new WP_Query(array(
         'post_type'      => $cpt,
@@ -340,7 +332,6 @@ function get_cpt_posts_by_tax($cpt='',$tax, $category_id, $limit=-1){
     ));
     return $query->posts; // Return array of post objects
 }
-
 
 //on ajax search
 function get_tools_and_tasks_by_search_term($search_term) {
@@ -385,7 +376,6 @@ function get_tools_and_tasks_by_search_term($search_term) {
         }
     }
 
-
     // Filter tools based on title, assigned tasks, or categories
     foreach ($all_tools as $single_tool) {
         $post_id = $single_tool->ID;
@@ -408,7 +398,6 @@ function get_tools_and_tasks_by_search_term($search_term) {
             $filtered_tools[] = $single_tool;
             continue;
         }
-
 
 //        todo: this causes duplicated tools so i commented it out, but maybe it needs to be here?
         // Check if the search term matches in the assigned tasks for the tool
@@ -448,8 +437,6 @@ function get_tools_and_tasks_by_search_term($search_term) {
 
     return $data;
 }
-
-
 
 function get_all_tasks($count = -1, $exclude_slug = '') {
     // Create cache key based on parameters
@@ -552,7 +539,6 @@ function get_count_of_tools_for_single_task($task_id_passed){
     return $count;
 }
 
-
 function disable_attachment_pages() {
     if (is_attachment()) {
         global $post;
@@ -562,241 +548,4 @@ function disable_attachment_pages() {
         }
     }
 }
-add_action('template_redirect', 'disable_attachment_pages');
-
-
-function siteefy_get_search_value(){
-    $search_value = isset($_GET['s']) ? $_GET['s'] : '';
-    echo $search_value;
-}
-
-
-
-/**
- * Helper function to get cache with Object Cache Pro support
- */
-function siteefy_get_cache($key) {
-    // Check if Object Cache Pro is active
-    if (function_exists('wp_cache_get')) {
-        return wp_cache_get($key, 'siteefy');
-    }
-    
-    // Fallback to transients
-    return get_transient($key);
-}
-
-/**
- * Helper function to set cache with Object Cache Pro support
- */
-function siteefy_set_cache($key, $data, $expiration = 86400) {
-    // Check if Object Cache Pro is active
-    if (function_exists('wp_cache_set')) {
-        return wp_cache_set($key, $data, 'siteefy', $expiration);
-    }
-    
-    // Fallback to transients
-    return set_transient($key, $data, $expiration);
-}
-
-/**
- * Helper function to delete cache with Object Cache Pro support
- */
-function siteefy_delete_cache($key) {
-    // Check if Object Cache Pro is active
-    if (function_exists('wp_cache_delete')) {
-        return wp_cache_delete($key, 'siteefy');
-    }
-    
-    // Fallback to transients
-    return delete_transient($key);
-}
-
-/**
- * Helper function to flush all Siteefy cache from Object Cache Pro
- */
-function siteefy_flush_cache_group() {
-    // Check if Object Cache Pro is active and supports group flushing
-    if (function_exists('wp_cache_flush_group')) {
-        return wp_cache_flush_group('siteefy');
-    }
-    
-    // Alternative method for Object Cache Pro
-    if (function_exists('wp_cache_flush_runtime')) {
-        return wp_cache_flush_runtime();
-    }
-    
-    return false;
-}
-
-/**
- * Purge all Siteefy cache when posts or terms are created/updated/deleted
- */
-function siteefy_purge_cache($post_id = null, $post = null, $update = null) {
-    // Only proceed if this is a relevant post type
-    if ($post && !in_array($post->post_type, ['tool', 'task'])) {
-        return;
-    }
-    
-    // First, try to flush the entire Siteefy cache group from Object Cache Pro
-    if (siteefy_flush_cache_group()) {
-        // If successful, we don't need to manually delete individual keys
-    } else {
-        // Fallback: Delete all cached transients that start with 'siteefy_'
-        global $wpdb;
-        
-        // Get all transients that start with 'siteefy_'
-        $transients = $wpdb->get_col(
-            $wpdb->prepare(
-                "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
-                '_transient_siteefy_%'
-            )
-        );
-        
-        // Delete each transient
-        foreach ($transients as $transient) {
-            $transient_name = str_replace('_transient_', '', $transient);
-            delete_transient($transient_name);
-        }
-        
-        // Also purge search cache
-        $search_transients = $wpdb->get_col(
-            $wpdb->prepare(
-                "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
-                '_transient_--cache'
-            )
-        );
-        
-        foreach ($search_transients as $transient) {
-            $transient_name = str_replace('_transient_', '', $transient);
-            delete_transient($transient_name);
-        }
-        
-        // Purge tools by task ID cache
-        $task_tools_transients = $wpdb->get_col(
-            $wpdb->prepare(
-                "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
-                '_transient_tools_by_task_id_%'
-            )
-        );
-        
-        foreach ($task_tools_transients as $transient) {
-            $transient_name = str_replace('_transient_', '', $transient);
-            delete_transient($transient_name);
-        }
-        
-        // Purge search tools cache (get_tools_by_search_term)
-        $search_tools_transients = $wpdb->get_col(
-            $wpdb->prepare(
-                "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
-                '_transient_siteefy_search_tools_%'
-            )
-        );
-        
-        foreach ($search_tools_transients as $transient) {
-            $transient_name = str_replace('_transient_', '', $transient);
-            delete_transient($transient_name);
-        }
-        
-        // Purge tools and tasks search cache (get_tools_and_tasks_by_search_term)
-        $tools_tasks_search_transients = $wpdb->get_col(
-            $wpdb->prepare(
-                "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
-                '_transient_siteefy_tools_tasks_search_%'
-            )
-        );
-        
-        foreach ($tools_tasks_search_transients as $transient) {
-            $transient_name = str_replace('_transient_', '', $transient);
-            delete_transient($transient_name);
-        }
-    }
-    
-    // Purge WP Rocket cache if the plugin is active
-    if (function_exists('rocket_clean_domain')) {
-        rocket_clean_domain();
-    }
-    
-    // Also purge WP Rocket cache for specific URLs if we have a post ID
-    if ($post_id && function_exists('rocket_clean_post')) {
-        rocket_clean_post($post_id);
-    }
-    
-    // Purge WP Rocket cache for related URLs (homepage, search pages, etc.)
-    if (function_exists('rocket_clean_files')) {
-        // Get the home URL and search URL to purge
-        $home_url = home_url('/');
-        $search_url = home_url('/?s=');
-        
-        // Purge homepage cache
-        rocket_clean_files($home_url);
-        
-        // Purge search page cache (this will clear all search results)
-        rocket_clean_files($search_url);
-        
-        // If we have a specific post, also purge its related pages
-        if ($post_id) {
-            $post_url = get_permalink($post_id);
-            if ($post_url) {
-                rocket_clean_files($post_url);
-            }
-        }
-    }
-}
-
-/**
- * Purge cache when terms are created/updated/deleted
- */
-function siteefy_purge_cache_on_term_change($term_id, $tt_id, $taxonomy) {
-    // Only proceed if this is a relevant taxonomy
-    if (!in_array($taxonomy, ['solution', 'category'])) {
-        return;
-    }
-    
-    siteefy_purge_cache();
-}
-
-// Hook into WordPress actions to purge cache
-add_action('save_post', 'siteefy_purge_cache', 10, 3);
-add_action('delete_post', 'siteefy_purge_cache', 10, 1);
-add_action('wp_trash_post', 'siteefy_purge_cache', 10, 1);
-add_action('create_term', 'siteefy_purge_cache_on_term_change', 10, 3);
-add_action('edit_term', 'siteefy_purge_cache_on_term_change', 10, 3);
-add_action('delete_term', 'siteefy_purge_cache_on_term_change', 10, 3);
-
-/**
- * Manual cache purge function (can be called from admin)
- */
-function siteefy_manual_purge_cache() {
-    siteefy_purge_cache();
-    
-    // Additional Object Cache Pro cache clearing for manual purge
-    if (siteefy_flush_cache_group()) {
-        // Successfully flushed Object Cache Pro cache
-    }
-    
-    // Additional WP Rocket cache clearing for manual purge
-    if (function_exists('rocket_clean_domain')) {
-        rocket_clean_domain();
-    }
-    
-    // Clear all WP Rocket cache files
-    if (function_exists('rocket_clean_files')) {
-        // Clear homepage
-        rocket_clean_files(home_url('/'));
-        
-        // Clear search pages
-        rocket_clean_files(home_url('/?s='));
-        
-        // Clear archive pages for tools and tasks
-        rocket_clean_files(home_url('/tool/'));
-        rocket_clean_files(home_url('/task/'));
-        
-        // Clear solution and category archive pages
-        rocket_clean_files(home_url('/solution/'));
-        rocket_clean_files(home_url('/category/'));
-    }
-    
-    return true;
-}
-
-
+add_action('template_redirect', 'disable_attachment_pages'); 

@@ -26,6 +26,7 @@ require_once  WP_PLUGIN_DIR . '/siteefy/settings.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/solutions.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/category.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/functions.php';
+require_once  WP_PLUGIN_DIR . '/siteefy/cache.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/ajax.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/shortcodes.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/validation.php';
@@ -82,16 +83,16 @@ function siteefy_tool_init() {
         'parent_item_colon'     => __( 'Parent Tools:', 'textdomain' ),
         'not_found'             => __( 'No Tools found.', 'textdomain' ),
         'not_found_in_trash'    => __( 'No Tools found in Trash.', 'textdomain' ),
-        'featured_image'        => _x( 'Tool Cover Image', 'Overrides the “Featured Image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'set_featured_image'    => _x( 'Set cover image', 'Overrides the “Set featured image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'remove_featured_image' => _x( 'Remove cover image', 'Overrides the “Remove featured image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'use_featured_image'    => _x( 'Use as cover image', 'Overrides the “Use as featured image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'archives'              => _x( 'Tool archives', 'The post type archive label used in nav menus. Default “Post Archives”. Added in 4.4', 'textdomain' ),
-        'insert_into_item'      => _x( 'Insert into Tool', 'Overrides the “Insert into post”/”Insert into page” phrase (used when inserting media into a post). Added in 4.4', 'textdomain' ),
-        'uploaded_to_this_item' => _x( 'Uploaded to this Tool', 'Overrides the “Uploaded to this post”/”Uploaded to this page” phrase (used when viewing media attached to a post). Added in 4.4', 'textdomain' ),
-        'filter_items_list'     => _x( 'Filter Tools list', 'Screen reader text for the filter links heading on the post type listing screen. Default “Filter posts list”/”Filter pages list”. Added in 4.4', 'textdomain' ),
-        'items_list_navigation' => _x( 'Tools list navigation', 'Screen reader text for the pagination heading on the post type listing screen. Default “Posts list navigation”/”Pages list navigation”. Added in 4.4', 'textdomain' ),
-        'items_list'            => _x( 'Tools list', 'Screen reader text for the items list heading on the post type listing screen. Default “Posts list”/”Pages list”. Added in 4.4', 'textdomain' ),
+        'featured_image'        => _x( 'Tool Cover Image', 'Overrides the "Featured Image" phrase for this post type. Added in 4.3', 'textdomain' ),
+        'set_featured_image'    => _x( 'Set cover image', 'Overrides the "Set featured image" phrase for this post type. Added in 4.3', 'textdomain' ),
+        'remove_featured_image' => _x( 'Remove cover image', 'Overrides the "Remove featured image" phrase for this post type. Added in 4.3', 'textdomain' ),
+        'use_featured_image'    => _x( 'Use as cover image', 'Overrides the "Use as featured image" phrase for this post type. Added in 4.3', 'textdomain' ),
+        'archives'              => _x( 'Tool archives', 'The post type archive label used in nav menus. Default "Post Archives". Added in 4.4', 'textdomain' ),
+        'insert_into_item'      => _x( 'Insert into Tool', 'Overrides the "Insert into post"/"Insert into page" phrase (used when inserting media into a post). Added in 4.4', 'textdomain' ),
+        'uploaded_to_this_item' => _x( 'Uploaded to this Tool', 'Overrides the "Uploaded to this post"/"Uploaded to this page" phrase (used when viewing media attached to a post). Added in 4.4', 'textdomain' ),
+        'filter_items_list'     => _x( 'Filter Tools list', 'Screen reader text for the filter links heading on the post type listing screen. Default "Filter posts list"/"Filter pages list". Added in 4.4', 'textdomain' ),
+        'items_list_navigation' => _x( 'Tools list navigation', 'Screen reader text for the pagination heading on the post type listing screen. Default "Posts list navigation"/"Pages list navigation". Added in 4.4', 'textdomain' ),
+        'items_list'            => _x( 'Tools list', 'Screen reader text for the items list heading on the post type listing screen. Default "Posts list"/"Pages list". Added in 4.4', 'textdomain' ),
     );
 
     $args = array(
@@ -239,16 +240,16 @@ function siteefy_task__init() {
         'parent_item_colon'     => __( 'Parent Tasks:', 'textdomain' ),
         'not_found'             => __( 'No Tasks found.', 'textdomain' ),
         'not_found_in_trash'    => __( 'No Tasks found in Trash.', 'textdomain' ),
-        'featured_image'        => _x( 'Task Cover Image', 'Overrides the “Featured Image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'set_featured_image'    => _x( 'Set cover image', 'Overrides the “Set featured image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'remove_featured_image' => _x( 'Remove cover image', 'Overrides the “Remove featured image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'use_featured_image'    => _x( 'Use as cover image', 'Overrides the “Use as featured image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'archives'              => _x( 'Task archives', 'The post type archive label used in nav menus. Default “Post Archives”. Added in 4.4', 'textdomain' ),
-        'insert_into_item'      => _x( 'Insert into Task', 'Overrides the “Insert into post”/”Insert into page” phrase (used when inserting media into a post). Added in 4.4', 'textdomain' ),
-        'uploaded_to_this_item' => _x( 'Uploaded to this Task', 'Overrides the “Uploaded to this post”/”Uploaded to this page” phrase (used when viewing media attached to a post). Added in 4.4', 'textdomain' ),
-        'filter_items_list'     => _x( 'Filter Tasks list', 'Screen reader text for the filter links heading on the post type listing screen. Default “Filter posts list”/”Filter pages list”. Added in 4.4', 'textdomain' ),
-        'items_list_navigation' => _x( 'Tasks list navigation', 'Screen reader text for the pagination heading on the post type listing screen. Default “Posts list navigation”/”Pages list navigation”. Added in 4.4', 'textdomain' ),
-        'items_list'            => _x( 'Tasks list', 'Screen reader text for the items list heading on the post type listing screen. Default “Posts list”/”Pages list”. Added in 4.4', 'textdomain' ),
+        'featured_image'        => _x( 'Task Cover Image', 'Overrides the "Featured Image" phrase for this post type. Added in 4.3', 'textdomain' ),
+        'set_featured_image'    => _x( 'Set cover image', 'Overrides the "Set featured image" phrase for this post type. Added in 4.3', 'textdomain' ),
+        'remove_featured_image' => _x( 'Remove cover image', 'Overrides the "Remove featured image" phrase for this post type. Added in 4.3', 'textdomain' ),
+        'use_featured_image'    => _x( 'Use as cover image', 'Overrides the "Use as featured image" phrase for this post type. Added in 4.3', 'textdomain' ),
+        'archives'              => _x( 'Task archives', 'The post type archive label used in nav menus. Default "Post Archives". Added in 4.4', 'textdomain' ),
+        'insert_into_item'      => _x( 'Insert into Task', 'Overrides the "Insert into post"/"Insert into page" phrase (used when inserting media into a post). Added in 4.4', 'textdomain' ),
+        'uploaded_to_this_item' => _x( 'Uploaded to this Task', 'Overrides the "Uploaded to this post"/"Uploaded to this page" phrase (used when viewing media attached to a post). Added in 4.4', 'textdomain' ),
+        'filter_items_list'     => _x( 'Filter Tasks list', 'Screen reader text for the filter links heading on the post type listing screen. Default "Filter posts list"/"Filter pages list". Added in 4.4', 'textdomain' ),
+        'items_list_navigation' => _x( 'Tasks list navigation', 'Screen reader text for the pagination heading on the post type listing screen. Default "Posts list navigation"/"Pages list navigation". Added in 4.4', 'textdomain' ),
+        'items_list'            => _x( 'Tasks list', 'Screen reader text for the items list heading on the post type listing screen. Default "Posts list"/"Pages list". Added in 4.4', 'textdomain' ),
     );
 
     $args = array(
@@ -434,16 +435,16 @@ function siteefy_article__init() {
         'parent_item_colon'     => __( 'Parent Articles:', 'textdomain' ),
         'not_found'             => __( 'No articles found.', 'textdomain' ),
         'not_found_in_trash'    => __( 'No articles found in Trash.', 'textdomain' ),
-        'featured_image'        => _x( 'Article Cover Image', 'Overrides the “Featured Image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'set_featured_image'    => _x( 'Set cover image', 'Overrides the “Set featured image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'remove_featured_image' => _x( 'Remove cover image', 'Overrides the “Remove featured image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'use_featured_image'    => _x( 'Use as cover image', 'Overrides the “Use as featured image” phrase for this post type. Added in 4.3', 'textdomain' ),
-        'archives'              => _x( 'Article archives', 'The post type archive label used in nav menus. Default “Post Archives”. Added in 4.4', 'textdomain' ),
-        'insert_into_item'      => _x( 'Insert into Article', 'Overrides the “Insert into post”/”Insert into page” phrase (used when inserting media into a post). Added in 4.4', 'textdomain' ),
-        'uploaded_to_this_item' => _x( 'Uploaded to this Article', 'Overrides the “Uploaded to this post”/”Uploaded to this page” phrase (used when viewing media attached to a post). Added in 4.4', 'textdomain' ),
-        'filter_items_list'     => _x( 'Filter articles list', 'Screen reader text for the filter links heading on the post type listing screen. Default “Filter posts list”/”Filter pages list”. Added in 4.4', 'textdomain' ),
-        'items_list_navigation' => _x( 'Articles list navigation', 'Screen reader text for the pagination heading on the post type listing screen. Default “Posts list navigation”/”Pages list navigation”. Added in 4.4', 'textdomain' ),
-        'items_list'            => _x( 'Articles list', 'Screen reader text for the items list heading on the post type listing screen. Default “Posts list”/”Pages list”. Added in 4.4', 'textdomain' ),
+        'featured_image'        => _x( 'Article Cover Image', 'Overrides the "Featured Image" phrase for this post type. Added in 4.3', 'textdomain' ),
+        'set_featured_image'    => _x( 'Set cover image', 'Overrides the "Set featured image" phrase for this post type. Added in 4.3', 'textdomain' ),
+        'remove_featured_image' => _x( 'Remove cover image', 'Overrides the "Remove featured image" phrase for this post type. Added in 4.3', 'textdomain' ),
+        'use_featured_image'    => _x( 'Use as cover image', 'Overrides the "Use as featured image" phrase for this post type. Added in 4.3', 'textdomain' ),
+        'archives'              => _x( 'Article archives', 'The post type archive label used in nav menus. Default "Post Archives". Added in 4.4', 'textdomain' ),
+        'insert_into_item'      => _x( 'Insert into Article', 'Overrides the "Insert into post"/"Insert into page" phrase (used when inserting media into a post). Added in 4.4', 'textdomain' ),
+        'uploaded_to_this_item' => _x( 'Uploaded to this Article', 'Overrides the "Uploaded to this post"/"Uploaded to this page" phrase (used when viewing media attached to a post). Added in 4.4', 'textdomain' ),
+        'filter_items_list'     => _x( 'Filter articles list', 'Screen reader text for the filter links heading on the post type listing screen. Default "Filter posts list"/"Filter pages list". Added in 4.4', 'textdomain' ),
+        'items_list_navigation' => _x( 'Articles list navigation', 'Screen reader text for the pagination heading on the post type listing screen. Default "Posts list navigation"/"Pages list navigation". Added in 4.4', 'textdomain' ),
+        'items_list'            => _x( 'Articles list', 'Screen reader text for the items list heading on the post type listing screen. Default "Posts list"/"Pages list". Added in 4.4', 'textdomain' ),
     );
 
     $args = array(
