@@ -291,24 +291,37 @@ function get_tools_by_task_id($task_id) {
     $data = siteefy_get_cache($cache_key);
 
     if (!$data) {
-        // Use direct SQL query for better performance with large datasets
-        global $wpdb;
+        // Get the solutions assigned to this task
+        $task_solutions = get_solutions_for_task($task_id);
         
-        $query = $wpdb->prepare("
-            SELECT DISTINCT p.* 
-            FROM {$wpdb->posts} p
-            INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
-            WHERE p.post_type = 'tool' 
-            AND p.post_status = 'publish'
-            AND pm.meta_key = 'tool_tasks'
-            AND pm.meta_value LIKE %s
-            ORDER BY p.post_date DESC
-        ", '%' . $wpdb->esc_like($task_id) . '%');
-        
-        $filtered_tools = $wpdb->get_results($query);
+        if (empty($task_solutions)) {
+            $data = array();
+        } else {
+            // Get all tools
+            $all_tools = get_posts(array(
+                'post_type' => 'tool',
+                'posts_per_page' => -1,
+                'no_found_rows' => true,
+                'update_post_meta_cache' => false,
+                'update_post_term_cache' => false,
+            ));
+
+            $filtered_tools = array();
+
+            // Loop through each tool and check if it shares any solutions with the task
+            foreach ($all_tools as $single_tool) {
+                $tool_solutions = get_solutions_for_tool($single_tool->ID);
+                
+                // Check if there's any overlap between task solutions and tool solutions
+                if (!empty($tool_solutions) && array_intersect($task_solutions, $tool_solutions)) {
+                    $filtered_tools[] = $single_tool;
+                }
+            }
+
+            $data = $filtered_tools;
+        }
 
         // Store the result in cache
-        $data = $filtered_tools;
         siteefy_set_cache($cache_key, $data, 3600); // Cache for 1 hour
     }
 
