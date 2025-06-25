@@ -523,6 +523,7 @@ function siteefy_add_custom_templates($template) {
     $count_of_items = 0;
 
     if (is_search()) {
+        var_dump('Condition 1: is_search() - Search page');
         $tools = get_tools_by_search_term();
         $tool_of_the_week = get_selected_tool_of_the_week();
         $related_items = get_all_categories(5);
@@ -542,6 +543,7 @@ function siteefy_add_custom_templates($template) {
         ]);
         exit;
     }elseif(is_single() && get_post_type($post) === 'task'){
+        var_dump('Condition 2: is_single() && get_post_type($post) === "task" - Single task page');
         $tools = get_tools_by_task_id($post->ID);
         $tasks = get_all_tasks(5, $post->post_name);
         $tool_of_the_week = get_selected_tool_of_the_week();
@@ -561,8 +563,8 @@ function siteefy_add_custom_templates($template) {
         ]);
         exit;
     }elseif(is_archive() && get_post_type($post) === 'task' && get_queried_object()->taxonomy !=='solution'){
-        var_dump('tasks');
-        $tasks = get_all_tasks(-1);
+        var_dump('Condition 3: is_archive() && get_post_type($post) === "task" && get_queried_object()->taxonomy !== "solution" - Task archive page');
+        $tasks = array();
         $categories = get_all_categories(5);
         $tool_of_the_week = get_selected_tool_of_the_week();
         $count_of_items = count($tasks);
@@ -581,6 +583,7 @@ function siteefy_add_custom_templates($template) {
         exit;
     }
     elseif(is_archive() && get_queried_object()->taxonomy === 'solution'){
+        var_dump('Condition 4: is_archive() && get_queried_object()->taxonomy === "solution" - Solution archive page');
         $term = get_queried_object();
         $taxonomy = $term->taxonomy;
         $solutions = get_all_solutions(5, $term->slug);
@@ -605,6 +608,7 @@ function siteefy_add_custom_templates($template) {
 
     }
     elseif(is_page() && strtolower(get_the_title())===SOLUTION_PAGE_SLUG ){
+        var_dump('Condition 5: is_page() && strtolower(get_the_title()) === SOLUTION_PAGE_SLUG - Solutions page');
         //        todo:remove template .php file
         $solutions = get_all_solutions(-1);
         $categories = get_all_categories(5);
@@ -625,6 +629,7 @@ function siteefy_add_custom_templates($template) {
         exit;
     }
     elseif (is_page() && strtolower(get_the_title())===CATEGORY_PAGE_SLUG) {
+        var_dump('Condition 6: is_page() && strtolower(get_the_title()) === CATEGORY_PAGE_SLUG - Categories page');
 //        todo:remove template .php file
         $categories = get_all_categories(-1);
         $solutions = get_all_solutions(5);
@@ -644,6 +649,7 @@ function siteefy_add_custom_templates($template) {
         ]);
         exit;
     }elseif(is_archive() && get_queried_object()->taxonomy === 'category'){
+        var_dump('Condition 7: is_archive() && get_queried_object()->taxonomy === "category" - Category archive page');
         $term = get_queried_object();
         $taxonomy = $term->taxonomy;
         $categories = get_all_categories(5, $term->slug);
@@ -667,6 +673,7 @@ function siteefy_add_custom_templates($template) {
         exit;
 
     }elseif(is_archive() && get_post_type($post) === 'tool'){
+        var_dump('Condition 8: is_archive() && get_post_type($post) === "tool" - Tool archive page');
         $tools = get_all_tools();
         $tool_of_the_week = get_selected_tool_of_the_week();
         $related_items = get_all_categories(5);
@@ -686,6 +693,7 @@ function siteefy_add_custom_templates($template) {
         exit;
     }
 
+    var_dump('No conditions matched - returning default template');
     return $template;
 }
 

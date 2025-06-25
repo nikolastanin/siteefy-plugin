@@ -446,7 +446,6 @@ function get_all_tasks($count = -1, $exclude_slug = '') {
     if ($use_cache) {
         $data = siteefy_get_cache($cache_key);
         if ($data !== false) {
-            var_dump('cached!');
             siteefy_debug_cache_status('get_all_tasks', $cache_key, $use_cache, true);
             return $data;
         }
