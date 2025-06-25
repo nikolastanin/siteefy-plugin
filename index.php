@@ -561,7 +561,7 @@ function siteefy_add_custom_templates($template) {
         ]);
         exit;
     }elseif(is_archive() && get_post_type($post) === 'task' && get_queried_object()->taxonomy !=='solution'){
-        $tasks = array();
+        $tasks = get_all_tasks(-1);
         $categories = get_all_categories(5);
         $tool_of_the_week = get_selected_tool_of_the_week();
         $count_of_items = count($tasks);

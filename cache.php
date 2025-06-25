@@ -1,6 +1,15 @@
 <?php
 
 /**
+ * Debug function to check if caching is working
+ */
+function siteefy_debug_cache_status($function_name, $cache_key, $use_cache, $data_found) {
+    if (defined('WP_DEBUG') && WP_DEBUG) {
+        error_log("Siteefy Cache Debug - {$function_name}: Cache Key: {$cache_key}, Enabled: " . ($use_cache ? 'Yes' : 'No') . ", Found: " . ($data_found ? 'Yes' : 'No'));
+    }
+}
+
+/**
  * Siteefy Cache Management System
  * 
  * This file contains all cache-related functions for the Siteefy plugin,
