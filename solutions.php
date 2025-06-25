@@ -8,7 +8,7 @@ function get_all_solutions($limit = -1, $exclude_term = '', $order='DESC') {
     // Check if caching is enabled
     $use_cache = get_siteefy_settings('use_cache');
     if ($use_cache) {
-        $data = get_transient($cache_key);
+        $data = siteefy_get_cache($cache_key);
         if ($data !== false) {
             return $data;
         }
@@ -38,7 +38,7 @@ function get_all_solutions($limit = -1, $exclude_term = '', $order='DESC') {
 
         // Cache the results for 24 hours if caching is enabled
         if ($use_cache) {
-            set_transient($cache_key, $terms, 86400);
+            siteefy_set_cache($cache_key, $terms, 86400);
         }
 
         return $terms;
@@ -46,7 +46,7 @@ function get_all_solutions($limit = -1, $exclude_term = '', $order='DESC') {
 
     // Cache empty results too
     if ($use_cache) {
-        set_transient($cache_key, array(), 86400);
+        siteefy_set_cache($cache_key, array(), 86400);
     }
 
     return array();

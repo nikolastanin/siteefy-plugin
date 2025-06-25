@@ -34,7 +34,7 @@ function get_count_of_items_for_yoast_minus_one() {
 function get_count_of_items_for_yoast() {
     // Check for cached count
     $cache_key = 'siteefy_count_items_' . md5(serialize($_SERVER['REQUEST_URI']));
-    $cached_count = get_transient($cache_key);
+    $cached_count = siteefy_get_cache($cache_key);
     
     if ($cached_count !== false) {
         return $cached_count;
@@ -90,7 +90,6 @@ function get_count_of_items_for_yoast() {
     }
     // Default fallback
     else {
-        $tools = get_all_tools();
-        return count($tools);
+        return 0;
     }
 }

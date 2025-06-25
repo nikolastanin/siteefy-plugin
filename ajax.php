@@ -25,8 +25,9 @@ add_action( 'wp_ajax_get_search_results_inline', 'get_search_results_inline' );
 
 function generate_html_for_results($results, $search_term) {
     $cache_key = $search_term . '_html';
-    $html = get_transient($cache_key);
-    if(!$html){
+    $html = siteefy_get_cache($cache_key);
+    
+    if ($html === false) {
         // Check if 'filtered_tasks' and 'filtered_tools' exist in the results array
         $tasks = array_key_exists('filtered_tasks', $results) ? $results['filtered_tasks'] : false;
         $tools = array_key_exists('filtered_tools', $results) ? $results['filtered_tools'] : false;
@@ -86,7 +87,7 @@ function generate_html_for_results($results, $search_term) {
         // Close the container div
         $html_output .= '</div>';
         $html = $html_output;
-        set_transient($cache_key, $html, 1);
+        siteefy_set_cache($cache_key, $html, 3600);
     }
     // Return the generated HTML
     return $html;

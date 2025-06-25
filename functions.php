@@ -163,7 +163,7 @@ function get_tools_by_search_term(){
     // Check if caching is enabled
     $use_cache = get_siteefy_settings('use_cache');
     if ($use_cache) {
-        $data = get_transient($cache_key);
+        $data = siteefy_get_cache($cache_key);
         if ($data !== false) {
             return $data;
         }
@@ -243,7 +243,7 @@ function get_tools_by_search_term(){
     
     // Cache the results for 24 hours if caching is enabled
     if ($use_cache) {
-        set_transient($cache_key, $filtered_tools, 86400);
+        siteefy_set_cache($cache_key, $filtered_tools, 86400);
     }
     
     return $filtered_tools;
@@ -293,7 +293,7 @@ function get_tools_by_task_id($task_id) {
 
     // Generate a cache key to avoid querying on every request
     $cache_key = 'tools_by_task_id_' . $task_id;
-    $data = get_transient($cache_key);
+    $data = siteefy_get_cache($cache_key);
 
     if (!$data) {
         // Get all tools
@@ -316,7 +316,7 @@ function get_tools_by_task_id($task_id) {
 
         // Store the result in a transient for future requests
         $data = $filtered_tools;
-        set_transient($cache_key, $data, 1); // Cache for 1 hour
+        siteefy_set_cache($cache_key, $data, 3600); // Cache for 1 hour
     }
 
     // Return the filtered tools
@@ -361,7 +361,7 @@ function get_tools_and_tasks_by_search_term($search_term) {
     // Check if caching is enabled
     $use_cache = get_siteefy_settings('use_cache');
     if ($use_cache) {
-        $data = get_transient($cache_key);
+        $data = siteefy_get_cache($cache_key);
         if ($data !== false) {
             return $data;
         }
@@ -443,7 +443,7 @@ function get_tools_and_tasks_by_search_term($search_term) {
 
     // Cache the results for 24 hours if caching is enabled
     if ($use_cache) {
-        set_transient($cache_key, $data, 86400);
+        siteefy_set_cache($cache_key, $data, 86400);
     }
 
     return $data;
@@ -458,7 +458,7 @@ function get_all_tasks($count = -1, $exclude_slug = '') {
     // Check if caching is enabled
     $use_cache = get_siteefy_settings('use_cache');
     if ($use_cache) {
-        $data = get_transient($cache_key);
+        $data = siteefy_get_cache($cache_key);
         if ($data !== false) {
             return $data;
         }
@@ -475,7 +475,7 @@ function get_all_tasks($count = -1, $exclude_slug = '') {
     
     // Cache the results for 24 hours if caching is enabled
     if ($use_cache) {
-        set_transient($cache_key, $tasks, 86400);
+        siteefy_set_cache($cache_key, $tasks, 86400);
     }
     
     return $tasks;
@@ -488,7 +488,7 @@ function get_all_tools($count=-1, $sort='ASC'){
     // Check if caching is enabled
     $use_cache = get_siteefy_settings('use_cache');
     if ($use_cache) {
-        $data = get_transient($cache_key);
+        $data = siteefy_get_cache($cache_key);
         if ($data !== false) {
             return $data;
         }
@@ -504,7 +504,7 @@ function get_all_tools($count=-1, $sort='ASC'){
     
     // Cache the results for 24 hours if caching is enabled
     if ($use_cache) {
-        set_transient($cache_key, $tools, 86400);
+        siteefy_set_cache($cache_key, $tools, 86400);
     }
     
     return $tools;
@@ -573,6 +573,62 @@ function siteefy_get_search_value(){
 
 
 /**
+ * Helper function to get cache with Object Cache Pro support
+ */
+function siteefy_get_cache($key) {
+    // Check if Object Cache Pro is active
+    if (function_exists('wp_cache_get')) {
+        return wp_cache_get($key, 'siteefy');
+    }
+    
+    // Fallback to transients
+    return get_transient($key);
+}
+
+/**
+ * Helper function to set cache with Object Cache Pro support
+ */
+function siteefy_set_cache($key, $data, $expiration = 86400) {
+    // Check if Object Cache Pro is active
+    if (function_exists('wp_cache_set')) {
+        return wp_cache_set($key, $data, 'siteefy', $expiration);
+    }
+    
+    // Fallback to transients
+    return set_transient($key, $data, $expiration);
+}
+
+/**
+ * Helper function to delete cache with Object Cache Pro support
+ */
+function siteefy_delete_cache($key) {
+    // Check if Object Cache Pro is active
+    if (function_exists('wp_cache_delete')) {
+        return wp_cache_delete($key, 'siteefy');
+    }
+    
+    // Fallback to transients
+    return delete_transient($key);
+}
+
+/**
+ * Helper function to flush all Siteefy cache from Object Cache Pro
+ */
+function siteefy_flush_cache_group() {
+    // Check if Object Cache Pro is active and supports group flushing
+    if (function_exists('wp_cache_flush_group')) {
+        return wp_cache_flush_group('siteefy');
+    }
+    
+    // Alternative method for Object Cache Pro
+    if (function_exists('wp_cache_flush_runtime')) {
+        return wp_cache_flush_runtime();
+    }
+    
+    return false;
+}
+
+/**
  * Purge all Siteefy cache when posts or terms are created/updated/deleted
  */
 function siteefy_purge_cache($post_id = null, $post = null, $update = null) {
@@ -581,73 +637,78 @@ function siteefy_purge_cache($post_id = null, $post = null, $update = null) {
         return;
     }
     
-    // Delete all cached transients that start with 'siteefy_'
-    global $wpdb;
-    
-    // Get all transients that start with 'siteefy_'
-    $transients = $wpdb->get_col(
-        $wpdb->prepare(
-            "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
-            '_transient_siteefy_%'
-        )
-    );
-    
-    // Delete each transient
-    foreach ($transients as $transient) {
-        $transient_name = str_replace('_transient_', '', $transient);
-        delete_transient($transient_name);
-    }
-    
-    // Also purge search cache
-    $search_transients = $wpdb->get_col(
-        $wpdb->prepare(
-            "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
-            '_transient_--cache'
-        )
-    );
-    
-    foreach ($search_transients as $transient) {
-        $transient_name = str_replace('_transient_', '', $transient);
-        delete_transient($transient_name);
-    }
-    
-    // Purge tools by task ID cache
-    $task_tools_transients = $wpdb->get_col(
-        $wpdb->prepare(
-            "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
-            '_transient_tools_by_task_id_%'
-        )
-    );
-    
-    foreach ($task_tools_transients as $transient) {
-        $transient_name = str_replace('_transient_', '', $transient);
-        delete_transient($transient_name);
-    }
-    
-    // Purge search tools cache (get_tools_by_search_term)
-    $search_tools_transients = $wpdb->get_col(
-        $wpdb->prepare(
-            "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
-            '_transient_siteefy_search_tools_%'
-        )
-    );
-    
-    foreach ($search_tools_transients as $transient) {
-        $transient_name = str_replace('_transient_', '', $transient);
-        delete_transient($transient_name);
-    }
-    
-    // Purge tools and tasks search cache (get_tools_and_tasks_by_search_term)
-    $tools_tasks_search_transients = $wpdb->get_col(
-        $wpdb->prepare(
-            "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
-            '_transient_siteefy_tools_tasks_search_%'
-        )
-    );
-    
-    foreach ($tools_tasks_search_transients as $transient) {
-        $transient_name = str_replace('_transient_', '', $transient);
-        delete_transient($transient_name);
+    // First, try to flush the entire Siteefy cache group from Object Cache Pro
+    if (siteefy_flush_cache_group()) {
+        // If successful, we don't need to manually delete individual keys
+    } else {
+        // Fallback: Delete all cached transients that start with 'siteefy_'
+        global $wpdb;
+        
+        // Get all transients that start with 'siteefy_'
+        $transients = $wpdb->get_col(
+            $wpdb->prepare(
+                "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
+                '_transient_siteefy_%'
+            )
+        );
+        
+        // Delete each transient
+        foreach ($transients as $transient) {
+            $transient_name = str_replace('_transient_', '', $transient);
+            delete_transient($transient_name);
+        }
+        
+        // Also purge search cache
+        $search_transients = $wpdb->get_col(
+            $wpdb->prepare(
+                "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
+                '_transient_--cache'
+            )
+        );
+        
+        foreach ($search_transients as $transient) {
+            $transient_name = str_replace('_transient_', '', $transient);
+            delete_transient($transient_name);
+        }
+        
+        // Purge tools by task ID cache
+        $task_tools_transients = $wpdb->get_col(
+            $wpdb->prepare(
+                "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
+                '_transient_tools_by_task_id_%'
+            )
+        );
+        
+        foreach ($task_tools_transients as $transient) {
+            $transient_name = str_replace('_transient_', '', $transient);
+            delete_transient($transient_name);
+        }
+        
+        // Purge search tools cache (get_tools_by_search_term)
+        $search_tools_transients = $wpdb->get_col(
+            $wpdb->prepare(
+                "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
+                '_transient_siteefy_search_tools_%'
+            )
+        );
+        
+        foreach ($search_tools_transients as $transient) {
+            $transient_name = str_replace('_transient_', '', $transient);
+            delete_transient($transient_name);
+        }
+        
+        // Purge tools and tasks search cache (get_tools_and_tasks_by_search_term)
+        $tools_tasks_search_transients = $wpdb->get_col(
+            $wpdb->prepare(
+                "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
+                '_transient_siteefy_tools_tasks_search_%'
+            )
+        );
+        
+        foreach ($tools_tasks_search_transients as $transient) {
+            $transient_name = str_replace('_transient_', '', $transient);
+            delete_transient($transient_name);
+        }
     }
     
     // Purge WP Rocket cache if the plugin is active
@@ -707,6 +768,11 @@ add_action('delete_term', 'siteefy_purge_cache_on_term_change', 10, 3);
  */
 function siteefy_manual_purge_cache() {
     siteefy_purge_cache();
+    
+    // Additional Object Cache Pro cache clearing for manual purge
+    if (siteefy_flush_cache_group()) {
+        // Successfully flushed Object Cache Pro cache
+    }
     
     // Additional WP Rocket cache clearing for manual purge
     if (function_exists('rocket_clean_domain')) {

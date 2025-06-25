@@ -27,7 +27,7 @@ class Siteefy {
 
     public static function get_env() {
         $transient_key = 'site_env';
-        $env = get_transient($transient_key);
+        $env = siteefy_get_cache($transient_key);
 
         if ($env === false) {
             $url = $_SERVER['HTTP_HOST'] ?? '';
@@ -41,7 +41,7 @@ class Siteefy {
                 $env = 'unknown';
             }
 
-            set_transient($transient_key, $env, 12 * HOUR_IN_SECONDS); // Cache for 12 hours
+            siteefy_set_cache($transient_key, $env, 12 * HOUR_IN_SECONDS); // Cache for 12 hours
         }
 
         return $env;
