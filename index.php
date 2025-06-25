@@ -27,6 +27,8 @@ require_once  WP_PLUGIN_DIR . '/siteefy/solutions.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/category.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/functions.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/cache.php';
+require_once  WP_PLUGIN_DIR . '/siteefy/admin/admin.php';
+require_once  WP_PLUGIN_DIR . '/siteefy/database-optimization.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/ajax.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/shortcodes.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/validation.php';

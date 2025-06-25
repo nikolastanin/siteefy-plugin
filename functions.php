@@ -291,25 +291,23 @@ function get_tools_by_task_id($task_id) {
     $data = siteefy_get_cache($cache_key);
 
     if (!$data) {
-        // Get all tools
-        $all_tools = get_posts(array(
-            'post_type' => 'tool',
-            'posts_per_page' => -1,
-        ));
+        // Use direct SQL query for better performance with large datasets
+        global $wpdb;
+        
+        $query = $wpdb->prepare("
+            SELECT DISTINCT p.* 
+            FROM {$wpdb->posts} p
+            INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
+            WHERE p.post_type = 'tool' 
+            AND p.post_status = 'publish'
+            AND pm.meta_key = 'tool_tasks'
+            AND pm.meta_value LIKE %s
+            ORDER BY p.post_date DESC
+        ", '%' . $wpdb->esc_like($task_id) . '%');
+        
+        $filtered_tools = $wpdb->get_results($query);
 
-        $filtered_tools = array();
-
-        // Loop through each tool and check if it is assigned to the specific task ID
-        foreach ($all_tools as $single_tool) {
-            $post_id = $single_tool->ID;
-            $assigned_tasks = get_tasks_for_tool_from_its_solution($post_id); // Assume this is an ACF field
-            if (!empty($assigned_tasks) && in_array($task_id, $assigned_tasks)) {
-                // If the task ID is found in the assigned tasks, add the tool to the filtered list
-                $filtered_tools[] = $single_tool;
-            }
-        }
-
-        // Store the result in a transient for future requests
+        // Store the result in cache
         $data = $filtered_tools;
         siteefy_set_cache($cache_key, $data, 3600); // Cache for 1 hour
     }
@@ -456,7 +454,15 @@ function get_all_tasks($count = -1, $exclude_slug = '') {
         'numberposts'    => $count,
         'post_status'    => 'publish',
         'exclude'        => !empty($exclude_slug) ? get_page_by_path($exclude_slug, OBJECT, 'task')->ID : array(),
+        'no_found_rows'  => true,
+        'update_post_meta_cache' => false,
+        'update_post_term_cache' => false,
+        'orderby'        => 'date',
+        'order'          => 'DESC',
     );
+    
+    // Apply optimization filter
+    $args = apply_filters('siteefy_get_posts_args', $args, 'task');
 
     $tasks = get_posts($args);
     
@@ -486,7 +492,14 @@ function get_all_tools($count=-1, $sort='ASC'){
         'numberposts'      => $count,
         'orderby'        => 'date',
         'order'          => $sort,
+        'no_found_rows'  => true,
+        'update_post_meta_cache' => false,
+        'update_post_term_cache' => false,
     );
+    
+    // Apply optimization filter
+    $args = apply_filters('siteefy_get_posts_args', $args, 'tool');
+    
     $tools = get_posts($args);
     
     // Cache the results for 24 hours if caching is enabled
