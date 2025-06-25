@@ -545,26 +545,63 @@ function get_all_top_rated_tools($count=3){
     return $selected_tools;
 }
 
-function get_count_of_tools_for_single_task($task_id_passed){
-    // Get all tools
+/**
+ * Get tool counts for multiple tasks efficiently (avoids N+1 query problem)
+ */
+function get_tool_counts_for_tasks($task_ids) {
+    if (empty($task_ids)) {
+        return array();
+    }
+    
+    // Create cache key
+    $cache_key = 'siteefy_task_tool_counts_' . md5(serialize($task_ids));
+    
+    // Check if caching is enabled
+    $use_cache = get_siteefy_settings('use_cache');
+    if ($use_cache) {
+        $data = siteefy_get_cache($cache_key);
+        if ($data !== false) {
+            return $data;
+        }
+    }
+    
+    // Get all tools once
     $all_tools = get_posts(array(
         'post_type' => 'tool',
         'posts_per_page' => -1,
+        'no_found_rows' => true,
+        'update_post_meta_cache' => false,
+        'update_post_term_cache' => false,
     ));
-    $count = 0;
-    // Loop through each tool and get the selected tasks
+    
+    // Initialize counts
+    $task_counts = array_fill_keys($task_ids, 0);
+    
+    // Loop through each tool and count tasks
     foreach ($all_tools as $single_tool) {
         $post_id = $single_tool->ID;
         $selected_tasks_ids_for_post = get_tasks_for_tool_from_its_solution($post_id);
         if (!empty($selected_tasks_ids_for_post)) {
             foreach ($selected_tasks_ids_for_post as $task_id) {
-                if($task_id == $task_id_passed){
-                    $count++;
+                if (in_array($task_id, $task_ids)) {
+                    $task_counts[$task_id]++;
                 }
             }
         }
     }
-    return $count;
+    
+    // Cache the results for 1 hour
+    if ($use_cache) {
+        siteefy_set_cache($cache_key, $task_counts, 3600);
+    }
+    
+    return $task_counts;
+}
+
+function get_count_of_tools_for_single_task($task_id_passed){
+    // Use the optimized function for single task
+    $counts = get_tool_counts_for_tasks(array($task_id_passed));
+    return isset($counts[$task_id_passed]) ? $counts[$task_id_passed] : 0;
 }
 
 function disable_attachment_pages() {
@@ -576,4 +613,4 @@ function disable_attachment_pages() {
         }
     }
 }
-add_action('template_redirect', 'disable_attachment_pages'); 
+add_action('template_redirect', 'disable_attachment_pages');
