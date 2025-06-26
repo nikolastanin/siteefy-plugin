@@ -12,39 +12,6 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-/**
- * Add admin menu for Siteefy settings
- */
-function siteefy_admin_menu() {
-    add_menu_page(
-        'Siteefy Settings',
-        'Siteefy',
-        'manage_options',
-        'siteefy-settings',
-        'siteefy_admin_page',
-        'dashicons-admin-tools',
-        30
-    );
-    
-    add_submenu_page(
-        'siteefy-settings',
-        'Cache Management',
-        'Cache Management',
-        'manage_options',
-        'siteefy-cache',
-        'siteefy_cache_admin_page'
-    );
-    
-    add_submenu_page(
-        'siteefy-settings',
-        'Preload URLs',
-        'Preload URLs',
-        'manage_options',
-        'siteefy-preload',
-        'siteefy_preload_admin_page'
-    );
-}
-add_action('admin_menu', 'siteefy_admin_menu');
 
 /**
  * Main Siteefy admin page

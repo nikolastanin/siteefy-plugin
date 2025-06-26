@@ -283,7 +283,7 @@ function siteefy_add_database_optimization_admin() {
  */
 function siteefy_add_db_optimization_menu() {
     add_submenu_page(
-        'siteefy-settings',
+        'siteefy-options',
         'Database Optimization',
         'Database Optimization',
         'manage_options',

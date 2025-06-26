@@ -136,6 +136,36 @@ function siteefy_add_options_menu() {
     add_submenu_page( 'siteefy-options', 'Siteefy Options', 'Siteefy Options',
         'manage_options', 'siteefy-options','', '0');
     add_submenu_page('siteefy-options', 'Tool of the week', 'Tool of the Week', 'manage_options', 'tool-of-the-week', 'siteefy_central_menu', '5');
+
+
+    add_submenu_page(
+        'siteefy-options',
+        'Siteefy Overview',
+        'Siteefy Overview',
+        'manage_options',
+        'siteefy-overview',
+        'siteefy_admin_page',
+    );
+    
+    add_submenu_page(
+        'siteefy-options',
+        'Cache Management',
+        'Cache Management',
+        'manage_options',
+        'siteefy-cache',
+        'siteefy_cache_admin_page'
+    );
+    
+    add_submenu_page(
+        'siteefy-options',
+        'Preload URLs',
+        'Preload URLs',
+        'manage_options',
+        'siteefy-preload',
+        'siteefy_preload_admin_page'
+    );
+
+
 }
 
 add_action( 'admin_menu', 'siteefy_add_options_menu' );
