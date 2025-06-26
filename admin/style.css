@@ -12,8 +12,8 @@ a.wp-has-submenu.menu-top.menu-icon-article.menu-top-last {
 .siteefy-admin-overview,
 .siteefy-cache-actions,
 .siteefy-cache-status,
-.siteefy-preload-description,
-.siteefy-preload-test {
+.siteefy-preload-config,
+.siteefy-preload-results {
     background: #fff;
     border: 1px solid #ccd0d4;
     border-radius: 4px;
@@ -24,32 +24,67 @@ a.wp-has-submenu.menu-top.menu-icon-article.menu-top-last {
 .siteefy-admin-overview h2,
 .siteefy-cache-actions h2,
 .siteefy-cache-status h2,
-.siteefy-preload-test h2 {
+.siteefy-preload-config h2,
+.siteefy-preload-results h2 {
     margin-top: 0;
     color: #23282d;
     border-bottom: 1px solid #eee;
     padding-bottom: 10px;
 }
 
-.siteefy-preload-description {
+.siteefy-preload-config {
     background: #f9f9f9;
     border-left: 4px solid #0073aa;
 }
 
-.siteefy-preload-description p {
+.siteefy-preload-config p {
     margin: 0 0 10px 0;
 }
 
-.siteefy-preload-description ul {
+.siteefy-preload-config ul {
     margin: 10px 0;
     padding-left: 20px;
 }
 
-.siteefy-preload-description code {
+.siteefy-preload-config code {
     background: #e5e5e5;
     padding: 2px 4px;
     border-radius: 3px;
     font-family: monospace;
+}
+
+.siteefy-preload-results {
+    background: #f0f8f0;
+    border-left: 4px solid #46b450;
+}
+
+.siteefy-results-summary h3,
+.siteefy-results-details h3 {
+    margin-top: 0;
+    color: #23282d;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.siteefy-results-details table {
+    margin-top: 15px;
+}
+
+.siteefy-results-details th {
+    background: #f9f9f9;
+    font-weight: bold;
+}
+
+.siteefy-results-details td {
+    vertical-align: top;
+}
+
+.siteefy-results-details code {
+    background: #e5e5e5;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: monospace;
+    word-break: break-all;
 }
 
 #siteefy_preload_urls {
@@ -168,4 +203,25 @@ a.wp-has-submenu.menu-top.menu-icon-article.menu-top-last {
         width: 100%;
         max-width: none;
     }
+}
+
+.siteefy-debug-info {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-left: 4px solid #ffc107;
+    border-radius: 4px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.siteefy-debug-info h2 {
+    margin-top: 0;
+    color: #856404;
+    border-bottom: 1px solid #ffeaa7;
+    padding-bottom: 10px;
+}
+
+.siteefy-debug-info p {
+    margin: 5px 0;
+    color: #856404;
 }

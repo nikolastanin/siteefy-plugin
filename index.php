@@ -140,8 +140,8 @@ function siteefy_add_options_menu() {
 
     add_submenu_page(
         'siteefy-options',
-        'Siteefy Overview',
-        'Siteefy Overview',
+        'Plugin Overview',
+        'Plugin Overview',
         'manage_options',
         'siteefy-overview',
         'siteefy_admin_page',
@@ -149,22 +149,12 @@ function siteefy_add_options_menu() {
     
     add_submenu_page(
         'siteefy-options',
-        'Cache Management',
-        'Cache Management',
+        'Cache Management & Preload',
+        'Cache Management & Preload',
         'manage_options',
         'siteefy-cache',
         'siteefy_cache_admin_page'
     );
-    
-    add_submenu_page(
-        'siteefy-options',
-        'Preload URLs',
-        'Preload URLs',
-        'manage_options',
-        'siteefy-preload',
-        'siteefy_preload_admin_page'
-    );
-
 
 }
 
@@ -702,7 +692,8 @@ function siteefy_add_custom_templates($template) {
         ]);
         exit;
 
-    }elseif(is_archive() && get_post_type($post) === 'tool'){
+    }
+    elseif(is_archive() && get_post_type($post) === 'tool'){
         $tools = get_all_tools();
         $tool_of_the_week = get_selected_tool_of_the_week();
         $related_items = get_all_categories(5);
