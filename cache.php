@@ -86,6 +86,7 @@ function siteefy_preload_cache($test_mode = false) {
         home_url('/tasks/'), // Task archive
         home_url('/solutions/'), // Solution archive
         home_url('/categories/'), // Category archive
+        home_url('/ai-tools/'), // Category archive
     ];
     
     // Add custom preload URLs from admin settings
