@@ -630,7 +630,7 @@ add_action('template_redirect', 'disable_attachment_pages');
 
 function siteefy_get_page_content($post_id){
     $content = get_the_content($post_id);
-    $separator = '<!--list-->';
+    $separator = '<!--more-->';
     $parts = explode($separator, $content);
     
     $result = array();
