@@ -55,12 +55,15 @@
                     </div>
                 </div>
                 <div class="main-page-content">
-                    {!!$wp_content!!}
+                    {!!$wp_content['above']!!}
                 </div>
                 <div class="tools-collection-container" data-tab-id="{{$key}}">
                     @foreach($items as $tool)
                         @include('components.tool', ['tool'=>$tool])
                     @endforeach
+                </div>
+                <div class="main-page-content">
+                    {!!$wp_content['below']!!}
                 </div>
             </div>
         </div>

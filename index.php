@@ -567,7 +567,7 @@ function siteefy_add_custom_templates($template) {
         $tasks = get_all_tasks(5, $post->post_name);
         $tool_of_the_week = get_selected_tool_of_the_week();
         $count_of_items = count($tools);
-        $wp_content = get_the_content($post->ID);
+        $wp_content = siteefy_get_page_content($post->ID);
         echo Siteefy::blade()->run('pages.single-cpt-template', [
             'page_title'=>ucfirst($post->post_title),
             'page_subtitle' =>false,
