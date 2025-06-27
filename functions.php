@@ -628,14 +628,3 @@ function disable_attachment_pages() {
 }
 add_action('template_redirect', 'disable_attachment_pages');
 
-function siteefy_get_page_content($post_id){
-    $content = get_the_content($post_id);
-    $separator = '<!--more-->';
-    $parts = explode($separator, $content);
-    
-    $result = array();
-    $result['above'] = isset($parts[0]) ? $parts[0] : '';
-    $result['below'] = isset($parts[1]) ? $parts[1] : '';
-    
-    return $result;
-}

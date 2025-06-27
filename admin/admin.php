@@ -336,3 +336,28 @@ function siteefy_admin_styles() {
     }
 }
 add_action('admin_enqueue_scripts', 'siteefy_admin_styles'); 
+
+function siteefy_get_page_content($post_id){
+    $content = get_the_content($post_id);
+    $separator = '<!--list-->';
+    $parts = explode($separator, $content);
+    
+    $result = array();
+    $result['above'] = isset($parts[0]) ? $parts[0] : '';
+    $result['below'] = isset($parts[1]) ? $parts[1] : '';
+    return $result;
+}
+
+// Add the custom button to TinyMCE
+function siteefy_register_list_separator_button($buttons) {
+    array_push($buttons, "siteefy_list_separator");
+    return $buttons;
+}
+add_filter("mce_buttons", "siteefy_register_list_separator_button");
+
+// Register the TinyMCE plugin for the button
+function siteefy_add_tinymce_plugin($plugin_array) {
+    $plugin_array["siteefy_list_separator"] = plugins_url('/list-separator.js', __FILE__);
+    return $plugin_array;
+}
+add_filter("mce_external_plugins", "siteefy_add_tinymce_plugin");

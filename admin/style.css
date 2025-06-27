@@ -225,3 +225,11 @@ a.wp-has-submenu.menu-top.menu-icon-article.menu-top-last {
     margin: 5px 0;
     color: #856404;
 }
+
+hr.siteefy-list-separator-mce {
+    border: none;
+    border-top: 2px dashed #bbb;
+    margin: 2em 0;
+    height: 0;
+    background: none;
+}

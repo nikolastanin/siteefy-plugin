@@ -1,11 +1,11 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('post'); // WordPress post form
     const categoryChecklist = document.getElementById('categorychecklist');
     const solutionChecklist = document.getElementById('solutionchecklist');
 
     if (!form || !categoryChecklist || !solutionChecklist) return;
 
-    form.addEventListener('submit', function (e) {
+    form.addEventListener('submit', function(e) {
         const categoryBoxes = categoryChecklist.querySelectorAll('input[type="checkbox"]');
         const solutionBoxes = solutionChecklist.querySelectorAll('input[type="checkbox"]');
 
@@ -22,4 +22,6 @@ document.addEventListener('DOMContentLoaded', function () {
             alert(message);
         }
     });
+
+
 });
