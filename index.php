@@ -567,6 +567,7 @@ function siteefy_add_custom_templates($template) {
         $tasks = get_all_tasks(5, $post->post_name);
         $tool_of_the_week = get_selected_tool_of_the_week();
         $count_of_items = count($tools);
+        $wp_content = get_the_content($post->ID);
         echo Siteefy::blade()->run('pages.single-cpt-template', [
             'page_title'=>ucfirst($post->post_title),
             'page_subtitle' =>false,
@@ -579,6 +580,7 @@ function siteefy_add_custom_templates($template) {
             'related_link'=>'/tasks',
             'related_items' =>$tasks,
             'tool_of_the_week'=>$tool_of_the_week,
+            'wp_content'=>$wp_content,
         ]);
         exit;
     }elseif(is_archive() && get_post_type($post) === 'task' && get_queried_object()->taxonomy !=='solution'){
