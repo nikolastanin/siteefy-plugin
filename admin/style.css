@@ -235,9 +235,9 @@ hr.siteefy-list-separator-mce {
 }
 
 .mce-content-body hr {
-    border: none;
-    border-top: 4px dashed #bbb;
-    margin: 2em 0;
-    height: 0;
-    background: none;
+    border: none !important;
+    border-top: 4px dashed #bbb !important;
+    margin: 2em 0 !important;
+    height: 0 !important;
+    background: none !important;
 }
