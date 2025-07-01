@@ -27,6 +27,8 @@ require_once  WP_PLUGIN_DIR . '/siteefy/solutions.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/category.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/functions.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/cache.php';
+require_once  WP_PLUGIN_DIR . '/siteefy/admin/admin.php';
+require_once  WP_PLUGIN_DIR . '/siteefy/database-optimization.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/ajax.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/shortcodes.php';
 require_once  WP_PLUGIN_DIR . '/siteefy/validation.php';
@@ -134,6 +136,26 @@ function siteefy_add_options_menu() {
     add_submenu_page( 'siteefy-options', 'Siteefy Options', 'Siteefy Options',
         'manage_options', 'siteefy-options','', '0');
     add_submenu_page('siteefy-options', 'Tool of the week', 'Tool of the Week', 'manage_options', 'tool-of-the-week', 'siteefy_central_menu', '5');
+
+
+    add_submenu_page(
+        'siteefy-options',
+        'Plugin Overview',
+        'Plugin Overview',
+        'manage_options',
+        'siteefy-overview',
+        'siteefy_admin_page',
+    );
+    
+    add_submenu_page(
+        'siteefy-options',
+        'Cache Management & Preload',
+        'Cache Management & Preload',
+        'manage_options',
+        'siteefy-cache',
+        'siteefy_cache_admin_page'
+    );
+
 }
 
 add_action( 'admin_menu', 'siteefy_add_options_menu' );
@@ -189,6 +211,7 @@ function siteefy_central_menu() {
     </form>
     <?php
 }
+
 
 function get_selected_tool_of_the_week(){
     $choosen_tool = get_options(array('tool_of_the_week'));
@@ -544,6 +567,7 @@ function siteefy_add_custom_templates($template) {
         $tasks = get_all_tasks(5, $post->post_name);
         $tool_of_the_week = get_selected_tool_of_the_week();
         $count_of_items = count($tools);
+        $wp_content = siteefy_get_page_content($post->ID);
         echo Siteefy::blade()->run('pages.single-cpt-template', [
             'page_title'=>ucfirst($post->post_title),
             'page_subtitle' =>false,
@@ -556,6 +580,7 @@ function siteefy_add_custom_templates($template) {
             'related_link'=>'/tasks',
             'related_items' =>$tasks,
             'tool_of_the_week'=>$tool_of_the_week,
+            'wp_content'=>$wp_content,
         ]);
         exit;
     }elseif(is_archive() && get_post_type($post) === 'task' && get_queried_object()->taxonomy !=='solution'){
@@ -563,6 +588,11 @@ function siteefy_add_custom_templates($template) {
         $categories = get_all_categories(5);
         $tool_of_the_week = get_selected_tool_of_the_week();
         $count_of_items = count($tasks);
+        
+        // Pre-calculate tool counts for all tasks to avoid N+1 query problem
+        $task_ids = array_map(function($task) { return $task->ID; }, $tasks);
+        $task_tool_counts = get_tool_counts_for_tasks($task_ids);
+        
         echo Siteefy::blade()->run('pages.archive-cpt-template', [
             'page_title'=>false,
             'page_subtitle' =>false,
@@ -574,6 +604,7 @@ function siteefy_add_custom_templates($template) {
             'related_link'=>CATEGORY_PAGE_PATH,
             'related_items' =>$categories,
             'tool_of_the_week'=>$tool_of_the_week,
+            'task_tool_counts' => $task_tool_counts, // Pass pre-calculated counts
         ]);
         exit;
     }
@@ -663,7 +694,8 @@ function siteefy_add_custom_templates($template) {
         ]);
         exit;
 
-    }elseif(is_archive() && get_post_type($post) === 'tool'){
+    }
+    elseif(is_archive() && get_post_type($post) === 'tool'){
         $tools = get_all_tools();
         $tool_of_the_week = get_selected_tool_of_the_week();
         $related_items = get_all_categories(5);
@@ -865,7 +897,6 @@ add_filter('acf/load_field/name=tool_assigned_tasks', 'populate_tool_assigned_ta
 function siteefy_get_tool_image($id){
     $img = get_field('tool_image', $id);
     if(is_array($img)){
-//        var_dump($img);
         return $img['url'];
     }else{
         return  PLUGIN_IMAGE_URL . '/tool-image-placeholder.png';

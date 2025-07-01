@@ -55,7 +55,7 @@
                             <a href="{{get_permalink( $item->ID )}}">
                                 <span class="list-item__index">{{$loop->index+1}}.</span>
                                 {{$item->post_title}}
-                                <span class="list-item__count">{{get_count_of_tools_for_single_task($item->ID)}} results</span>
+                                <span class="list-item__count">{{$task_tool_counts[$item->ID] ?? 0}} results</span>
                             </a>
                         </li>
                     @endforeach

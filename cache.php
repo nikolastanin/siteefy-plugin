@@ -1,6 +1,15 @@
 <?php
 
 /**
+ * Debug function to check if caching is working
+ */
+function siteefy_debug_cache_status($function_name, $cache_key, $use_cache, $data_found) {
+    if (defined('WP_DEBUG') && WP_DEBUG) {
+        error_log("Siteefy Cache Debug - {$function_name}: Cache Key: {$cache_key}, Enabled: " . ($use_cache ? 'Yes' : 'No') . ", Found: " . ($data_found ? 'Yes' : 'No'));
+    }
+}
+
+/**
  * Siteefy Cache Management System
  * 
  * This file contains all cache-related functions for the Siteefy plugin,
@@ -66,7 +75,9 @@ function siteefy_flush_cache_group() {
 /**
  * Preload important URLs after cache purge
  */
-function siteefy_preload_cache() {
+function siteefy_preload_cache($test_mode = false) {
+    $results = array();
+    
     // List of important URLs to preload
     $urls_to_preload = [
         home_url('/'), // Homepage
@@ -75,7 +86,23 @@ function siteefy_preload_cache() {
         home_url('/tasks/'), // Task archive
         home_url('/solutions/'), // Solution archive
         home_url('/categories/'), // Category archive
+        home_url('/ai-tools/'), // Category archive
     ];
+    
+    // Add custom preload URLs from admin settings
+    $custom_preload_urls = get_siteefy_settings('preload_urls');
+    if (!empty($custom_preload_urls) && is_array($custom_preload_urls)) {
+        foreach ($custom_preload_urls as $url) {
+            $url = trim($url);
+            if (!empty($url)) {
+                // Convert relative URLs to absolute URLs
+                if (strpos($url, '/') === 0) {
+                    $url = home_url($url);
+                }
+                $urls_to_preload[] = $url;
+            }
+        }
+    }
     
     // Get recent tools and tasks for preloading
     $recent_tools = get_all_tools(5, 'DESC');
@@ -105,20 +132,85 @@ function siteefy_preload_cache() {
         $urls_to_preload[] = get_term_link($category);
     }
     
+    // Remove duplicates
+    $urls_to_preload = array_unique($urls_to_preload);
+    
     // Preload URLs using wp_remote_get
     foreach ($urls_to_preload as $url) {
         if (is_string($url) && !is_wp_error($url)) {
-            wp_remote_get($url, [
-                'timeout' => 5,
-                'blocking' => false, // Non-blocking requests
-                'user-agent' => 'Siteefy Cache Preloader'
-            ]);
+            if ($test_mode) {
+                // Test mode: blocking requests with detailed results
+                $start_time = microtime(true);
+                
+                $response = wp_remote_get($url, [
+                    'timeout' => 10,
+                    'blocking' => true,
+                    'user-agent' => 'Siteefy Cache Preloader Test',
+                    'httpversion' => '1.1',
+                    'sslverify' => false
+                ]);
+                
+                $end_time = microtime(true);
+                $response_time = $end_time - $start_time;
+                
+                if (is_wp_error($response)) {
+                    $results[] = array(
+                        'url' => $url,
+                        'success' => false,
+                        'http_code' => 'N/A',
+                        'response_time' => $response_time,
+                        'message' => $response->get_error_message()
+                    );
+                } else {
+                    $http_code = wp_remote_retrieve_response_code($response);
+                    $success = ($http_code >= 200 && $http_code < 400);
+                    
+                    $message = '';
+                    if ($success) {
+                        $message = 'Successfully preloaded';
+                        if ($http_code == 200) {
+                            $message .= ' (OK)';
+                        } elseif ($http_code == 301 || $http_code == 302) {
+                            $message .= ' (Redirect)';
+                        }
+                    } else {
+                        $message = 'Failed to preload';
+                        if ($http_code == 404) {
+                            $message .= ' (Not Found)';
+                        } elseif ($http_code == 500) {
+                            $message .= ' (Server Error)';
+                        } else {
+                            $message .= ' (HTTP ' . $http_code . ')';
+                        }
+                    }
+                    
+                    $results[] = array(
+                        'url' => $url,
+                        'success' => $success,
+                        'http_code' => $http_code,
+                        'response_time' => $response_time,
+                        'message' => $message
+                    );
+                }
+            } else {
+                // Normal mode: non-blocking requests
+                wp_remote_get($url, [
+                    'timeout' => 5,
+                    'blocking' => false,
+                    'user-agent' => 'Siteefy Cache Preloader'
+                ]);
+            }
         }
     }
     
-    // Also preload WP Rocket cache if available
-    if (function_exists('rocket_preload_domain')) {
+    // Also preload WP Rocket cache if available (only in normal mode)
+    if (!$test_mode && function_exists('rocket_preload_domain')) {
         rocket_preload_domain();
+    }
+    
+    // Return results if in test mode
+    if ($test_mode) {
+        return $results;
     }
 }
 

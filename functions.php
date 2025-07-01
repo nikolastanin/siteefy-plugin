@@ -291,26 +291,37 @@ function get_tools_by_task_id($task_id) {
     $data = siteefy_get_cache($cache_key);
 
     if (!$data) {
-        // Get all tools
-        $all_tools = get_posts(array(
-            'post_type' => 'tool',
-            'posts_per_page' => -1,
-        ));
+        // Get the solutions assigned to this task
+        $task_solutions = get_solutions_for_task($task_id);
+        
+        if (empty($task_solutions)) {
+            $data = array();
+        } else {
+            // Get all tools
+            $all_tools = get_posts(array(
+                'post_type' => 'tool',
+                'posts_per_page' => -1,
+                'no_found_rows' => true,
+                'update_post_meta_cache' => false,
+                'update_post_term_cache' => false,
+            ));
 
-        $filtered_tools = array();
+            $filtered_tools = array();
 
-        // Loop through each tool and check if it is assigned to the specific task ID
-        foreach ($all_tools as $single_tool) {
-            $post_id = $single_tool->ID;
-            $assigned_tasks = get_tasks_for_tool_from_its_solution($post_id); // Assume this is an ACF field
-            if (!empty($assigned_tasks) && in_array($task_id, $assigned_tasks)) {
-                // If the task ID is found in the assigned tasks, add the tool to the filtered list
-                $filtered_tools[] = $single_tool;
+            // Loop through each tool and check if it shares any solutions with the task
+            foreach ($all_tools as $single_tool) {
+                $tool_solutions = get_solutions_for_tool($single_tool->ID);
+                
+                // Check if there's any overlap between task solutions and tool solutions
+                if (!empty($tool_solutions) && array_intersect($task_solutions, $tool_solutions)) {
+                    $filtered_tools[] = $single_tool;
+                }
             }
+
+            $data = $filtered_tools;
         }
 
-        // Store the result in a transient for future requests
-        $data = $filtered_tools;
+        // Store the result in cache
         siteefy_set_cache($cache_key, $data, 3600); // Cache for 1 hour
     }
 
@@ -439,24 +450,43 @@ function get_tools_and_tasks_by_search_term($search_term) {
 }
 
 function get_all_tasks($count = -1, $exclude_slug = '') {
-    // Create cache key based on parameters
-    $cache_key = 'siteefy_all_tasks_' . $count . '_' . $exclude_slug;
+    // Create cache key based on parameters - use 'all' for -1 to make it more readable
+    $count_key = ($count === -1) ? 'all' : $count;
+    $cache_key = 'siteefy_all_tasks_' . $count_key . '_' . $exclude_slug;
     
     // Check if caching is enabled
     $use_cache = get_siteefy_settings('use_cache');
     if ($use_cache) {
         $data = siteefy_get_cache($cache_key);
         if ($data !== false) {
+            siteefy_debug_cache_status('get_all_tasks', $cache_key, $use_cache, true);
             return $data;
         }
     }
+    
+    siteefy_debug_cache_status('get_all_tasks', $cache_key, $use_cache, false);
     
     $args = array(
         'post_type'      => 'task',
         'numberposts'    => $count,
         'post_status'    => 'publish',
-        'exclude'        => !empty($exclude_slug) ? get_page_by_path($exclude_slug, OBJECT, 'task')->ID : array(),
+        'no_found_rows'  => true,
+        'update_post_meta_cache' => false,
+        'update_post_term_cache' => false,
+        'orderby'        => 'date',
+        'order'          => 'DESC',
     );
+    
+    // Only add exclude if we have a valid slug
+    if (!empty($exclude_slug)) {
+        $exclude_post = get_page_by_path($exclude_slug, OBJECT, 'task');
+        if ($exclude_post) {
+            $args['exclude'] = $exclude_post->ID;
+        }
+    }
+    
+    // Apply optimization filter
+    $args = apply_filters('siteefy_get_posts_args', $args, 'task');
 
     $tasks = get_posts($args);
     
@@ -469,24 +499,35 @@ function get_all_tasks($count = -1, $exclude_slug = '') {
 }
 
 function get_all_tools($count=-1, $sort='ASC'){
-    // Create cache key based on parameters
-    $cache_key = 'siteefy_all_tools_' . $count . '_' . $sort;
+    // Create cache key based on parameters - use 'all' for -1 to make it more readable
+    $count_key = ($count === -1) ? 'all' : $count;
+    $cache_key = 'siteefy_all_tools_' . $count_key . '_' . $sort;
     
     // Check if caching is enabled
     $use_cache = get_siteefy_settings('use_cache');
     if ($use_cache) {
         $data = siteefy_get_cache($cache_key);
         if ($data !== false) {
+            siteefy_debug_cache_status('get_all_tools', $cache_key, $use_cache, true);
             return $data;
         }
     }
+    
+    siteefy_debug_cache_status('get_all_tools', $cache_key, $use_cache, false);
     
     $args=array(
         'post_type'        => 'tool',
         'numberposts'      => $count,
         'orderby'        => 'date',
         'order'          => $sort,
+        'no_found_rows'  => true,
+        'update_post_meta_cache' => false,
+        'update_post_term_cache' => false,
     );
+    
+    // Apply optimization filter
+    $args = apply_filters('siteefy_get_posts_args', $args, 'tool');
+    
     $tools = get_posts($args);
     
     // Cache the results for 24 hours if caching is enabled
@@ -517,26 +558,63 @@ function get_all_top_rated_tools($count=3){
     return $selected_tools;
 }
 
-function get_count_of_tools_for_single_task($task_id_passed){
-    // Get all tools
+/**
+ * Get tool counts for multiple tasks efficiently (avoids N+1 query problem)
+ */
+function get_tool_counts_for_tasks($task_ids) {
+    if (empty($task_ids)) {
+        return array();
+    }
+    
+    // Create cache key
+    $cache_key = 'siteefy_task_tool_counts_' . md5(serialize($task_ids));
+    
+    // Check if caching is enabled
+    $use_cache = get_siteefy_settings('use_cache');
+    if ($use_cache) {
+        $data = siteefy_get_cache($cache_key);
+        if ($data !== false) {
+            return $data;
+        }
+    }
+    
+    // Get all tools once
     $all_tools = get_posts(array(
         'post_type' => 'tool',
         'posts_per_page' => -1,
+        'no_found_rows' => true,
+        'update_post_meta_cache' => false,
+        'update_post_term_cache' => false,
     ));
-    $count = 0;
-    // Loop through each tool and get the selected tasks
+    
+    // Initialize counts
+    $task_counts = array_fill_keys($task_ids, 0);
+    
+    // Loop through each tool and count tasks
     foreach ($all_tools as $single_tool) {
         $post_id = $single_tool->ID;
         $selected_tasks_ids_for_post = get_tasks_for_tool_from_its_solution($post_id);
         if (!empty($selected_tasks_ids_for_post)) {
             foreach ($selected_tasks_ids_for_post as $task_id) {
-                if($task_id == $task_id_passed){
-                    $count++;
+                if (in_array($task_id, $task_ids)) {
+                    $task_counts[$task_id]++;
                 }
             }
         }
     }
-    return $count;
+    
+    // Cache the results for 1 hour
+    if ($use_cache) {
+        siteefy_set_cache($cache_key, $task_counts, 3600);
+    }
+    
+    return $task_counts;
+}
+
+function get_count_of_tools_for_single_task($task_id_passed){
+    // Use the optimized function for single task
+    $counts = get_tool_counts_for_tasks(array($task_id_passed));
+    return isset($counts[$task_id_passed]) ? $counts[$task_id_passed] : 0;
 }
 
 function disable_attachment_pages() {
@@ -548,4 +626,5 @@ function disable_attachment_pages() {
         }
     }
 }
-add_action('template_redirect', 'disable_attachment_pages'); 
+add_action('template_redirect', 'disable_attachment_pages');
+
