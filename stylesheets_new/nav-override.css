@@ -101,6 +101,11 @@ p.gb-headline {
     color: #494b67 !important;
 }
 
+p.gb-headline-2a7fc7b8{
+    background-color:unset !important;
+    color:white !important;
+}
+
 /*AI humanizer page*/
 body.page-template-default.page.page-id-59920.logged-in.admin-bar.wp-custom-logo.wp-embed-responsive.post-image-aligned-center.sticky-menu-fade.mobile-header.mobile-header-logo.both-sidebars.nav-float-right.separate-containers.fluid-header.active-footer-widgets-3.header-aligned-left.dropdown-hover.full-width-content.customize-support{
     background-image:radial-gradient(circle, rgb(216, 227, 255) 0%, rgb(153, 176, 247) 100%)!important;
